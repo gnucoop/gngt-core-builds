@@ -1,0 +1,8 @@
+{
+  "name": "@gngt/core/model",
+  "typings": "../model.d.ts",
+  "main": "../bundles/core-model.umd.js",
+  "module": "../esm5/model.es5.js",
+  "es2015": "../esm2015/model.js",
+  "sideEffects": false
+}

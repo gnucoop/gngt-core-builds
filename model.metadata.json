@@ -1,0 +1,12 @@
+{
+  "__symbolic": "module",
+  "version": 3,
+  "metadata": {},
+  "exports": [
+    {
+      "from": "./model/index"
+    }
+  ],
+  "flatModuleIndexRedirect": true,
+  "importAs": "@gngt/core/model"
+}

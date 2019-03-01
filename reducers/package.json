@@ -1,0 +1,8 @@
+{
+  "name": "@gngt/core/reducers",
+  "typings": "../reducers.d.ts",
+  "main": "../bundles/core-reducers.umd.js",
+  "module": "../esm5/reducers.es5.js",
+  "es2015": "../esm2015/reducers.js",
+  "sideEffects": false
+}
