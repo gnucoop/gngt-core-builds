@@ -172,10 +172,5 @@ function forceBooleanProp(value) {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
 export { CommonModule, FormDisabledDirective, forceBooleanProp, GetObjectProperty as ɵa };
 //# sourceMappingURL=common.es5.js.map

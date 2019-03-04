@@ -28,7 +28,7 @@ import { Version } from '@angular/core';
  * Current version of Gngt.
  * @type {?}
  */
-const VERSION = new Version('7.0.0-alpha.5-df60176');
+const VERSION = new Version('7.0.0-alpha.5-356ec9e');
 
 /**
  * @fileoverview added by tsickle

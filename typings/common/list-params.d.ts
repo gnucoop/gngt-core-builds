@@ -19,11 +19,12 @@
  *
  */
 import { ModelJoin } from './model-join';
-import { ModelSort } from './model-sort';
 export interface ModelListParams {
     limit?: number;
     start?: number;
-    sort?: ModelSort;
+    sort?: {
+        [propName: string]: 'asc' | 'desc';
+    };
     fields?: string[];
     joins?: ModelJoin[];
 }

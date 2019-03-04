@@ -1,8 +1,0 @@
-{
-  "name": "@gngt/core/sync",
-  "typings": "../sync.d.ts",
-  "main": "../bundles/core-sync.umd.js",
-  "module": "../esm5/sync.es5.js",
-  "es2015": "../esm2015/sync.js",
-  "sideEffects": false
-}

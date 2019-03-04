@@ -24,7 +24,7 @@ import { Model, ModelActions, ModelService, reducers as fromModel } from '@gngt/
 import { AdminUserInteractionsService } from './admin-user-interactions';
 import { AdminListHeader } from './list-header';
 export declare abstract class AdminListComponent<T extends Model, S extends fromModel.State<T>, A1 extends ModelActions.ModelGetAction, A2 extends ModelActions.ModelListAction, A3 extends ModelActions.ModelCreateAction<T>, A4 extends ModelActions.ModelUpdateAction<T>, A5 extends ModelActions.ModelPatchAction<T>, A6 extends ModelActions.ModelDeleteAction<T>, A7 extends ModelActions.ModelDeleteAllAction<T>, MS extends ModelService<T, S, A1, A2, A3, A4, A5, A6, A7>> implements OnDestroy {
-    protected _cdr: ChangeDetectorRef;
+    private _cdr;
     private _aui;
     title: string;
     private _title;
@@ -52,7 +52,6 @@ export declare abstract class AdminListComponent<T extends Model, S extends from
     ngOnDestroy(): void;
     processAction(action: string): void;
     processDeleteAction(selected: T[]): void;
-    protected _getService(): MS;
     private _getActionHandler;
     private _initService;
 }
