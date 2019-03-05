@@ -86,7 +86,11 @@ class AdminEditComponent {
          * @param {?} o
          * @return {?}
          */
-        o => this._processObject(o))), shareReplay(1));
+        o => {
+            if (this._processObject) {
+                this._processObject(o);
+            }
+        })), shareReplay(1));
         this.form = combineLatest(objObs, this._updateFormEvt).pipe(map((/**
          * @param {?} r
          * @return {?}
@@ -357,6 +361,7 @@ const AdminEditFieldType = {
     CheckBox: 'checkbox',
     Radio: 'radio',
     Select: 'select',
+    MultipleSelect: 'multipleselect',
 };
 
 /**

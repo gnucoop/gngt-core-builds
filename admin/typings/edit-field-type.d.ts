@@ -23,5 +23,6 @@ export declare enum AdminEditFieldType {
     TextArea = "textarea",
     CheckBox = "checkbox",
     Radio = "radio",
-    Select = "select"
+    Select = "select",
+    MultipleSelect = "multipleselect"
 }

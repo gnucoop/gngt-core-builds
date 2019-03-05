@@ -1,6 +1,6 @@
 {
   "name": "@gngt/core",
-  "version": "7.0.0-alpha.5-356ec9e",
+  "version": "7.0.0-alpha.5-10f0624",
   "description": "",
   "main": "./bundles/core.umd.js",
   "module": "./esm5/core.es5.js",
@@ -36,7 +36,7 @@
     "migrations": "./schematics/migration.json"
   },
   "sideEffects": false,
-  "releaseGitCommitSha": "356ec9e49fc0323f96038d6147f4d5080b27e861",
+  "releaseGitCommitSha": "10f06245ab613ea993f0f2c07dac42ccba146985",
   "releaseGitBranch": "",
   "releaseGitUser": " <>"
 }

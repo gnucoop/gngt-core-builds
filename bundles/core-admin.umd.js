@@ -119,7 +119,11 @@
              * @param {?} o
              * @return {?}
              */
-            function (o) { return _this._processObject(o); })), operators.shareReplay(1));
+            function (o) {
+                if (_this._processObject) {
+                    _this._processObject(o);
+                }
+            })), operators.shareReplay(1));
             this.form = rxjs.combineLatest(objObs, this._updateFormEvt).pipe(operators.map((/**
              * @param {?} r
              * @return {?}
@@ -451,6 +455,7 @@
         CheckBox: 'checkbox',
         Radio: 'radio',
         Select: 'select',
+        MultipleSelect: 'multipleselect',
     };
 
     /**
