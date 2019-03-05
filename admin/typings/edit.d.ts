@@ -52,6 +52,8 @@ export declare abstract class AdminEditComponent<T extends Model, S extends from
     private _saveEvt;
     private _saveSub;
     private _savedSub;
+    private _valueChanges$;
+    readonly valueChanges$: Observable<any>;
     constructor(_cdr: ChangeDetectorRef, _fb: FormBuilder, _router: Router);
     goBack(): void;
     save(): void;

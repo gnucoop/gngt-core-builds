@@ -143,6 +143,11 @@
                     return prev;
                 }), {}));
             })), operators.shareReplay(1));
+            this._valueChanges$ = this.form.pipe(operators.switchMap((/**
+             * @param {?} form
+             * @return {?}
+             */
+            function (form) { return form.valueChanges; })));
             this._saveSub = this._saveEvt.pipe(operators.withLatestFrom(this.form, this._service, this._id), operators.filter((/**
              * @param {?} r
              * @return {?}
@@ -312,6 +317,16 @@
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(AdminEditComponent.prototype, "valueChanges$", {
+            get: /**
+             * @return {?}
+             */
+            function () {
+                return this._valueChanges$;
+            },
+            enumerable: true,
+            configurable: true
+        });
         /**
          * @return {?}
          */
@@ -406,7 +421,8 @@
             fields: [{ type: core.Input }],
             id: [{ type: core.Input }],
             processObject: [{ type: core.Input }],
-            processFormData: [{ type: core.Input }]
+            processFormData: [{ type: core.Input }],
+            valueChanges$: [{ type: core.Output }]
         };
         return AdminEditComponent;
     }());

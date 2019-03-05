@@ -19,7 +19,7 @@
  *
  */
 import { __assign } from 'tslib';
-import { Input, EventEmitter } from '@angular/core';
+import { Input, Output, EventEmitter } from '@angular/core';
 import { BehaviorSubject, Subscription, combineLatest, of, merge } from 'rxjs';
 import { filter, switchMap, tap, shareReplay, map, withLatestFrom } from 'rxjs/operators';
 import '@gngt/core/model';
@@ -117,6 +117,11 @@ var AdminEditComponent = /** @class */ (function () {
                 return prev;
             }), {}));
         })), shareReplay(1));
+        this._valueChanges$ = this.form.pipe(switchMap((/**
+         * @param {?} form
+         * @return {?}
+         */
+        function (form) { return form.valueChanges; })));
         this._saveSub = this._saveEvt.pipe(withLatestFrom(this.form, this._service, this._id), filter((/**
          * @param {?} r
          * @return {?}
@@ -286,6 +291,16 @@ var AdminEditComponent = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(AdminEditComponent.prototype, "valueChanges$", {
+        get: /**
+         * @return {?}
+         */
+        function () {
+            return this._valueChanges$;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * @return {?}
      */
@@ -380,7 +395,8 @@ var AdminEditComponent = /** @class */ (function () {
         fields: [{ type: Input }],
         id: [{ type: Input }],
         processObject: [{ type: Input }],
-        processFormData: [{ type: Input }]
+        processFormData: [{ type: Input }],
+        valueChanges$: [{ type: Output }]
     };
     return AdminEditComponent;
 }());

@@ -18,7 +18,7 @@
  * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
  *
  */
-import { EventEmitter, Input } from '@angular/core';
+import { EventEmitter, Input, Output } from '@angular/core';
 import { BehaviorSubject, Subscription, combineLatest, of, merge } from 'rxjs';
 import { filter, switchMap, tap, shareReplay, map, withLatestFrom } from 'rxjs/operators';
 import '@gngt/core/model';
@@ -110,6 +110,11 @@ class AdminEditComponent {
                 return prev;
             }), {}));
         })), shareReplay(1));
+        this._valueChanges$ = this.form.pipe(switchMap((/**
+         * @param {?} form
+         * @return {?}
+         */
+        (form) => form.valueChanges)));
         this._saveSub = this._saveEvt.pipe(withLatestFrom(this.form, this._service, this._id), filter((/**
          * @param {?} r
          * @return {?}
@@ -245,6 +250,12 @@ class AdminEditComponent {
     /**
      * @return {?}
      */
+    get valueChanges$() {
+        return this._valueChanges$;
+    }
+    /**
+     * @return {?}
+     */
     goBack() {
         this._router.navigate([this._listUrl]);
     }
@@ -314,7 +325,8 @@ AdminEditComponent.propDecorators = {
     fields: [{ type: Input }],
     id: [{ type: Input }],
     processObject: [{ type: Input }],
-    processFormData: [{ type: Input }]
+    processFormData: [{ type: Input }],
+    valueChanges$: [{ type: Output }]
 };
 
 /**
