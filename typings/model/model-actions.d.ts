@@ -20,7 +20,7 @@
  */
 import { Action } from '@ngrx/store';
 import { Model, ModelListParams, ModelListResult } from '@gngt/core/common';
-export declare abstract class ModelActionTypes {
+export interface ModelActionTypes {
     GET: string;
     GET_FAILURE: string;
     GET_SUCCESS: string;

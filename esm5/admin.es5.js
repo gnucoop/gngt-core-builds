@@ -61,6 +61,16 @@ var AdminEditComponent = /** @class */ (function () {
         this._service = new BehaviorSubject(null);
         this._fields = [];
         this._id = new BehaviorSubject(null);
+        this._processObject = (/**
+         * @param {?} _
+         * @return {?}
+         */
+        function (_) { });
+        this._processFormData = (/**
+         * @param {?} _
+         * @return {?}
+         */
+        function (_) { });
         this._updateFormEvt = new EventEmitter();
         this._saveEvt = new EventEmitter();
         this._saveSub = Subscription.EMPTY;
@@ -326,6 +336,8 @@ var AdminEditComponent = /** @class */ (function () {
      * @return {?}
      */
     function () {
+        this._updateFormEvt.complete();
+        this._saveEvt.complete();
         this._saveSub.unsubscribe();
         this._savedSub.unsubscribe();
     };
@@ -656,6 +668,15 @@ AdminListComponent = /** @class */ (function () {
             }
         }));
     };
+    /**
+     * @protected
+     * @return {?}
+     */
+    AdminListComponent.prototype._getService = /**
+     * @protected
+     * @return {?}
+     */
+    function () { return this._service; };
     /**
      * @private
      * @param {?} action

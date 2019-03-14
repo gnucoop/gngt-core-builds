@@ -32,7 +32,7 @@
 	 * Current version of Gngt.
 	 * @type {?}
 	 */
-	var VERSION = new core.Version('7.0.0-alpha.5-a3fd93b');
+	var VERSION = new core.Version('7.0.0-beta.1-e6f1ae7');
 
 	exports.VERSION = VERSION;
 

@@ -31,16 +31,9 @@ import { select, createSelector, createFeatureSelector } from '@ngrx/store';
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
- * @abstract
+ * @record
  */
-var /**
- * @abstract
- */
-ModelActionTypes = /** @class */ (function () {
-    function ModelActionTypes() {
-    }
-    return ModelActionTypes;
-}());
+function ModelActionTypes() { }
 /**
  * @param {?} typeName
  * @return {?}

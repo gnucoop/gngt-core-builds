@@ -30,10 +30,9 @@ import { createFeatureSelector, createSelector, select } from '@ngrx/store';
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
- * @abstract
+ * @record
  */
-class ModelActionTypes {
-}
+function ModelActionTypes() { }
 /**
  * @param {?} typeName
  * @return {?}

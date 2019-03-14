@@ -58,6 +58,16 @@ class AdminEditComponent {
         this._service = new BehaviorSubject(null);
         this._fields = [];
         this._id = new BehaviorSubject(null);
+        this._processObject = (/**
+         * @param {?} _
+         * @return {?}
+         */
+        (_) => { });
+        this._processFormData = (/**
+         * @param {?} _
+         * @return {?}
+         */
+        (_) => { });
         this._updateFormEvt = new EventEmitter();
         this._saveEvt = new EventEmitter();
         this._saveSub = Subscription.EMPTY;
@@ -269,6 +279,8 @@ class AdminEditComponent {
      * @return {?}
      */
     ngOnDestroy() {
+        this._updateFormEvt.complete();
+        this._saveEvt.complete();
         this._saveSub.unsubscribe();
         this._savedSub.unsubscribe();
     }
@@ -542,6 +554,11 @@ class AdminListComponent {
             }
         }));
     }
+    /**
+     * @protected
+     * @return {?}
+     */
+    _getService() { return this._service; }
     /**
      * @private
      * @param {?} action

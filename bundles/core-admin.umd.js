@@ -87,6 +87,16 @@
             this._service = new rxjs.BehaviorSubject(null);
             this._fields = [];
             this._id = new rxjs.BehaviorSubject(null);
+            this._processObject = (/**
+             * @param {?} _
+             * @return {?}
+             */
+            function (_) { });
+            this._processFormData = (/**
+             * @param {?} _
+             * @return {?}
+             */
+            function (_) { });
             this._updateFormEvt = new core.EventEmitter();
             this._saveEvt = new core.EventEmitter();
             this._saveSub = rxjs.Subscription.EMPTY;
@@ -352,6 +362,8 @@
          * @return {?}
          */
         function () {
+            this._updateFormEvt.complete();
+            this._saveEvt.complete();
             this._saveSub.unsubscribe();
             this._savedSub.unsubscribe();
         };
@@ -682,6 +694,15 @@
                 }
             }));
         };
+        /**
+         * @protected
+         * @return {?}
+         */
+        AdminListComponent.prototype._getService = /**
+         * @protected
+         * @return {?}
+         */
+        function () { return this._service; };
         /**
          * @private
          * @param {?} action
