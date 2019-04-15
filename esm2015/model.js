@@ -1270,5 +1270,5 @@ class ModelService {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { modelActions as ModelActions, reducers, ModelEffects, ModelManager, MODEL_OPTIONS, generateInitialModelState, modelReducer, ModelService };
+export { MODEL_OPTIONS, modelActions as ModelActions, ModelEffects, ModelManager, ModelService, generateInitialModelState, modelReducer, reducers };
 //# sourceMappingURL=model.js.map

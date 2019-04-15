@@ -1552,5 +1552,5 @@ var SyncModule = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { OfflineInterceptor, SyncModule, SYNC_OPTIONS, SyncService };
+export { OfflineInterceptor, SYNC_OPTIONS, SyncModule, SyncService };
 //# sourceMappingURL=sync.es5.js.map

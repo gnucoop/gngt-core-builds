@@ -59,5 +59,5 @@ TranslationsModule.decorators = [
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { TranslationsModule, MissingTranslationHandler };
+export { MissingTranslationHandler, TranslationsModule };
 //# sourceMappingURL=translations.js.map

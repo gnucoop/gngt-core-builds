@@ -93,8 +93,8 @@
         return TranslationsModule;
     }());
 
-    exports.TranslationsModule = TranslationsModule;
     exports.MissingTranslationHandler = MissingTranslationHandler;
+    exports.TranslationsModule = TranslationsModule;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

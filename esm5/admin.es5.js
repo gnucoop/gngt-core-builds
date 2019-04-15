@@ -458,6 +458,7 @@ var AdminEditFieldType = {
     Radio: 'radio',
     Select: 'select',
     MultipleSelect: 'multipleselect',
+    Autocomplete: 'autocomplete',
 };
 
 /**
@@ -724,5 +725,5 @@ AdminListComponent = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { AdminUserInteractionsService, AdminEditComponent, AdminEditFieldSubtype, AdminEditFieldType, AdminListComponent };
+export { AdminEditComponent, AdminEditFieldSubtype, AdminEditFieldType, AdminListComponent, AdminUserInteractionsService };
 //# sourceMappingURL=admin.es5.js.map

@@ -711,5 +711,5 @@ class Calendar {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { CALENDAR_CONTROL_VALUE_ACCESSOR, CalendarPeriod, CalendarChange, CalendarEntry, Calendar };
+export { CALENDAR_CONTROL_VALUE_ACCESSOR, Calendar, CalendarChange, CalendarEntry, CalendarPeriod };
 //# sourceMappingURL=calendar.js.map

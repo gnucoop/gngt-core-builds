@@ -72,5 +72,5 @@ var TranslationsModule = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { TranslationsModule, MissingTranslationHandler };
+export { MissingTranslationHandler, TranslationsModule };
 //# sourceMappingURL=translations.es5.js.map

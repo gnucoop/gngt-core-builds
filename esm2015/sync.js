@@ -1299,5 +1299,5 @@ SyncModule.decorators = [
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { OfflineInterceptor, SyncModule, SYNC_OPTIONS, SyncService };
+export { OfflineInterceptor, SYNC_OPTIONS, SyncModule, SyncService };
 //# sourceMappingURL=sync.js.map

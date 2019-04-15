@@ -1113,5 +1113,5 @@ AuthModule.decorators = [
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { reducers$1 as reducers, AUTH_OPTIONS, JwtInterceptor, JWT_OPTIONS, AuthService, AuthGuard, JwtHelperService, AuthUserInteractionsService, LoginComponent, AuthModule, AuthEffects as ɵe, reducer as ɵc, reducer$1 as ɵd, reducers as ɵb };
+export { AUTH_OPTIONS, AuthGuard, AuthModule, AuthService, AuthUserInteractionsService, JWT_OPTIONS, JwtHelperService, JwtInterceptor, LoginComponent, reducers$1 as reducers, reducers as ɵb, reducer as ɵc, reducer$1 as ɵd, AuthEffects as ɵe };
 //# sourceMappingURL=auth.js.map

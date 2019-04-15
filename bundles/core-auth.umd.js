@@ -1233,20 +1233,20 @@
         return AuthModule;
     }());
 
-    exports.reducers = reducers$1;
     exports.AUTH_OPTIONS = AUTH_OPTIONS;
-    exports.JwtInterceptor = JwtInterceptor;
-    exports.JWT_OPTIONS = JWT_OPTIONS;
-    exports.AuthService = AuthService;
     exports.AuthGuard = AuthGuard;
-    exports.JwtHelperService = JwtHelperService;
-    exports.AuthUserInteractionsService = AuthUserInteractionsService;
-    exports.LoginComponent = LoginComponent;
     exports.AuthModule = AuthModule;
-    exports.ɵe = AuthEffects;
+    exports.AuthService = AuthService;
+    exports.AuthUserInteractionsService = AuthUserInteractionsService;
+    exports.JWT_OPTIONS = JWT_OPTIONS;
+    exports.JwtHelperService = JwtHelperService;
+    exports.JwtInterceptor = JwtInterceptor;
+    exports.LoginComponent = LoginComponent;
+    exports.reducers = reducers$1;
+    exports.ɵb = reducers;
     exports.ɵc = reducer;
     exports.ɵd = reducer$1;
-    exports.ɵb = reducers;
+    exports.ɵe = AuthEffects;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

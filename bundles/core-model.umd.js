@@ -1506,14 +1506,14 @@
         return ModelService;
     }());
 
+    exports.MODEL_OPTIONS = MODEL_OPTIONS;
     exports.ModelActions = modelActions;
-    exports.reducers = reducers;
     exports.ModelEffects = ModelEffects;
     exports.ModelManager = ModelManager;
-    exports.MODEL_OPTIONS = MODEL_OPTIONS;
+    exports.ModelService = ModelService;
     exports.generateInitialModelState = generateInitialModelState;
     exports.modelReducer = modelReducer;
-    exports.ModelService = ModelService;
+    exports.reducers = reducers;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

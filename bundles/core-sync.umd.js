@@ -1560,8 +1560,8 @@
     }());
 
     exports.OfflineInterceptor = OfflineInterceptor;
-    exports.SyncModule = SyncModule;
     exports.SYNC_OPTIONS = SYNC_OPTIONS;
+    exports.SyncModule = SyncModule;
     exports.SyncService = SyncService;
 
     Object.defineProperty(exports, '__esModule', { value: true });

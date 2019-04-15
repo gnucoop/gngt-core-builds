@@ -484,6 +484,7 @@
         Radio: 'radio',
         Select: 'select',
         MultipleSelect: 'multipleselect',
+        Autocomplete: 'autocomplete',
     };
 
     /**
@@ -735,11 +736,11 @@
         return AdminListComponent;
     }());
 
-    exports.AdminUserInteractionsService = AdminUserInteractionsService;
     exports.AdminEditComponent = AdminEditComponent;
     exports.AdminEditFieldSubtype = AdminEditFieldSubtype;
     exports.AdminEditFieldType = AdminEditFieldType;
     exports.AdminListComponent = AdminListComponent;
+    exports.AdminUserInteractionsService = AdminUserInteractionsService;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

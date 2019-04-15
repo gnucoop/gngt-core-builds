@@ -386,6 +386,7 @@ const AdminEditFieldType = {
     Radio: 'radio',
     Select: 'select',
     MultipleSelect: 'multipleselect',
+    Autocomplete: 'autocomplete',
 };
 
 /**
@@ -595,5 +596,5 @@ class AdminListComponent {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { AdminUserInteractionsService, AdminEditComponent, AdminEditFieldSubtype, AdminEditFieldType, AdminListComponent };
+export { AdminEditComponent, AdminEditFieldSubtype, AdminEditFieldType, AdminListComponent, AdminUserInteractionsService };
 //# sourceMappingURL=admin.js.map

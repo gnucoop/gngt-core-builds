@@ -869,10 +869,10 @@
     }());
 
     exports.CALENDAR_CONTROL_VALUE_ACCESSOR = CALENDAR_CONTROL_VALUE_ACCESSOR;
-    exports.CalendarPeriod = CalendarPeriod;
+    exports.Calendar = Calendar;
     exports.CalendarChange = CalendarChange;
     exports.CalendarEntry = CalendarEntry;
-    exports.Calendar = Calendar;
+    exports.CalendarPeriod = CalendarPeriod;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
