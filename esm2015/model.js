@@ -59,7 +59,10 @@ function generateModelActionTypes(typeName) {
         DELETE_SUCCESS: type(`[${typeName}] Delete success`),
         DELETE_ALL: type(`[${typeName}] Delete all`),
         DELETE_ALL_FAILURE: type(`[${typeName}] Delete all failure`),
-        DELETE_ALL_SUCCESS: type(`[${typeName}] Delete all success`)
+        DELETE_ALL_SUCCESS: type(`[${typeName}] Delete all success`),
+        QUERY: type(`[${typeName}] Query`),
+        QUERY_FAILURE: type(`[${typeName}] Query failure`),
+        QUERY_SUCCESS: type(`[${typeName}] Query success`),
     };
 }
 /**
@@ -305,6 +308,40 @@ class ModelDeleteAllFailureAction {
         this.payload = payload;
     }
 }
+/**
+ * @abstract
+ */
+class ModelQueryAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ * @template T
+ */
+class ModelQuerySuccessAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ */
+class ModelQueryFailureAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        this.payload = payload;
+    }
+}
 
 var modelActions = /*#__PURE__*/Object.freeze({
     ModelActionTypes: ModelActionTypes,
@@ -329,7 +366,10 @@ var modelActions = /*#__PURE__*/Object.freeze({
     ModelDeleteFailureAction: ModelDeleteFailureAction,
     ModelDeleteAllAction: ModelDeleteAllAction,
     ModelDeleteAllSuccessAction: ModelDeleteAllSuccessAction,
-    ModelDeleteAllFailureAction: ModelDeleteAllFailureAction
+    ModelDeleteAllFailureAction: ModelDeleteAllFailureAction,
+    ModelQueryAction: ModelQueryAction,
+    ModelQuerySuccessAction: ModelQuerySuccessAction,
+    ModelQueryFailureAction: ModelQueryFailureAction
 });
 
 /**
@@ -383,7 +423,13 @@ function generateInitialModelState() {
             ids: null,
             objects: null,
             error: null
-        }
+        },
+        query: {
+            loading: false,
+            options: null,
+            objects: null,
+            error: null
+        },
     };
 }
 /**
@@ -441,6 +487,12 @@ function modelReducer(state, action, actionTypes) {
             return Object.assign({}, state, { deleteAll: Object.assign({}, state.deleteAll, { loading: false, objects: ((/** @type {?} */ (action))).payload.items, error: null }) });
         case actionTypes.DELETE_ALL_FAILURE:
             return Object.assign({}, state, { deleteAll: Object.assign({}, state.deleteAll, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
+        case actionTypes.QUERY:
+            return Object.assign({}, state, { list: Object.assign({}, state.list, { loading: true, options: ((/** @type {?} */ (action))).payload.params, objects: null, error: null }) });
+        case actionTypes.QUERY_SUCCESS:
+            return Object.assign({}, state, { list: Object.assign({}, state.list, { loading: false, objects: ((/** @type {?} */ (action))).payload.result, error: null }) });
+        case actionTypes.QUERY_FAILURE:
+            return Object.assign({}, state, { list: Object.assign({}, state.list, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
         default:
             return state;
     }
@@ -468,7 +520,7 @@ var reducers = /*#__PURE__*/Object.freeze({
  */
 /**
  * @abstract
- * @template M, S, A, A1, A2, A3, A4, A5, A6, A7
+ * @template M, S, A, A1, A2, A3, A4, A5, A6, A7, A8
  */
 class ModelEffects {
     /**
@@ -589,6 +641,21 @@ class ModelEffects {
          * @return {?}
          */
         error => of(new this._params.deleteAllFailureAction({ error }))))))));
+        this.modelQuery$ = this._actions
+            .pipe(ofType(this._params.queryActionType), switchMap((/**
+         * @param {?} action
+         * @return {?}
+         */
+        action => this._manager.query(action.payload.params)
+            .pipe(map((/**
+         * @param {?} result
+         * @return {?}
+         */
+        (result) => new this._params.querySuccessAction({ result }))), catchError((/**
+         * @param {?} error
+         * @return {?}
+         */
+        error => of(new this._params.queryFailureAction({ error }))))))));
     }
 }
 
@@ -675,6 +742,18 @@ class ModelManager {
             url = `${url}/`;
         }
         return this._http.post(url, { ids });
+    }
+    /**
+     * @param {?} params
+     * @return {?}
+     */
+    query(params) {
+        /** @type {?} */
+        let url = `${this._baseUrl}/query`;
+        if (this._config.addTrailingSlash) {
+            url = `${url}/`;
+        }
+        return this._http.post(url, params);
     }
     /**
      * @private
@@ -840,8 +919,17 @@ function createDeleteAllAction(type, items) {
     return new type({ items });
 }
 /**
+ * @template T
+ * @param {?} type
+ * @param {?} params
+ * @return {?}
+ */
+function createQueryAction(type, params) {
+    return new type({ params });
+}
+/**
  * @abstract
- * @template T, S, A1, A2, A3, A4, A5, A6, A7
+ * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8
  */
 class ModelService {
     /**
@@ -854,9 +942,10 @@ class ModelService {
      * @param {?} _patchAction
      * @param {?} _deleteAction
      * @param {?} _deleteAllAction
+     * @param {?} _queryAction
      * @param {?} statePrefixes
      */
-    constructor(_store, _actions, _getAction, _listAction, _createAction, _updateAction, _patchAction, _deleteAction, _deleteAllAction, statePrefixes) {
+    constructor(_store, _actions, _getAction, _listAction, _createAction, _updateAction, _patchAction, _deleteAction, _deleteAllAction, _queryAction, statePrefixes) {
         this._store = _store;
         this._actions = _actions;
         this._getAction = _getAction;
@@ -866,6 +955,7 @@ class ModelService {
         this._patchAction = _patchAction;
         this._deleteAction = _deleteAction;
         this._deleteAllAction = _deleteAllAction;
+        this._queryAction = _queryAction;
         /** @type {?} */
         const packageState = createFeatureSelector(statePrefixes[0]);
         this._modelState = createSelector(packageState, (/**
@@ -1182,6 +1272,71 @@ class ModelService {
     /**
      * @return {?}
      */
+    getQueryLoading() {
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.query.loading))));
+    }
+    /**
+     * @return {?}
+     */
+    getQueryOptions() {
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.query.options))));
+    }
+    /**
+     * @return {?}
+     */
+    getQueryObjects() {
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.query.objects))));
+    }
+    /**
+     * @return {?}
+     */
+    getQueryError() {
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.query.error))));
+    }
+    /**
+     * @return {?}
+     */
+    getQueryHasNext() {
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.query.objects && state.query.objects.next))));
+    }
+    /**
+     * @return {?}
+     */
+    getQueryCurrentStart() {
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => {
+            if (state.query.options && state.query.options.start != null) {
+                return state.query.options.start;
+            }
+            return 1;
+        }))));
+    }
+    /**
+     * @return {?}
+     */
     getCreateSuccess() {
         return this._actions.pipe(ofType(new this._createAction((/** @type {?} */ (null))).type));
     }
@@ -1257,6 +1412,13 @@ class ModelService {
      */
     deleteAll(data) {
         this._store.dispatch(createDeleteAllAction(this._deleteAllAction, data));
+    }
+    /**
+     * @param {?} options
+     * @return {?}
+     */
+    query(options) {
+        this._store.dispatch(createQueryAction(this._queryAction, options || {}));
     }
 }
 

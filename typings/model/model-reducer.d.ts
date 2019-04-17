@@ -19,7 +19,7 @@
  *
  */
 import { Action } from '@ngrx/store';
-import { Model, ModelGetParams, ModelListParams, ModelListResult } from '@gngt/core/common';
+import { Model, ModelGetParams, ModelListParams, ModelListResult, ModelQueryParams } from '@gngt/core/common';
 import * as ModelActions from './model-actions';
 export interface State<M extends Model> {
     get: {
@@ -62,6 +62,12 @@ export interface State<M extends Model> {
         loading: boolean;
         ids: number[] | null;
         objects: M[] | null;
+        error: any;
+    };
+    query: {
+        loading: boolean;
+        options: ModelQueryParams | null;
+        objects: ModelListResult<M> | null;
         error: any;
     };
 }

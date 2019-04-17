@@ -18,25 +18,20 @@
  * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
  *
  */
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
-	typeof define === 'function' && define.amd ? define('@gngt/core', ['exports', '@angular/core'], factory) :
-	(global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = {}), global.ng.core));
-}(this, function (exports, core) { 'use strict';
-
-	/**
-	 * @fileoverview added by tsickle
-	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-	 */
-	/**
-	 * Current version of Gngt.
-	 * @type {?}
-	 */
-	var VERSION = new core.Version('7.0.0-beta.4-ed60d27');
-
-	exports.VERSION = VERSION;
-
-	Object.defineProperty(exports, '__esModule', { value: true });
-
-}));
-//# sourceMappingURL=core.umd.js.map
+export declare type ModelQuerySelector = {
+    [propName: string]: any | {
+        $lt?: any;
+        $gt?: any;
+        $lte?: any;
+        $gte?: any;
+        $eq?: any;
+        $ne?: any;
+        $exists?: any;
+        $in?: any;
+        $nin?: any;
+        $or?: any;
+        $nor?: any;
+        $not?: any;
+        $regex?: any;
+    };
+};

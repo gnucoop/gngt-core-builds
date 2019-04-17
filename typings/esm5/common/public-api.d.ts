@@ -27,3 +27,5 @@ export * from './list-result';
 export * from './model';
 export * from './model-join';
 export * from './model-sort';
+export * from './query-params';
+export * from './query-selector';

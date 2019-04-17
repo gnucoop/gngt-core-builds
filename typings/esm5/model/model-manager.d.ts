@@ -20,7 +20,7 @@
  */
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Model, ModelListParams, ModelListResult } from '@gngt/core/common';
+import { Model, ModelListParams, ModelListResult, ModelQueryParams } from '@gngt/core/common';
 import { ModelOptions } from './model-options';
 export declare abstract class ModelManager<M extends Model> {
     private _config;
@@ -36,6 +36,7 @@ export declare abstract class ModelManager<M extends Model> {
     patch(id: number, data: M): Observable<M>;
     delete(id: number): Observable<M>;
     deleteAll(ids: number[]): Observable<M>;
+    query(params: ModelQueryParams): Observable<ModelListResult<M>>;
     private _getObjectUrl;
     private _getListUrl;
     private _listParamsToQueryParameters;

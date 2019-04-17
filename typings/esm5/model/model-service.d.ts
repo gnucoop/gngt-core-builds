@@ -22,10 +22,10 @@ import { MemoizedSelector, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Actions } from '@ngrx/effects';
 import * as fromRoot from '@gngt/core/reducers';
-import { Model, ModelGetParams, ModelListParams, ModelListResult } from '@gngt/core/common';
+import { Model, ModelGetParams, ModelListParams, ModelListResult, ModelQueryParams } from '@gngt/core/common';
 import * as ModelActions from './model-actions';
 import * as fromModel from './reducers';
-export declare abstract class ModelService<T extends Model, S extends fromModel.State<T>, A1 extends ModelActions.ModelGetAction, A2 extends ModelActions.ModelListAction, A3 extends ModelActions.ModelCreateAction<T>, A4 extends ModelActions.ModelUpdateAction<T>, A5 extends ModelActions.ModelPatchAction<T>, A6 extends ModelActions.ModelDeleteAction<T>, A7 extends ModelActions.ModelDeleteAllAction<T>> {
+export declare abstract class ModelService<T extends Model, S extends fromModel.State<T>, A1 extends ModelActions.ModelGetAction, A2 extends ModelActions.ModelListAction, A3 extends ModelActions.ModelCreateAction<T>, A4 extends ModelActions.ModelUpdateAction<T>, A5 extends ModelActions.ModelPatchAction<T>, A6 extends ModelActions.ModelDeleteAction<T>, A7 extends ModelActions.ModelDeleteAllAction<T>, A8 extends ModelActions.ModelQueryAction> {
     protected _store: Store<fromRoot.State>;
     private _actions;
     private _getAction;
@@ -35,6 +35,7 @@ export declare abstract class ModelService<T extends Model, S extends fromModel.
     private _patchAction;
     private _deleteAction;
     private _deleteAllAction;
+    private _queryAction;
     protected _modelState: MemoizedSelector<object, S>;
     constructor(_store: Store<fromRoot.State>, _actions: Actions, _getAction: {
         new (p: {
@@ -64,6 +65,10 @@ export declare abstract class ModelService<T extends Model, S extends fromModel.
         new (p: {
             items: T[];
         }): A7;
+    }, _queryAction: {
+        new (p: {
+            params: ModelQueryParams;
+        }): A8;
     }, statePrefixes: [string, string]);
     getGetLoading(): Observable<boolean>;
     getGetOptions(): Observable<ModelGetParams>;
@@ -95,6 +100,12 @@ export declare abstract class ModelService<T extends Model, S extends fromModel.
     getDeleteAllIds(): Observable<number[] | null>;
     getDeleteAllObjects(): Observable<T[] | null>;
     getDeleteAllError(): Observable<any>;
+    getQueryLoading(): Observable<boolean>;
+    getQueryOptions(): Observable<ModelQueryParams | null>;
+    getQueryObjects(): Observable<ModelListResult<T> | null>;
+    getQueryError(): Observable<any>;
+    getQueryHasNext(): Observable<any>;
+    getQueryCurrentStart(): Observable<any>;
     getCreateSuccess(): Observable<ModelActions.ModelCreateSuccessAction<T>>;
     getUpdateSuccess(): Observable<ModelActions.ModelUpdateSuccessAction<T>>;
     getPatchSuccess(): Observable<ModelActions.ModelUpdateSuccessAction<T>>;
@@ -107,4 +118,5 @@ export declare abstract class ModelService<T extends Model, S extends fromModel.
     patch(data: T): void;
     delete(data: T): void;
     deleteAll(data: T[]): void;
+    query(options: ModelQueryParams): void;
 }

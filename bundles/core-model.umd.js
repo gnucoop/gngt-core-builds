@@ -84,7 +84,10 @@
             DELETE_SUCCESS: reducers$1.type("[" + typeName + "] Delete success"),
             DELETE_ALL: reducers$1.type("[" + typeName + "] Delete all"),
             DELETE_ALL_FAILURE: reducers$1.type("[" + typeName + "] Delete all failure"),
-            DELETE_ALL_SUCCESS: reducers$1.type("[" + typeName + "] Delete all success")
+            DELETE_ALL_SUCCESS: reducers$1.type("[" + typeName + "] Delete all success"),
+            QUERY: reducers$1.type("[" + typeName + "] Query"),
+            QUERY_FAILURE: reducers$1.type("[" + typeName + "] Query failure"),
+            QUERY_SUCCESS: reducers$1.type("[" + typeName + "] Query success"),
         };
     }
     /**
@@ -363,6 +366,44 @@
         }
         return ModelDeleteAllFailureAction;
     }());
+    /**
+     * @abstract
+     */
+    var /**
+     * @abstract
+     */
+    ModelQueryAction = /** @class */ (function () {
+        function ModelQueryAction(payload) {
+            this.payload = payload;
+        }
+        return ModelQueryAction;
+    }());
+    /**
+     * @abstract
+     * @template T
+     */
+    var /**
+     * @abstract
+     * @template T
+     */
+    ModelQuerySuccessAction = /** @class */ (function () {
+        function ModelQuerySuccessAction(payload) {
+            this.payload = payload;
+        }
+        return ModelQuerySuccessAction;
+    }());
+    /**
+     * @abstract
+     */
+    var /**
+     * @abstract
+     */
+    ModelQueryFailureAction = /** @class */ (function () {
+        function ModelQueryFailureAction(payload) {
+            this.payload = payload;
+        }
+        return ModelQueryFailureAction;
+    }());
 
     var modelActions = /*#__PURE__*/Object.freeze({
         ModelActionTypes: ModelActionTypes,
@@ -387,7 +428,10 @@
         ModelDeleteFailureAction: ModelDeleteFailureAction,
         ModelDeleteAllAction: ModelDeleteAllAction,
         ModelDeleteAllSuccessAction: ModelDeleteAllSuccessAction,
-        ModelDeleteAllFailureAction: ModelDeleteAllFailureAction
+        ModelDeleteAllFailureAction: ModelDeleteAllFailureAction,
+        ModelQueryAction: ModelQueryAction,
+        ModelQuerySuccessAction: ModelQuerySuccessAction,
+        ModelQueryFailureAction: ModelQueryFailureAction
     });
 
     /**
@@ -441,7 +485,13 @@
                 ids: null,
                 objects: null,
                 error: null
-            }
+            },
+            query: {
+                loading: false,
+                options: null,
+                objects: null,
+                error: null
+            },
         };
     }
     /**
@@ -499,6 +549,12 @@
                 return __assign({}, state, { deleteAll: __assign({}, state.deleteAll, { loading: false, objects: ((/** @type {?} */ (action))).payload.items, error: null }) });
             case actionTypes.DELETE_ALL_FAILURE:
                 return __assign({}, state, { deleteAll: __assign({}, state.deleteAll, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
+            case actionTypes.QUERY:
+                return __assign({}, state, { list: __assign({}, state.list, { loading: true, options: ((/** @type {?} */ (action))).payload.params, objects: null, error: null }) });
+            case actionTypes.QUERY_SUCCESS:
+                return __assign({}, state, { list: __assign({}, state.list, { loading: false, objects: ((/** @type {?} */ (action))).payload.result, error: null }) });
+            case actionTypes.QUERY_FAILURE:
+                return __assign({}, state, { list: __assign({}, state.list, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
             default:
                 return state;
         }
@@ -526,11 +582,11 @@
      */
     /**
      * @abstract
-     * @template M, S, A, A1, A2, A3, A4, A5, A6, A7
+     * @template M, S, A, A1, A2, A3, A4, A5, A6, A7, A8
      */
     var   /**
      * @abstract
-     * @template M, S, A, A1, A2, A3, A4, A5, A6, A7
+     * @template M, S, A, A1, A2, A3, A4, A5, A6, A7, A8
      */
     ModelEffects = /** @class */ (function () {
         function ModelEffects(_actions, _service, _manager, _params) {
@@ -660,6 +716,23 @@
                  */
                 function (error) { return rxjs.of(new _this._params.deleteAllFailureAction({ error: error })); })));
             })));
+            this.modelQuery$ = this._actions
+                .pipe(effects.ofType(this._params.queryActionType), operators.switchMap((/**
+             * @param {?} action
+             * @return {?}
+             */
+            function (action) {
+                return _this._manager.query(action.payload.params)
+                    .pipe(operators.map((/**
+                 * @param {?} result
+                 * @return {?}
+                 */
+                function (result) { return new _this._params.querySuccessAction({ result: result }); })), operators.catchError((/**
+                 * @param {?} error
+                 * @return {?}
+                 */
+                function (error) { return rxjs.of(new _this._params.queryFailureAction({ error: error })); })));
+            })));
         }
         return ModelEffects;
     }());
@@ -780,6 +853,22 @@
                 url = url + "/";
             }
             return this._http.post(url, { ids: ids });
+        };
+        /**
+         * @param {?} params
+         * @return {?}
+         */
+        ModelManager.prototype.query = /**
+         * @param {?} params
+         * @return {?}
+         */
+        function (params) {
+            /** @type {?} */
+            var url = this._baseUrl + "/query";
+            if (this._config.addTrailingSlash) {
+                url = url + "/";
+            }
+            return this._http.post(url, params);
         };
         /**
          * @private
@@ -960,15 +1049,24 @@
         return new type({ items: items });
     }
     /**
+     * @template T
+     * @param {?} type
+     * @param {?} params
+     * @return {?}
+     */
+    function createQueryAction(type, params) {
+        return new type({ params: params });
+    }
+    /**
      * @abstract
-     * @template T, S, A1, A2, A3, A4, A5, A6, A7
+     * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8
      */
     var   /**
      * @abstract
-     * @template T, S, A1, A2, A3, A4, A5, A6, A7
+     * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8
      */
     ModelService = /** @class */ (function () {
-        function ModelService(_store, _actions, _getAction, _listAction, _createAction, _updateAction, _patchAction, _deleteAction, _deleteAllAction, statePrefixes) {
+        function ModelService(_store, _actions, _getAction, _listAction, _createAction, _updateAction, _patchAction, _deleteAction, _deleteAllAction, _queryAction, statePrefixes) {
             this._store = _store;
             this._actions = _actions;
             this._getAction = _getAction;
@@ -978,6 +1076,7 @@
             this._patchAction = _patchAction;
             this._deleteAction = _deleteAction;
             this._deleteAllAction = _deleteAllAction;
+            this._queryAction = _queryAction;
             /** @type {?} */
             var packageState = store.createFeatureSelector(statePrefixes[0]);
             this._modelState = store.createSelector(packageState, (/**
@@ -1384,6 +1483,89 @@
         /**
          * @return {?}
          */
+        ModelService.prototype.getQueryLoading = /**
+         * @return {?}
+         */
+        function () {
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.query.loading; }))));
+        };
+        /**
+         * @return {?}
+         */
+        ModelService.prototype.getQueryOptions = /**
+         * @return {?}
+         */
+        function () {
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.query.options; }))));
+        };
+        /**
+         * @return {?}
+         */
+        ModelService.prototype.getQueryObjects = /**
+         * @return {?}
+         */
+        function () {
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.query.objects; }))));
+        };
+        /**
+         * @return {?}
+         */
+        ModelService.prototype.getQueryError = /**
+         * @return {?}
+         */
+        function () {
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.query.error; }))));
+        };
+        /**
+         * @return {?}
+         */
+        ModelService.prototype.getQueryHasNext = /**
+         * @return {?}
+         */
+        function () {
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.query.objects && state.query.objects.next; }))));
+        };
+        /**
+         * @return {?}
+         */
+        ModelService.prototype.getQueryCurrentStart = /**
+         * @return {?}
+         */
+        function () {
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) {
+                if (state.query.options && state.query.options.start != null) {
+                    return state.query.options.start;
+                }
+                return 1;
+            }))));
+        };
+        /**
+         * @return {?}
+         */
         ModelService.prototype.getCreateSuccess = /**
          * @return {?}
          */
@@ -1502,6 +1684,17 @@
          */
         function (data) {
             this._store.dispatch(createDeleteAllAction(this._deleteAllAction, data));
+        };
+        /**
+         * @param {?} options
+         * @return {?}
+         */
+        ModelService.prototype.query = /**
+         * @param {?} options
+         * @return {?}
+         */
+        function (options) {
+            this._store.dispatch(createQueryAction(this._queryAction, options || {}));
         };
         return ModelService;
     }());

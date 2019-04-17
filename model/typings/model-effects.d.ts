@@ -26,9 +26,9 @@ import * as ModelActions from './model-actions';
 import { ModelManager } from './model-manager';
 import { ModelService } from './model-service';
 import * as fromModel from './model-reducer';
-export declare abstract class ModelEffects<M extends Model, S extends fromModel.State<M>, A extends Action, A1 extends ModelActions.ModelGetAction, A2 extends ModelActions.ModelListAction, A3 extends ModelActions.ModelCreateAction<M>, A4 extends ModelActions.ModelUpdateAction<M>, A5 extends ModelActions.ModelPatchAction<M>, A6 extends ModelActions.ModelDeleteAction<M>, A7 extends ModelActions.ModelDeleteAllAction<M>> {
+export declare abstract class ModelEffects<M extends Model, S extends fromModel.State<M>, A extends Action, A1 extends ModelActions.ModelGetAction, A2 extends ModelActions.ModelListAction, A3 extends ModelActions.ModelCreateAction<M>, A4 extends ModelActions.ModelUpdateAction<M>, A5 extends ModelActions.ModelPatchAction<M>, A6 extends ModelActions.ModelDeleteAction<M>, A7 extends ModelActions.ModelDeleteAllAction<M>, A8 extends ModelActions.ModelQueryAction> {
     protected _actions: Actions;
-    protected _service: ModelService<M, S, A1, A2, A3, A4, A5, A6, A7>;
+    protected _service: ModelService<M, S, A1, A2, A3, A4, A5, A6, A7, A8>;
     protected _manager: ModelManager<M>;
     private _params;
     protected readonly modelGet$: Observable<A>;
@@ -38,7 +38,8 @@ export declare abstract class ModelEffects<M extends Model, S extends fromModel.
     protected readonly modelPatch$: Observable<A>;
     protected readonly modelDelete$: Observable<A>;
     protected readonly modelDeleteAll$: Observable<A>;
-    constructor(_actions: Actions, _service: ModelService<M, S, A1, A2, A3, A4, A5, A6, A7>, _manager: ModelManager<M>, _params: {
+    protected readonly modelQuery$: Observable<A>;
+    constructor(_actions: Actions, _service: ModelService<M, S, A1, A2, A3, A4, A5, A6, A7, A8>, _manager: ModelManager<M>, _params: {
         getActionType: string;
         getSuccessAction: new (p: {
             item: M;
@@ -86,6 +87,13 @@ export declare abstract class ModelEffects<M extends Model, S extends fromModel.
             items: M[];
         }) => A;
         deleteAllFailureAction: new (p: {
+            error: any;
+        }) => A;
+        queryActionType: string;
+        querySuccessAction: new (p: {
+            result: ModelListResult<M>;
+        }) => A;
+        queryFailureAction: new (p: {
             error: any;
         }) => A;
     });

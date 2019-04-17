@@ -19,7 +19,7 @@
  *
  */
 import { Action } from '@ngrx/store';
-import { Model, ModelListParams, ModelListResult } from '@gngt/core/common';
+import { Model, ModelListParams, ModelListResult, ModelQueryParams } from '@gngt/core/common';
 export interface ModelActionTypes {
     GET: string;
     GET_FAILURE: string;
@@ -42,6 +42,9 @@ export interface ModelActionTypes {
     DELETE_ALL: string;
     DELETE_ALL_SUCCESS: string;
     DELETE_ALL_FAILURE: string;
+    QUERY: string;
+    QUERY_SUCCESS: string;
+    QUERY_FAILURE: string;
 }
 export declare function generateModelActionTypes(typeName: string): ModelActionTypes;
 export declare abstract class ModelGetAction implements Action {
@@ -225,6 +228,33 @@ export declare abstract class ModelDeleteAllSuccessAction<T extends Model> imple
     });
 }
 export declare abstract class ModelDeleteAllFailureAction implements Action {
+    payload: {
+        error: any;
+    };
+    abstract type: string;
+    constructor(payload: {
+        error: any;
+    });
+}
+export declare abstract class ModelQueryAction implements Action {
+    payload: {
+        params: ModelQueryParams;
+    };
+    abstract type: string;
+    constructor(payload: {
+        params: ModelQueryParams;
+    });
+}
+export declare abstract class ModelQuerySuccessAction<T extends Model> implements Action {
+    payload: {
+        result: ModelListResult<T>;
+    };
+    abstract type: string;
+    constructor(payload: {
+        result: ModelListResult<T>;
+    });
+}
+export declare abstract class ModelQueryFailureAction implements Action {
     payload: {
         error: any;
     };

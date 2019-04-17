@@ -73,7 +73,7 @@
      */
     /**
      * @abstract
-     * @template T, S, A1, A2, A3, A4, A5, A6, A7
+     * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8
      */
     var AdminEditComponent = /** @class */ (function () {
         function AdminEditComponent(_cdr, _fb, _router) {
@@ -498,11 +498,11 @@
      */
     /**
      * @abstract
-     * @template T, S, A1, A2, A3, A4, A5, A6, A7, MS
+     * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8, MS
      */
     var   /**
      * @abstract
-     * @template T, S, A1, A2, A3, A4, A5, A6, A7, MS
+     * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8, MS
      */
     AdminListComponent = /** @class */ (function () {
         function AdminListComponent(_cdr, _aui) {
