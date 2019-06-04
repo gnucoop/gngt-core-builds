@@ -33,4 +33,5 @@ export declare class AuthService {
     logout(): Observable<null>;
     refreshToken(refreshToken: string): Observable<RefreshTokenResponse>;
     getCurrentUser(): Observable<User>;
+    getLoggedInUser(): number | null;
 }

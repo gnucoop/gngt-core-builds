@@ -18,14 +18,10 @@
  * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
  *
  */
-import { Provider } from '@angular/core';
-import { AuthOptions } from './auth-options';
-import { JwtOptions } from './jwt-options';
-export interface AuthModuleOptions {
-    jwtOptionsProvider?: Provider;
-    jwtConfig?: JwtOptions;
-    authOptionsProvider?: Provider;
-    authConfig?: AuthOptions;
-    loggedInUserGetter?: () => number | null;
-    loggedInUserSetter?: (id: number | null) => void;
+import { Action } from '@ngrx/store';
+export declare class ModelGenericAction implements Action {
+    payload: any;
+    type: string;
+    uuid: string;
+    constructor(payload: any);
 }

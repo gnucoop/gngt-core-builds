@@ -19,10 +19,10 @@
  *
  */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@gngt/core/reducers'), require('rxjs'), require('rxjs/operators'), require('@ngrx/effects'), require('@angular/core'), require('@ngrx/store')) :
-    typeof define === 'function' && define.amd ? define('@gngt/core/model', ['exports', '@gngt/core/reducers', 'rxjs', 'rxjs/operators', '@ngrx/effects', '@angular/core', '@ngrx/store'], factory) :
-    (global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = global.dewco.core || {}, global.dewco.core.model = {}), global.gngt.core.reducers, global.rxjs, global.rxjs.operators, global.ngrx.effects, global.ng.core, global.ngrx.store));
-}(this, function (exports, reducers$1, rxjs, operators, effects, core, store) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@gngt/core/reducers'), require('rxjs'), require('rxjs/operators'), require('@ngrx/effects'), require('uuid'), require('@angular/core'), require('@ngrx/store')) :
+    typeof define === 'function' && define.amd ? define('@gngt/core/model', ['exports', '@gngt/core/reducers', 'rxjs', 'rxjs/operators', '@ngrx/effects', 'uuid', '@angular/core', '@ngrx/store'], factory) :
+    (global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = global.dewco.core || {}, global.dewco.core.model = {}), global.gngt.core.reducers, global.rxjs, global.rxjs.operators, global.ngrx.effects, global.uuid, global.ng.core, global.ngrx.store));
+}(this, function (exports, reducers$1, rxjs, operators, effects, uuid, core, store) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -38,6 +38,20 @@
     See the Apache Version 2.0 License for specific language governing permissions
     and limitations under the License.
     ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
 
     var __assign = function() {
         __assign = Object.assign || function __assign(t) {
@@ -96,12 +110,27 @@
     var /**
      * @abstract
      */
-    ModelGetAction = /** @class */ (function () {
-        function ModelGetAction(payload) {
+    ModelBaseAction = /** @class */ (function () {
+        function ModelBaseAction(payload) {
             this.payload = payload;
+        }
+        return ModelBaseAction;
+    }());
+    /**
+     * @abstract
+     */
+    var /**
+     * @abstract
+     */
+    ModelGetAction = /** @class */ (function (_super) {
+        __extends(ModelGetAction, _super);
+        function ModelGetAction(payload) {
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelGetAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -110,36 +139,45 @@
      * @abstract
      * @template T
      */
-    ModelGetSuccessAction = /** @class */ (function () {
+    ModelGetSuccessAction = /** @class */ (function (_super) {
+        __extends(ModelGetSuccessAction, _super);
         function ModelGetSuccessAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelGetSuccessAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelGetFailureAction = /** @class */ (function () {
+    ModelGetFailureAction = /** @class */ (function (_super) {
+        __extends(ModelGetFailureAction, _super);
         function ModelGetFailureAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelGetFailureAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelListAction = /** @class */ (function () {
+    ModelListAction = /** @class */ (function (_super) {
+        __extends(ModelListAction, _super);
         function ModelListAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelListAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -148,24 +186,30 @@
      * @abstract
      * @template T
      */
-    ModelListSuccessAction = /** @class */ (function () {
+    ModelListSuccessAction = /** @class */ (function (_super) {
+        __extends(ModelListSuccessAction, _super);
         function ModelListSuccessAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelListSuccessAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelListFailureAction = /** @class */ (function () {
+    ModelListFailureAction = /** @class */ (function (_super) {
+        __extends(ModelListFailureAction, _super);
         function ModelListFailureAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelListFailureAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -174,12 +218,15 @@
      * @abstract
      * @template T
      */
-    ModelCreateAction = /** @class */ (function () {
+    ModelCreateAction = /** @class */ (function (_super) {
+        __extends(ModelCreateAction, _super);
         function ModelCreateAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelCreateAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -188,24 +235,30 @@
      * @abstract
      * @template T
      */
-    ModelCreateSuccessAction = /** @class */ (function () {
+    ModelCreateSuccessAction = /** @class */ (function (_super) {
+        __extends(ModelCreateSuccessAction, _super);
         function ModelCreateSuccessAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelCreateSuccessAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelCreateFailureAction = /** @class */ (function () {
+    ModelCreateFailureAction = /** @class */ (function (_super) {
+        __extends(ModelCreateFailureAction, _super);
         function ModelCreateFailureAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelCreateFailureAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -214,12 +267,15 @@
      * @abstract
      * @template T
      */
-    ModelUpdateAction = /** @class */ (function () {
+    ModelUpdateAction = /** @class */ (function (_super) {
+        __extends(ModelUpdateAction, _super);
         function ModelUpdateAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelUpdateAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -228,24 +284,30 @@
      * @abstract
      * @template T
      */
-    ModelUpdateSuccessAction = /** @class */ (function () {
+    ModelUpdateSuccessAction = /** @class */ (function (_super) {
+        __extends(ModelUpdateSuccessAction, _super);
         function ModelUpdateSuccessAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelUpdateSuccessAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelUpdateFailureAction = /** @class */ (function () {
+    ModelUpdateFailureAction = /** @class */ (function (_super) {
+        __extends(ModelUpdateFailureAction, _super);
         function ModelUpdateFailureAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelUpdateFailureAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -254,12 +316,15 @@
      * @abstract
      * @template T
      */
-    ModelPatchAction = /** @class */ (function () {
+    ModelPatchAction = /** @class */ (function (_super) {
+        __extends(ModelPatchAction, _super);
         function ModelPatchAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelPatchAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -268,24 +333,30 @@
      * @abstract
      * @template T
      */
-    ModelPatchSuccessAction = /** @class */ (function () {
+    ModelPatchSuccessAction = /** @class */ (function (_super) {
+        __extends(ModelPatchSuccessAction, _super);
         function ModelPatchSuccessAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelPatchSuccessAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelPatchFailureAction = /** @class */ (function () {
+    ModelPatchFailureAction = /** @class */ (function (_super) {
+        __extends(ModelPatchFailureAction, _super);
         function ModelPatchFailureAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelPatchFailureAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -294,12 +365,15 @@
      * @abstract
      * @template T
      */
-    ModelDeleteAction = /** @class */ (function () {
+    ModelDeleteAction = /** @class */ (function (_super) {
+        __extends(ModelDeleteAction, _super);
         function ModelDeleteAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelDeleteAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -308,24 +382,30 @@
      * @abstract
      * @template T
      */
-    ModelDeleteSuccessAction = /** @class */ (function () {
+    ModelDeleteSuccessAction = /** @class */ (function (_super) {
+        __extends(ModelDeleteSuccessAction, _super);
         function ModelDeleteSuccessAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelDeleteSuccessAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelDeleteFailureAction = /** @class */ (function () {
+    ModelDeleteFailureAction = /** @class */ (function (_super) {
+        __extends(ModelDeleteFailureAction, _super);
         function ModelDeleteFailureAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelDeleteFailureAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -334,12 +414,15 @@
      * @abstract
      * @template T
      */
-    ModelDeleteAllAction = /** @class */ (function () {
+    ModelDeleteAllAction = /** @class */ (function (_super) {
+        __extends(ModelDeleteAllAction, _super);
         function ModelDeleteAllAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelDeleteAllAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -348,36 +431,45 @@
      * @abstract
      * @template T
      */
-    ModelDeleteAllSuccessAction = /** @class */ (function () {
+    ModelDeleteAllSuccessAction = /** @class */ (function (_super) {
+        __extends(ModelDeleteAllSuccessAction, _super);
         function ModelDeleteAllSuccessAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelDeleteAllSuccessAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelDeleteAllFailureAction = /** @class */ (function () {
+    ModelDeleteAllFailureAction = /** @class */ (function (_super) {
+        __extends(ModelDeleteAllFailureAction, _super);
         function ModelDeleteAllFailureAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelDeleteAllFailureAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelQueryAction = /** @class */ (function () {
+    ModelQueryAction = /** @class */ (function (_super) {
+        __extends(ModelQueryAction, _super);
         function ModelQueryAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelQueryAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      * @template T
@@ -386,28 +478,35 @@
      * @abstract
      * @template T
      */
-    ModelQuerySuccessAction = /** @class */ (function () {
+    ModelQuerySuccessAction = /** @class */ (function (_super) {
+        __extends(ModelQuerySuccessAction, _super);
         function ModelQuerySuccessAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelQuerySuccessAction;
-    }());
+    }(ModelBaseAction));
     /**
      * @abstract
      */
     var /**
      * @abstract
      */
-    ModelQueryFailureAction = /** @class */ (function () {
+    ModelQueryFailureAction = /** @class */ (function (_super) {
+        __extends(ModelQueryFailureAction, _super);
         function ModelQueryFailureAction(payload) {
-            this.payload = payload;
+            var _this = _super.call(this, payload) || this;
+            _this.payload = payload;
+            return _this;
         }
         return ModelQueryFailureAction;
-    }());
+    }(ModelBaseAction));
 
     var modelActions = /*#__PURE__*/Object.freeze({
         ModelActionTypes: ModelActionTypes,
         generateModelActionTypes: generateModelActionTypes,
+        ModelBaseAction: ModelBaseAction,
         ModelGetAction: ModelGetAction,
         ModelGetSuccessAction: ModelGetSuccessAction,
         ModelGetFailureAction: ModelGetFailureAction,
@@ -438,60 +537,23 @@
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
+
+    /** @type {?} */
+    var stateQueueLimit = 20;
     /**
      * @template M
      * @return {?}
      */
     function generateInitialModelState() {
         return {
-            get: {
-                loading: false,
-                options: { id: null },
-                id: null,
-                object: null,
-                error: null
-            },
-            list: {
-                loading: false,
-                options: {},
-                objects: null,
-                error: null
-            },
-            create: {
-                loading: false,
-                object: null,
-                error: null
-            },
-            update: {
-                loading: false,
-                id: null,
-                object: null,
-                error: null
-            },
-            patch: {
-                loading: false,
-                id: null,
-                object: null,
-                error: null
-            },
-            delete: {
-                loading: false,
-                id: null,
-                object: null,
-                error: null
-            },
-            deleteAll: {
-                loading: false,
-                ids: null,
-                objects: null,
-                error: null
-            },
-            query: {
-                loading: false,
-                options: null,
-                objects: null,
-                error: null
-            },
+            get: [],
+            list: [],
+            create: [],
+            update: [],
+            patch: [],
+            delete: [],
+            deleteAll: [],
+            query: [],
         };
     }
     /**
@@ -504,57 +566,249 @@
     function modelReducer(state, action, actionTypes) {
         switch (action.type) {
             case actionTypes.GET:
-                return __assign({}, state, { get: __assign({}, state.get, { loading: true, options: { id: null }, id: ((/** @type {?} */ (action))).payload.id, object: null, error: null }) });
+                return __assign({}, state, { get: [{
+                            uuid: action.uuid,
+                            loading: true,
+                            options: { id: null },
+                            id: ((/** @type {?} */ (action))).payload.id,
+                            object: null,
+                            error: null
+                        }].concat(state.get.slice(0, stateQueueLimit - 1)) });
             case actionTypes.GET_SUCCESS:
-                return __assign({}, state, { get: __assign({}, state.get, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+                /** @type {?} */
+                var successGetIdx = state.get.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (successGetIdx >= 0) {
+                    return __assign({}, state, { get: state.get.slice(0, successGetIdx).concat([__assign({}, state.get[successGetIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null })], state.get.slice(successGetIdx + 1)) });
+                }
+                return state;
             case actionTypes.GET_FAILURE:
-                return __assign({}, state, { get: __assign({}, state.get, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+                /** @type {?} */
+                var failureGetIdx = state.get.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (failureGetIdx >= 0) {
+                    return __assign({}, state, { get: state.get.slice(0, failureGetIdx).concat([__assign({}, state.get[failureGetIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error })], state.get.slice(failureGetIdx + 1)) });
+                }
+                return state;
             case actionTypes.LIST:
-                return __assign({}, state, { list: __assign({}, state.list, { loading: true, options: ((/** @type {?} */ (action))).payload.params, objects: null, error: null }) });
+                return __assign({}, state, { list: [{
+                            uuid: action.uuid,
+                            loading: true,
+                            options: ((/** @type {?} */ (action))).payload.params,
+                            objects: null,
+                            error: null
+                        }].concat(state.list.slice(0, stateQueueLimit - 1)) });
             case actionTypes.LIST_SUCCESS:
-                return __assign({}, state, { list: __assign({}, state.list, { loading: false, objects: ((/** @type {?} */ (action))).payload.result, error: null }) });
+                /** @type {?} */
+                var successListIdx = state.list.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (successListIdx >= 0) {
+                    return __assign({}, state, { list: state.list.slice(0, successListIdx).concat([__assign({}, state.list[successListIdx], { loading: false, objects: ((/** @type {?} */ (action))).payload.result, error: null })], state.list.slice(successListIdx + 1)) });
+                }
+                return state;
             case actionTypes.LIST_FAILURE:
-                return __assign({}, state, { list: __assign({}, state.list, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
+                /** @type {?} */
+                var failureListIdx = state.list.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (failureListIdx >= 0) {
+                    return __assign({}, state, { list: state.list.slice(0, failureListIdx).concat([__assign({}, state.list[failureListIdx], { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error })], state.list.slice(failureListIdx + 1)) });
+                }
+                return state;
             case actionTypes.CREATE:
-                return __assign({}, state, { create: __assign({}, state.create, { loading: true, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+                return __assign({}, state, { create: [{
+                            uuid: action.uuid,
+                            loading: true,
+                            object: ((/** @type {?} */ (action))).payload.item,
+                            error: null
+                        }].concat(state.create.slice(0, stateQueueLimit - 1)) });
             case actionTypes.CREATE_SUCCESS:
-                return __assign({}, state, { create: __assign({}, state.create, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+                /** @type {?} */
+                var successCreateIdx = state.create.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (successCreateIdx >= 0) {
+                    return __assign({}, state, { create: state.create.slice(0, successCreateIdx).concat([__assign({}, state.create[successCreateIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null })], state.create.slice(successCreateIdx + 1)) });
+                }
+                return state;
             case actionTypes.CREATE_FAILURE:
-                return __assign({}, state, { create: __assign({}, state.create, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+                /** @type {?} */
+                var failureCreateIdx = state.create.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (failureCreateIdx >= 0) {
+                    return __assign({}, state, { create: state.create.slice(0, failureCreateIdx).concat([__assign({}, state.create[failureCreateIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error })], state.create.slice(failureCreateIdx + 1)) });
+                }
+                return state;
             case actionTypes.UPDATE:
-                return __assign({}, state, { update: __assign({}, state.update, { loading: true, id: ((/** @type {?} */ (action))).payload.item.id, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+                return __assign({}, state, { update: [{
+                            uuid: action.uuid,
+                            loading: true,
+                            id: ((/** @type {?} */ (action))).payload.item.id,
+                            object: ((/** @type {?} */ (action))).payload.item,
+                            error: null
+                        }].concat(state.update.slice(0, stateQueueLimit - 1)) });
             case actionTypes.UPDATE_SUCCESS:
-                return __assign({}, state, { update: __assign({}, state.update, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+                /** @type {?} */
+                var successUpdateIdx = state.update.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (successUpdateIdx >= 0) {
+                    return __assign({}, state, { update: state.update.slice(0, successUpdateIdx).concat([__assign({}, state.update[successUpdateIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null })], state.update.slice(successUpdateIdx + 1)) });
+                }
+                return state;
             case actionTypes.UPDATE_FAILURE:
-                return __assign({}, state, { update: __assign({}, state.update, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+                /** @type {?} */
+                var failureUpdateIdx = state.update.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (failureUpdateIdx >= 0) {
+                    return __assign({}, state, { update: state.update.slice(0, failureUpdateIdx).concat([__assign({}, state.update[failureUpdateIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error })], state.update.slice(failureUpdateIdx + 1)) });
+                }
+                return state;
             case actionTypes.PATCH:
-                return __assign({}, state, { patch: __assign({}, state.patch, { loading: true, id: ((/** @type {?} */ (action))).payload.item.id, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+                return __assign({}, state, { patch: [{
+                            uuid: action.uuid,
+                            loading: true,
+                            id: ((/** @type {?} */ (action))).payload.item.id,
+                            object: ((/** @type {?} */ (action))).payload.item,
+                            error: null
+                        }].concat(state.patch.slice(0, stateQueueLimit - 1)) });
             case actionTypes.PATCH_SUCCESS:
-                return __assign({}, state, { patch: __assign({}, state.patch, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+                /** @type {?} */
+                var successPatchIdx = state.patch.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (successPatchIdx >= 0) {
+                    return __assign({}, state, { patch: state.patch.slice(0, successPatchIdx).concat([__assign({}, state.patch[successPatchIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null })], state.patch.slice(successPatchIdx + 1)) });
+                }
+                return state;
             case actionTypes.PATCH_FAILURE:
-                return __assign({}, state, { patch: __assign({}, state.patch, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+                /** @type {?} */
+                var failurePatchIdx = state.patch.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (failurePatchIdx >= 0) {
+                    return __assign({}, state, { patch: state.patch.slice(0, failurePatchIdx).concat([__assign({}, state.patch[failurePatchIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error })], state.patch.slice(failurePatchIdx + 1)) });
+                }
+                return state;
             case actionTypes.DELETE:
-                return __assign({}, state, { delete: __assign({}, state.delete, { loading: true, id: ((/** @type {?} */ (action))).payload.item.id, object: null, error: null }) });
+                return __assign({}, state, { delete: [{
+                            uuid: action.uuid,
+                            loading: true,
+                            id: ((/** @type {?} */ (action))).payload.item.id,
+                            object: null,
+                            error: null
+                        }].concat(state.delete.slice(0, stateQueueLimit - 1)) });
             case actionTypes.DELETE_SUCCESS:
-                return __assign({}, state, { delete: __assign({}, state.delete, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+                /** @type {?} */
+                var successDeleteIdx = state.delete.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (successDeleteIdx >= 0) {
+                    return __assign({}, state, { delete: state.delete.slice(0, successDeleteIdx).concat([__assign({}, state.delete[successDeleteIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null })], state.delete.slice(successDeleteIdx + 1)) });
+                }
+                return state;
             case actionTypes.DELETE_FAILURE:
-                return __assign({}, state, { delete: __assign({}, state.delete, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+                /** @type {?} */
+                var failureDeleteIdx = state.delete.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (failureDeleteIdx >= 0) {
+                    return __assign({}, state, { delete: state.delete.slice(0, failureDeleteIdx).concat([__assign({}, state.delete[failureDeleteIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error })], state.delete.slice(failureDeleteIdx + 1)) });
+                }
+                return state;
             case actionTypes.DELETE_ALL:
-                return __assign({}, state, { deleteAll: __assign({}, state.deleteAll, { loading: true, ids: ((/** @type {?} */ (action))).payload.items.map((/**
-                         * @param {?} i
-                         * @return {?}
-                         */
-                        function (i) { return i.id; })), objects: null, error: null }) });
+                return __assign({}, state, { deleteAll: [{
+                            uuid: action.uuid,
+                            loading: true,
+                            ids: ((/** @type {?} */ (action))).payload.items.map((/**
+                             * @param {?} i
+                             * @return {?}
+                             */
+                            function (i) { return i.id; })),
+                            objects: null,
+                            error: null
+                        }].concat(state.deleteAll.slice(0, stateQueueLimit - 1)) });
             case actionTypes.DELETE_ALL_SUCCESS:
-                return __assign({}, state, { deleteAll: __assign({}, state.deleteAll, { loading: false, objects: ((/** @type {?} */ (action))).payload.items, error: null }) });
+                /** @type {?} */
+                var successDeleteAllIdx = state.deleteAll.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (successDeleteAllIdx >= 0) {
+                    return __assign({}, state, { deleteAll: state.deleteAll.slice(0, successDeleteAllIdx).concat([__assign({}, state.deleteAll[successDeleteAllIdx], { loading: false, objects: ((/** @type {?} */ (action))).payload.items, error: null })], state.deleteAll.slice(successDeleteAllIdx + 1)) });
+                }
+                return state;
             case actionTypes.DELETE_ALL_FAILURE:
-                return __assign({}, state, { deleteAll: __assign({}, state.deleteAll, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
+                /** @type {?} */
+                var failureDeleteAllIdx = state.deleteAll.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (failureDeleteAllIdx >= 0) {
+                    return __assign({}, state, { deleteAll: state.deleteAll.slice(0, failureDeleteAllIdx).concat([__assign({}, state.deleteAll[failureDeleteAllIdx], { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error })], state.deleteAll.slice(failureDeleteAllIdx + 1)) });
+                }
+                return state;
             case actionTypes.QUERY:
-                return __assign({}, state, { list: __assign({}, state.list, { loading: true, options: ((/** @type {?} */ (action))).payload.params, objects: null, error: null }) });
+                return __assign({}, state, { query: [{
+                            uuid: action.uuid,
+                            loading: true,
+                            options: ((/** @type {?} */ (action))).payload.params,
+                            objects: null,
+                            error: null
+                        }].concat(state.query.slice(0, stateQueueLimit - 1)) });
             case actionTypes.QUERY_SUCCESS:
-                return __assign({}, state, { list: __assign({}, state.list, { loading: false, objects: ((/** @type {?} */ (action))).payload.result, error: null }) });
+                /** @type {?} */
+                var successQueryIdx = state.query.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (successQueryIdx >= 0) {
+                    return __assign({}, state, { query: state.query.slice(0, successQueryIdx).concat([__assign({}, state.query[successQueryIdx], { loading: false, options: __assign({}, (/** @type {?} */ (state.query[successQueryIdx].options))), objects: ((/** @type {?} */ (action))).payload.result, error: null })], state.query.slice(successQueryIdx + 1)) });
+                }
+                return state;
             case actionTypes.QUERY_FAILURE:
-                return __assign({}, state, { list: __assign({}, state.list, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
+                /** @type {?} */
+                var failureQueryIdx = state.query.findIndex((/**
+                 * @param {?} g
+                 * @return {?}
+                 */
+                function (g) { return g.uuid === action.uuid; }));
+                if (failureQueryIdx >= 0) {
+                    return __assign({}, state, { query: state.query.slice(0, failureQueryIdx).concat([__assign({}, state.query[failureQueryIdx], { loading: false, options: __assign({}, (/** @type {?} */ (state.query[failureQueryIdx].options))), objects: null, error: ((/** @type {?} */ (action))).payload.error })], state.query.slice(failureQueryIdx + 1)) });
+                }
+                return state;
             default:
                 return state;
         }
@@ -580,159 +834,221 @@
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
+
+    var ModelGenericAction = /** @class */ (function () {
+        function ModelGenericAction(payload) {
+            this.payload = payload;
+        }
+        return ModelGenericAction;
+    }());
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
+    /**
+     * @template A
+     * @param {?} params
+     * @return {?}
+     */
+    function createAction(params) {
+        /** @type {?} */
+        var action = new ModelGenericAction(params.payload);
+        action.type = params.type;
+        action.uuid = params.uuid || uuid.v4();
+        return (/** @type {?} */ (action));
+    }
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
     /**
      * @abstract
-     * @template M, S, A, A1, A2, A3, A4, A5, A6, A7, A8
+     * @template M, S, A, AT
      */
     var   /**
      * @abstract
-     * @template M, S, A, A1, A2, A3, A4, A5, A6, A7, A8
+     * @template M, S, A, AT
      */
     ModelEffects = /** @class */ (function () {
-        function ModelEffects(_actions, _service, _manager, _params) {
+        function ModelEffects(_actions, _service, _manager, _actionTypes) {
             var _this = this;
             this._actions = _actions;
             this._service = _service;
             this._manager = _manager;
-            this._params = _params;
-            this.modelGet$ = this._actions
-                .pipe(effects.ofType(this._params.getActionType), operators.switchMap((/**
+            this._actionTypes = _actionTypes;
+            this.modelGet$ = this._actions.pipe(effects.ofType(this._actionTypes.GET), operators.mergeMap((/**
              * @param {?} action
              * @return {?}
              */
-            function (action) {
-                return _this._manager.get(action.payload.id)
-                    .pipe(operators.map((/**
-                 * @param {?} item
-                 * @return {?}
-                 */
-                function (item) { return new _this._params.getSuccessAction({ item: item }); })), operators.catchError((/**
-                 * @param {?} error
-                 * @return {?}
-                 */
-                function (error) { return rxjs.of(new _this._params.getFailureAction({ error: error })); })));
-            })));
-            this.modelList$ = this._actions
-                .pipe(effects.ofType(this._params.listActionType), operators.switchMap((/**
+            function (action) { return _this._manager.get(action.payload.id).pipe(operators.map((/**
+             * @param {?} item
+             * @return {?}
+             */
+            function (item) { return createAction({
+                type: _this._actionTypes.GET_SUCCESS,
+                payload: { item: item },
+                uuid: action.uuid
+            }); })), operators.catchError((/**
+             * @param {?} error
+             * @return {?}
+             */
+            function (error) { return rxjs.of(createAction({
+                type: _this._actionTypes.GET_FAILURE,
+                payload: { error: error },
+                uuid: action.uuid
+            })); }))); })));
+            this.modelList$ = this._actions.pipe(effects.ofType(this._actionTypes.LIST), operators.mergeMap((/**
              * @param {?} action
              * @return {?}
              */
-            function (action) {
-                return _this._manager.list(action.payload.params)
-                    .pipe(operators.map((/**
-                 * @param {?} result
-                 * @return {?}
-                 */
-                function (result) { return new _this._params.listSuccessAction({ result: result }); })), operators.catchError((/**
-                 * @param {?} error
-                 * @return {?}
-                 */
-                function (error) { return rxjs.of(new _this._params.listFailureAction({ error: error })); })));
-            })));
-            this.modelCreate$ = this._actions
-                .pipe(effects.ofType(this._params.createActionType), operators.switchMap((/**
+            function (action) { return _this._manager.list(action.payload.params).pipe(operators.map((/**
+             * @param {?} result
+             * @return {?}
+             */
+            function (result) { return createAction({
+                type: _this._actionTypes.LIST_SUCCESS,
+                payload: { result: result },
+                uuid: action.uuid
+            }); })), operators.catchError((/**
+             * @param {?} error
+             * @return {?}
+             */
+            function (error) { return rxjs.of(createAction({
+                type: _this._actionTypes.LIST_FAILURE,
+                payload: { error: error },
+                uuid: action.uuid
+            })); }))); })));
+            this.modelCreate$ = this._actions.pipe(effects.ofType(this._actionTypes.CREATE), operators.mergeMap((/**
              * @param {?} action
              * @return {?}
              */
-            function (action) {
-                return _this._manager.create(action.payload.item)
-                    .pipe(operators.map((/**
-                 * @param {?} item
-                 * @return {?}
-                 */
-                function (item) { return new _this._params.createSuccessAction({ item: item }); })), operators.catchError((/**
-                 * @param {?} error
-                 * @return {?}
-                 */
-                function (error) { return rxjs.of(new _this._params.createFailureAction({ error: error })); })));
-            })));
+            function (action) { return _this._manager.create(action.payload.item).pipe(operators.map((/**
+             * @param {?} item
+             * @return {?}
+             */
+            function (item) { return createAction({
+                type: _this._actionTypes.CREATE_SUCCESS,
+                payload: { item: item },
+                uuid: action.uuid
+            }); })), operators.catchError((/**
+             * @param {?} error
+             * @return {?}
+             */
+            function (error) { return rxjs.of(createAction({
+                type: _this._actionTypes.CREATE_FAILURE,
+                payload: { error: error },
+                uuid: action.uuid
+            })); }))); })));
             this.modelUpdate$ = this._actions
-                .pipe(effects.ofType(this._params.updateActionType), operators.switchMap((/**
+                .pipe(effects.ofType(this._actionTypes.UPDATE), operators.mergeMap((/**
              * @param {?} action
              * @return {?}
              */
-            function (action) {
-                return _this._manager.update(action.payload.item.id, action.payload.item)
-                    .pipe(operators.map((/**
-                 * @param {?} item
-                 * @return {?}
-                 */
-                function (item) { return new _this._params.updateSuccessAction({ item: item }); })), operators.catchError((/**
-                 * @param {?} error
-                 * @return {?}
-                 */
-                function (error) { return rxjs.of(new _this._params.updateFailureAction({ error: error })); })));
-            })));
-            this.modelPatch$ = this._actions
-                .pipe(effects.ofType(this._params.patchActionType), operators.switchMap((/**
+            function (action) { return _this._manager.update(action.payload.item.id, action.payload.item).pipe(operators.map((/**
+             * @param {?} item
+             * @return {?}
+             */
+            function (item) { return createAction({
+                type: _this._actionTypes.UPDATE_SUCCESS,
+                payload: { item: item },
+                uuid: action.uuid
+            }); })), operators.catchError((/**
+             * @param {?} error
+             * @return {?}
+             */
+            function (error) { return rxjs.of(createAction({
+                type: _this._actionTypes.CREATE_FAILURE,
+                payload: { error: error },
+                uuid: action.uuid
+            })); }))); })));
+            this.modelPatch$ = this._actions.pipe(effects.ofType(this._actionTypes.PATCH), operators.mergeMap((/**
              * @param {?} action
              * @return {?}
              */
-            function (action) {
-                return _this._manager.patch(action.payload.item.id, action.payload.item)
-                    .pipe(operators.map((/**
-                 * @param {?} item
-                 * @return {?}
-                 */
-                function (item) { return new _this._params.patchSuccessAction({ item: item }); })), operators.catchError((/**
-                 * @param {?} error
-                 * @return {?}
-                 */
-                function (error) { return rxjs.of(new _this._params.patchFailureAction({ error: error })); })));
-            })));
-            this.modelDelete$ = this._actions
-                .pipe(effects.ofType(this._params.deleteActionType), operators.switchMap((/**
+            function (action) { return _this._manager.patch(action.payload.item.id, action.payload.item).pipe(operators.map((/**
+             * @param {?} item
+             * @return {?}
+             */
+            function (item) { return createAction({
+                type: _this._actionTypes.CREATE_SUCCESS,
+                payload: { item: item },
+                uuid: action.uuid
+            }); })), operators.catchError((/**
+             * @param {?} error
+             * @return {?}
+             */
+            function (error) { return rxjs.of(createAction({
+                type: _this._actionTypes.CREATE_FAILURE,
+                payload: { error: error },
+                uuid: action.uuid
+            })); }))); })));
+            this.modelDelete$ = this._actions.pipe(effects.ofType(this._actionTypes.DELETE), operators.mergeMap((/**
              * @param {?} action
              * @return {?}
              */
-            function (action) {
-                return _this._manager.delete(action.payload.item.id)
-                    .pipe(operators.map((/**
-                 * @return {?}
-                 */
-                function () { return new _this._params.deleteSuccessAction({ item: action.payload.item }); })), operators.catchError((/**
-                 * @param {?} error
-                 * @return {?}
-                 */
-                function (error) { return rxjs.of(new _this._params.deleteFailureAction({ error: error })); })));
-            })));
-            this.modelDeleteAll$ = this._actions
-                .pipe(effects.ofType(this._params.deleteAllActionType), operators.switchMap((/**
+            function (action) { return _this._manager.delete(action.payload.item.id).pipe(operators.map((/**
+             * @return {?}
+             */
+            function () { return createAction({
+                type: _this._actionTypes.DELETE_SUCCESS,
+                payload: { item: action.payload.item },
+                uuid: action.uuid
+            }); })), operators.catchError((/**
+             * @param {?} error
+             * @return {?}
+             */
+            function (error) { return rxjs.of(createAction({
+                type: _this._actionTypes.DELETE_FAILURE,
+                payload: { error: error },
+                uuid: action.uuid
+            })); }))); })));
+            this.modelDeleteAll$ = this._actions.pipe(effects.ofType(this._actionTypes.DELETE_ALL), operators.mergeMap((/**
              * @param {?} action
              * @return {?}
              */
-            function (action) {
-                return _this._manager.deleteAll(action.payload.items.map((/**
-                 * @param {?} i
-                 * @return {?}
-                 */
-                function (i) { return i.id; })))
-                    .pipe(operators.map((/**
-                 * @return {?}
-                 */
-                function () { return new _this._params.deleteAllSuccessAction({ items: action.payload.items }); })), operators.catchError((/**
-                 * @param {?} error
-                 * @return {?}
-                 */
-                function (error) { return rxjs.of(new _this._params.deleteAllFailureAction({ error: error })); })));
-            })));
-            this.modelQuery$ = this._actions
-                .pipe(effects.ofType(this._params.queryActionType), operators.switchMap((/**
+            function (action) { return _this._manager.deleteAll(action.payload.items.map((/**
+             * @param {?} i
+             * @return {?}
+             */
+            function (i) { return i.id; }))).pipe(operators.map((/**
+             * @return {?}
+             */
+            function () { return createAction({
+                type: _this._actionTypes.DELETE_ALL_SUCCESS,
+                payload: { items: action.payload.items },
+                uuid: action.uuid
+            }); })), operators.catchError((/**
+             * @param {?} error
+             * @return {?}
+             */
+            function (error) { return rxjs.of(createAction({
+                type: _this._actionTypes.DELETE_ALL_FAILURE,
+                payload: { error: error },
+                uuid: action.uuid
+            })); }))); })));
+            this.modelQuery$ = this._actions.pipe(effects.ofType(this._actionTypes.QUERY), operators.mergeMap((/**
              * @param {?} action
              * @return {?}
              */
-            function (action) {
-                return _this._manager.query(action.payload.params)
-                    .pipe(operators.map((/**
-                 * @param {?} result
-                 * @return {?}
-                 */
-                function (result) { return new _this._params.querySuccessAction({ result: result }); })), operators.catchError((/**
-                 * @param {?} error
-                 * @return {?}
-                 */
-                function (error) { return rxjs.of(new _this._params.queryFailureAction({ error: error })); })));
-            })));
+            function (action) { return _this._manager.query(action.payload.params).pipe(operators.map((/**
+             * @param {?} result
+             * @return {?}
+             */
+            function (result) { return createAction({
+                type: _this._actionTypes.QUERY_SUCCESS,
+                payload: { result: result },
+                uuid: action.uuid
+            }); })), operators.catchError((/**
+             * @param {?} error
+             * @return {?}
+             */
+            function (error) { return rxjs.of(createAction({
+                type: _this._actionTypes.QUERY_FAILURE,
+                payload: { error: error },
+                uuid: action.uuid
+            })); }))); })));
         }
         return ModelEffects;
     }());
@@ -986,97 +1302,18 @@
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /**
-     * @template T
-     * @param {?} type
-     * @param {?} id
-     * @return {?}
-     */
-    function createGetAction(type, id) {
-        return new type({ id: id });
-    }
-    /**
-     * @template T
-     * @param {?} type
-     * @param {?} params
-     * @return {?}
-     */
-    function createListAction(type, params) {
-        return new type({ params: params });
-    }
-    /**
-     * @template T, M
-     * @param {?} type
-     * @param {?} item
-     * @return {?}
-     */
-    function createCreateAction(type, item) {
-        return new type({ item: item });
-    }
-    /**
-     * @template T, M
-     * @param {?} type
-     * @param {?} item
-     * @return {?}
-     */
-    function createUpdateAction(type, item) {
-        return new type({ item: item });
-    }
-    /**
-     * @template T, M
-     * @param {?} type
-     * @param {?} item
-     * @return {?}
-     */
-    function createPatchAction(type, item) {
-        return new type({ item: item });
-    }
-    /**
-     * @template T, M
-     * @param {?} type
-     * @param {?} item
-     * @return {?}
-     */
-    function createDeleteAction(type, item) {
-        return new type({ item: item });
-    }
-    /**
-     * @template T, M
-     * @param {?} type
-     * @param {?} items
-     * @return {?}
-     */
-    function createDeleteAllAction(type, items) {
-        return new type({ items: items });
-    }
-    /**
-     * @template T
-     * @param {?} type
-     * @param {?} params
-     * @return {?}
-     */
-    function createQueryAction(type, params) {
-        return new type({ params: params });
-    }
-    /**
      * @abstract
-     * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8
+     * @template T, S, A
      */
     var   /**
      * @abstract
-     * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8
+     * @template T, S, A
      */
     ModelService = /** @class */ (function () {
-        function ModelService(_store, _actions, _getAction, _listAction, _createAction, _updateAction, _patchAction, _deleteAction, _deleteAllAction, _queryAction, statePrefixes) {
+        function ModelService(_store, _actions, _actionTypes, statePrefixes) {
             this._store = _store;
             this._actions = _actions;
-            this._getAction = _getAction;
-            this._listAction = _listAction;
-            this._createAction = _createAction;
-            this._updateAction = _updateAction;
-            this._patchAction = _patchAction;
-            this._deleteAction = _deleteAction;
-            this._deleteAllAction = _deleteAllAction;
-            this._queryAction = _queryAction;
+            this._actionTypes = _actionTypes;
             /** @type {?} */
             var packageState = store.createFeatureSelector(statePrefixes[0]);
             this._modelState = store.createSelector(packageState, (/**
@@ -1084,6 +1321,110 @@
              * @return {?}
              */
             function (s) { return (/** @type {?} */ (((/** @type {?} */ (s)))[statePrefixes[1]])); }));
+            this._lastGetEntry = rxjs.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.get; }))), operators.filter((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g.length > 0; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g[0]; })));
+            this._lastListEntry = rxjs.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.list; }))), operators.filter((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g.length > 0; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g[0]; })));
+            this._lastCreateEntry = rxjs.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.create; }))), operators.filter((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g.length > 0; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g[0]; })));
+            this._lastPatchEntry = rxjs.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.patch; }))), operators.filter((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g.length > 0; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g[0]; })));
+            this._lastUpdateEntry = rxjs.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.update; }))), operators.filter((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g.length > 0; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g[0]; })));
+            this._lastDeleteEntry = rxjs.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.delete; }))), operators.filter((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g.length > 0; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g[0]; })));
+            this._lastDeleteAllEntry = rxjs.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.deleteAll; }))), operators.filter((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g.length > 0; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g[0]; })));
+            this._lastQueryEntry = rxjs.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.query; }))), operators.filter((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g.length > 0; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g[0]; })));
         }
         /**
          * @return {?}
@@ -1092,11 +1433,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastGetEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.get.loading; }))));
+            function (g) { return g.loading; })));
         };
         /**
          * @return {?}
@@ -1105,11 +1446,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastGetEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.get.options; }))));
+            function (g) { return g.options; })));
         };
         /**
          * @return {?}
@@ -1118,11 +1459,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastGetEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.get.id; }))));
+            function (g) { return g.id; })));
         };
         /**
          * @return {?}
@@ -1131,11 +1472,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastGetEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.get.object; }))));
+            function (g) { return g.object; })));
         };
         /**
          * @return {?}
@@ -1144,11 +1485,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastGetEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.get.error; }))));
+            function (g) { return g.error; })));
         };
         /**
          * @return {?}
@@ -1157,11 +1498,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastListEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.list.loading; }))));
+            function (g) { return g.loading; })));
         };
         /**
          * @return {?}
@@ -1170,11 +1511,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastListEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.list.options; }))));
+            function (g) { return g.options; })));
         };
         /**
          * @return {?}
@@ -1183,11 +1524,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastListEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.list.objects; }))));
+            function (g) { return g.objects; })));
         };
         /**
          * @return {?}
@@ -1196,11 +1537,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastListEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.list.error; }))));
+            function (g) { return g.error; })));
         };
         /**
          * @return {?}
@@ -1209,11 +1550,15 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastListEntry, operators.filter((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.list.objects && state.list.objects.next; }))));
+            function (g) { return g.objects != null; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return (/** @type {?} */ (g.objects)).next; })));
         };
         /**
          * @return {?}
@@ -1222,16 +1567,15 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastListEntry, operators.filter((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) {
-                if (state.list.options && state.list.options.start != null) {
-                    return state.list.options.start;
-                }
-                return 1;
-            }))));
+            function (g) { return g.options != null; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return (/** @type {?} */ (g.options)).start != null ? (/** @type {?} */ (g.options)).start : 1; })));
         };
         /**
          * @return {?}
@@ -1240,11 +1584,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastCreateEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.create.loading; }))));
+            function (g) { return g.loading; })));
         };
         /**
          * @return {?}
@@ -1253,11 +1597,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastCreateEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.create.object; }))));
+            function (g) { return g.object; })));
         };
         /**
          * @return {?}
@@ -1266,11 +1610,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastCreateEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.create.error; }))));
+            function (g) { return g.error; })));
         };
         /**
          * @return {?}
@@ -1279,11 +1623,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastUpdateEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.update.loading; }))));
+            function (g) { return g.loading; })));
         };
         /**
          * @return {?}
@@ -1292,11 +1636,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastUpdateEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.update.id; }))));
+            function (g) { return g.id; })));
         };
         /**
          * @return {?}
@@ -1305,11 +1649,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastUpdateEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.update.object; }))));
+            function (g) { return g.object; })));
         };
         /**
          * @return {?}
@@ -1318,11 +1662,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastUpdateEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.update.error; }))));
+            function (g) { return g.error; })));
         };
         /**
          * @return {?}
@@ -1331,11 +1675,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastPatchEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.patch.loading; }))));
+            function (g) { return g.loading; })));
         };
         /**
          * @return {?}
@@ -1344,11 +1688,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastPatchEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.patch.id; }))));
+            function (g) { return g.id; })));
         };
         /**
          * @return {?}
@@ -1357,11 +1701,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastPatchEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.patch.object; }))));
+            function (g) { return g.object; })));
         };
         /**
          * @return {?}
@@ -1370,11 +1714,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastPatchEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.patch.error; }))));
+            function (g) { return g.error; })));
         };
         /**
          * @return {?}
@@ -1383,11 +1727,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastDeleteEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.delete.loading; }))));
+            function (g) { return g.loading; })));
         };
         /**
          * @return {?}
@@ -1396,11 +1740,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastDeleteEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.delete.id; }))));
+            function (g) { return g.id; })));
         };
         /**
          * @return {?}
@@ -1409,11 +1753,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastDeleteEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.delete.object; }))));
+            function (g) { return g.object; })));
         };
         /**
          * @return {?}
@@ -1422,11 +1766,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastDeleteEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.delete.error; }))));
+            function (g) { return g.error; })));
         };
         /**
          * @return {?}
@@ -1435,11 +1779,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastDeleteAllEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.deleteAll.loading; }))));
+            function (g) { return g.loading; })));
         };
         /**
          * @return {?}
@@ -1448,11 +1792,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastDeleteAllEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.deleteAll.ids; }))));
+            function (g) { return g.ids; })));
         };
         /**
          * @return {?}
@@ -1461,11 +1805,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastDeleteAllEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.deleteAll.objects; }))));
+            function (g) { return g.objects; })));
         };
         /**
          * @return {?}
@@ -1474,11 +1818,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastDeleteAllEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.deleteAll.error; }))));
+            function (g) { return g.error; })));
         };
         /**
          * @return {?}
@@ -1487,11 +1831,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastQueryEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.query.loading; }))));
+            function (g) { return g.loading; })));
         };
         /**
          * @return {?}
@@ -1500,11 +1844,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastQueryEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.query.options; }))));
+            function (g) { return g.options; })));
         };
         /**
          * @return {?}
@@ -1513,11 +1857,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastQueryEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.query.objects; }))));
+            function (g) { return g.objects; })));
         };
         /**
          * @return {?}
@@ -1526,11 +1870,11 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastQueryEntry, operators.map((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.query.error; }))));
+            function (g) { return g.error; })));
         };
         /**
          * @return {?}
@@ -1539,11 +1883,15 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastQueryEntry, operators.filter((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) { return state.query.objects && state.query.objects.next; }))));
+            function (g) { return g.objects != null; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return (/** @type {?} */ (g.objects)).next; })));
         };
         /**
          * @return {?}
@@ -1552,16 +1900,15 @@
          * @return {?}
          */
         function () {
-            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
-             * @param {?} state
+            return this._store.pipe(this._lastQueryEntry, operators.filter((/**
+             * @param {?} g
              * @return {?}
              */
-            function (state) {
-                if (state.query.options && state.query.options.start != null) {
-                    return state.query.options.start;
-                }
-                return 1;
-            }))));
+            function (g) { return g.options != null; })), operators.map((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return (/** @type {?} */ (g.options)).start != null ? (/** @type {?} */ (g.options)).start : 1; })));
         };
         /**
          * @return {?}
@@ -1570,7 +1917,7 @@
          * @return {?}
          */
         function () {
-            return this._actions.pipe(effects.ofType(new this._createAction((/** @type {?} */ (null))).type));
+            return this._actions.pipe(effects.ofType(this._actionTypes.CREATE_SUCCESS));
         };
         /**
          * @return {?}
@@ -1579,7 +1926,7 @@
          * @return {?}
          */
         function () {
-            return this._actions.pipe(effects.ofType(new this._updateAction((/** @type {?} */ (null))).type));
+            return this._actions.pipe(effects.ofType(this._actionTypes.UPDATE_SUCCESS));
         };
         /**
          * @return {?}
@@ -1588,7 +1935,7 @@
          * @return {?}
          */
         function () {
-            return this._actions.pipe(effects.ofType(new this._patchAction((/** @type {?} */ (null))).type));
+            return this._actions.pipe(effects.ofType(this._actionTypes.PATCH_SUCCESS));
         };
         /**
          * @return {?}
@@ -1597,7 +1944,7 @@
          * @return {?}
          */
         function () {
-            return this._actions.pipe(effects.ofType(new this._deleteAction((/** @type {?} */ (null))).type));
+            return this._actions.pipe(effects.ofType(this._actionTypes.DELETE_SUCCESS));
         };
         /**
          * @return {?}
@@ -1606,7 +1953,7 @@
          * @return {?}
          */
         function () {
-            return this._actions.pipe(effects.ofType(new this._deleteAllAction((/** @type {?} */ (null))).type));
+            return this._actions.pipe(effects.ofType(this._actionTypes.DELETE_ALL_SUCCESS));
         };
         /**
          * @param {?} id
@@ -1617,7 +1964,45 @@
          * @return {?}
          */
         function (id) {
-            this._store.dispatch(createGetAction(this._getAction, id));
+            /** @type {?} */
+            var action = createAction({
+                type: this._actionTypes.GET,
+                payload: { id: id }
+            });
+            this._store.dispatch(action);
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.get; }))), operators.map((/**
+             * @param {?} gets
+             * @return {?}
+             */
+            function (gets) { return gets.find((/**
+             * @param {?} g
+             * @return {?}
+             */
+            function (g) { return g.uuid === action.uuid; })); })), operators.filter((/**
+             * @param {?} get
+             * @return {?}
+             */
+            function (get) { return get != null; })), operators.tap((/**
+             * @param {?} get
+             * @return {?}
+             */
+            function (get) {
+                if ((/** @type {?} */ (get)).error != null) {
+                    rxjs.throwError((/** @type {?} */ (get)).error);
+                }
+            })), operators.filter((/**
+             * @param {?} get
+             * @return {?}
+             */
+            function (get) { return (/** @type {?} */ (get)).object != null; })), operators.map((/**
+             * @param {?} get
+             * @return {?}
+             */
+            function (get) { return (/** @type {?} */ ((/** @type {?} */ (get)).object)); })));
         };
         /**
          * @param {?=} options
@@ -1628,7 +2013,45 @@
          * @return {?}
          */
         function (options) {
-            this._store.dispatch(createListAction(this._listAction, options || {}));
+            /** @type {?} */
+            var action = createAction({
+                type: this._actionTypes.LIST,
+                payload: { params: options || {} }
+            });
+            this._store.dispatch(action);
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.list; }))), operators.map((/**
+             * @param {?} lists
+             * @return {?}
+             */
+            function (lists) { return lists.find((/**
+             * @param {?} l
+             * @return {?}
+             */
+            function (l) { return l.uuid === action.uuid; })); })), operators.filter((/**
+             * @param {?} list
+             * @return {?}
+             */
+            function (list) { return list != null; })), operators.tap((/**
+             * @param {?} list
+             * @return {?}
+             */
+            function (list) {
+                if ((/** @type {?} */ (list)).error != null) {
+                    rxjs.throwError((/** @type {?} */ (list)).error);
+                }
+            })), operators.filter((/**
+             * @param {?} list
+             * @return {?}
+             */
+            function (list) { return (/** @type {?} */ (list)).objects != null; })), operators.map((/**
+             * @param {?} list
+             * @return {?}
+             */
+            function (list) { return (/** @type {?} */ ((/** @type {?} */ (list)).objects)); })));
         };
         /**
          * @param {?} data
@@ -1639,7 +2062,45 @@
          * @return {?}
          */
         function (data) {
-            this._store.dispatch(createCreateAction(this._createAction, data));
+            /** @type {?} */
+            var action = createAction({
+                type: this._actionTypes.CREATE,
+                payload: { item: data },
+            });
+            this._store.dispatch(action);
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.create; }))), operators.map((/**
+             * @param {?} creates
+             * @return {?}
+             */
+            function (creates) { return creates.find((/**
+             * @param {?} c
+             * @return {?}
+             */
+            function (c) { return c.uuid === action.uuid; })); })), operators.filter((/**
+             * @param {?} creates
+             * @return {?}
+             */
+            function (creates) { return creates != null; })), operators.tap((/**
+             * @param {?} create
+             * @return {?}
+             */
+            function (create) {
+                if ((/** @type {?} */ (create)).error != null) {
+                    rxjs.throwError((/** @type {?} */ (create)).error);
+                }
+            })), operators.filter((/**
+             * @param {?} create
+             * @return {?}
+             */
+            function (create) { return (/** @type {?} */ (create)).object != null; })), operators.map((/**
+             * @param {?} create
+             * @return {?}
+             */
+            function (create) { return (/** @type {?} */ ((/** @type {?} */ (create)).object)); })));
         };
         /**
          * @param {?} data
@@ -1650,7 +2111,45 @@
          * @return {?}
          */
         function (data) {
-            this._store.dispatch(createUpdateAction(this._updateAction, data));
+            /** @type {?} */
+            var action = createAction({
+                type: this._actionTypes.UPDATE,
+                payload: { item: data },
+            });
+            this._store.dispatch(action);
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.update; }))), operators.map((/**
+             * @param {?} updates
+             * @return {?}
+             */
+            function (updates) { return updates.find((/**
+             * @param {?} u
+             * @return {?}
+             */
+            function (u) { return u.uuid === action.uuid; })); })), operators.filter((/**
+             * @param {?} updates
+             * @return {?}
+             */
+            function (updates) { return updates != null; })), operators.tap((/**
+             * @param {?} update
+             * @return {?}
+             */
+            function (update) {
+                if ((/** @type {?} */ (update)).error != null) {
+                    rxjs.throwError((/** @type {?} */ (update)).error);
+                }
+            })), operators.filter((/**
+             * @param {?} update
+             * @return {?}
+             */
+            function (update) { return (/** @type {?} */ (update)).object != null; })), operators.map((/**
+             * @param {?} update
+             * @return {?}
+             */
+            function (update) { return (/** @type {?} */ ((/** @type {?} */ (update)).object)); })));
         };
         /**
          * @param {?} data
@@ -1661,7 +2160,45 @@
          * @return {?}
          */
         function (data) {
-            this._store.dispatch(createPatchAction(this._patchAction, data));
+            /** @type {?} */
+            var action = createAction({
+                type: this._actionTypes.PATCH,
+                payload: { item: data }
+            });
+            this._store.dispatch(action);
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.patch; }))), operators.map((/**
+             * @param {?} patches
+             * @return {?}
+             */
+            function (patches) { return patches.find((/**
+             * @param {?} p
+             * @return {?}
+             */
+            function (p) { return p.uuid === action.uuid; })); })), operators.filter((/**
+             * @param {?} patches
+             * @return {?}
+             */
+            function (patches) { return patches != null; })), operators.tap((/**
+             * @param {?} patch
+             * @return {?}
+             */
+            function (patch) {
+                if ((/** @type {?} */ (patch)).error != null) {
+                    rxjs.throwError((/** @type {?} */ (patch)).error);
+                }
+            })), operators.filter((/**
+             * @param {?} patch
+             * @return {?}
+             */
+            function (patch) { return (/** @type {?} */ (patch)).object != null; })), operators.map((/**
+             * @param {?} patch
+             * @return {?}
+             */
+            function (patch) { return (/** @type {?} */ ((/** @type {?} */ (patch)).object)); })));
         };
         /**
          * @param {?} data
@@ -1672,7 +2209,45 @@
          * @return {?}
          */
         function (data) {
-            this._store.dispatch(createDeleteAction(this._deleteAction, data));
+            /** @type {?} */
+            var action = createAction({
+                type: this._actionTypes.DELETE,
+                payload: { item: data }
+            });
+            this._store.dispatch(action);
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.delete; }))), operators.map((/**
+             * @param {?} dels
+             * @return {?}
+             */
+            function (dels) { return dels.find((/**
+             * @param {?} d
+             * @return {?}
+             */
+            function (d) { return d.uuid === action.uuid; })); })), operators.filter((/**
+             * @param {?} dels
+             * @return {?}
+             */
+            function (dels) { return dels != null; })), operators.tap((/**
+             * @param {?} del
+             * @return {?}
+             */
+            function (del) {
+                if ((/** @type {?} */ (del)).error != null) {
+                    rxjs.throwError((/** @type {?} */ (del)).error);
+                }
+            })), operators.filter((/**
+             * @param {?} del
+             * @return {?}
+             */
+            function (del) { return (/** @type {?} */ (del)).object != null; })), operators.map((/**
+             * @param {?} del
+             * @return {?}
+             */
+            function (del) { return (/** @type {?} */ ((/** @type {?} */ (del)).object)); })));
         };
         /**
          * @param {?} data
@@ -1683,7 +2258,45 @@
          * @return {?}
          */
         function (data) {
-            this._store.dispatch(createDeleteAllAction(this._deleteAllAction, data));
+            /** @type {?} */
+            var action = createAction({
+                type: this._actionTypes.DELETE_ALL,
+                payload: { items: data }
+            });
+            this._store.dispatch(action);
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.deleteAll; }))), operators.map((/**
+             * @param {?} deleteAlls
+             * @return {?}
+             */
+            function (deleteAlls) { return deleteAlls.find((/**
+             * @param {?} d
+             * @return {?}
+             */
+            function (d) { return d.uuid === action.uuid; })); })), operators.filter((/**
+             * @param {?} deleteAlls
+             * @return {?}
+             */
+            function (deleteAlls) { return deleteAlls != null; })), operators.tap((/**
+             * @param {?} deleteAll
+             * @return {?}
+             */
+            function (deleteAll) {
+                if ((/** @type {?} */ (deleteAll)).error != null) {
+                    rxjs.throwError((/** @type {?} */ (deleteAll)).error);
+                }
+            })), operators.filter((/**
+             * @param {?} deleteAll
+             * @return {?}
+             */
+            function (deleteAll) { return (/** @type {?} */ (deleteAll)).objects != null; })), operators.map((/**
+             * @param {?} deleteAll
+             * @return {?}
+             */
+            function (deleteAll) { return (/** @type {?} */ ((/** @type {?} */ (deleteAll)).objects)); })));
         };
         /**
          * @param {?} options
@@ -1694,7 +2307,45 @@
          * @return {?}
          */
         function (options) {
-            this._store.dispatch(createQueryAction(this._queryAction, options || {}));
+            /** @type {?} */
+            var action = createAction({
+                type: this._actionTypes.QUERY,
+                payload: { params: options || {} }
+            });
+            this._store.dispatch(action);
+            return this._store.pipe(store.select(store.createSelector(this._modelState, (/**
+             * @param {?} state
+             * @return {?}
+             */
+            function (state) { return state.query; }))), operators.map((/**
+             * @param {?} queries
+             * @return {?}
+             */
+            function (queries) { return queries.find((/**
+             * @param {?} q
+             * @return {?}
+             */
+            function (q) { return q.uuid === action.uuid; })); })), operators.filter((/**
+             * @param {?} queries
+             * @return {?}
+             */
+            function (queries) { return queries != null; })), operators.tap((/**
+             * @param {?} query
+             * @return {?}
+             */
+            function (query) {
+                if ((/** @type {?} */ (query)).error != null) {
+                    rxjs.throwError((/** @type {?} */ (query)).error);
+                }
+            })), operators.filter((/**
+             * @param {?} query
+             * @return {?}
+             */
+            function (query) { return (/** @type {?} */ (query)).objects != null; })), operators.map((/**
+             * @param {?} query
+             * @return {?}
+             */
+            function (query) { return (/** @type {?} */ ((/** @type {?} */ (query)).objects)); })));
         };
         return ModelService;
     }());
@@ -1707,6 +2358,7 @@
     exports.generateInitialModelState = generateInitialModelState;
     exports.modelReducer = modelReducer;
     exports.reducers = reducers;
+    exports.ɵa = ModelGenericAction;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

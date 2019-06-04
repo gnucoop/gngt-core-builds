@@ -23,13 +23,75 @@ import { __assign, __decorate, __metadata } from 'tslib';
 import { InjectionToken, Injectable, Inject, defineInjectable, inject, EventEmitter, NgModule } from '@angular/core';
 import * as URLParse from 'url-parse';
 import { HttpClient } from '@angular/common/http';
-import { filter, switchMap, map, take, exhaustMap, catchError, tap, delayWhen } from 'rxjs/operators';
+import { filter, concatMap, map, take, exhaustMap, catchError, tap, delayWhen, switchMap } from 'rxjs/operators';
 import { Validators } from '@angular/forms';
 import { Subscription, of, zip, timer, defer } from 'rxjs';
 import { forceBooleanProp } from '@gngt/core/common';
 import { Actions, Effect, ofType, EffectsModule } from '@ngrx/effects';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/** @enum {string} */
+var AuthActionTypes = {
+    InitUser: '[Auth] Init user',
+    InitUserComplete: '[Auth] Init user complete',
+    InitComplete: '[Auth] Init complete',
+    Logout: '[Auth] Logout',
+    LogoutConfirmation: '[Auth] Logout Confirmation',
+    LogoutConfirmationDismiss: '[Auth] Logout Confirmation Dismiss',
+};
+var InitUser = /** @class */ (function () {
+    function InitUser() {
+        this.type = AuthActionTypes.InitUser;
+    }
+    return InitUser;
+}());
+var InitUserComplete = /** @class */ (function () {
+    function InitUserComplete(payload) {
+        this.payload = payload;
+        this.type = AuthActionTypes.InitUserComplete;
+    }
+    return InitUserComplete;
+}());
+var InitComplete = /** @class */ (function () {
+    function InitComplete() {
+        this.type = AuthActionTypes.InitComplete;
+    }
+    return InitComplete;
+}());
+var Logout = /** @class */ (function () {
+    function Logout() {
+        this.type = AuthActionTypes.Logout;
+    }
+    return Logout;
+}());
+var LogoutConfirmation = /** @class */ (function () {
+    function LogoutConfirmation() {
+        this.type = AuthActionTypes.LogoutConfirmation;
+    }
+    return LogoutConfirmation;
+}());
+var LogoutConfirmationDismiss = /** @class */ (function () {
+    function LogoutConfirmationDismiss() {
+        this.type = AuthActionTypes.LogoutConfirmationDismiss;
+    }
+    return LogoutConfirmationDismiss;
+}());
+
+var authActions = /*#__PURE__*/Object.freeze({
+    AuthActionTypes: AuthActionTypes,
+    InitUser: InitUser,
+    InitUserComplete: InitUserComplete,
+    InitComplete: InitComplete,
+    Logout: Logout,
+    LogoutConfirmation: LogoutConfirmation,
+    LogoutConfirmationDismiss: LogoutConfirmationDismiss
+});
 
 /**
  * @fileoverview added by tsickle
@@ -71,51 +133,13 @@ var RefreshToken = /** @class */ (function () {
     return RefreshToken;
 }());
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/** @enum {string} */
-var AuthActionTypes = {
-    InitUser: '[Auth] Init user',
-    InitUserComplete: '[Auth] Init user complete',
-    InitComplete: '[Auth] Init complete',
-    Logout: '[Auth] Logout',
-    LogoutConfirmation: '[Auth] Logout Confirmation',
-    LogoutConfirmationDismiss: '[Auth] Logout Confirmation Dismiss',
-};
-var InitUser = /** @class */ (function () {
-    function InitUser() {
-        this.type = AuthActionTypes.InitUser;
-    }
-    return InitUser;
-}());
-var InitUserComplete = /** @class */ (function () {
-    function InitUserComplete(payload) {
-        this.payload = payload;
-        this.type = AuthActionTypes.InitUserComplete;
-    }
-    return InitUserComplete;
-}());
-var InitComplete = /** @class */ (function () {
-    function InitComplete() {
-        this.type = AuthActionTypes.InitComplete;
-    }
-    return InitComplete;
-}());
-var Logout = /** @class */ (function () {
-    function Logout() {
-        this.type = AuthActionTypes.Logout;
-    }
-    return Logout;
-}());
-var LogoutConfirmationDismiss = /** @class */ (function () {
-    function LogoutConfirmationDismiss() {
-        this.type = AuthActionTypes.LogoutConfirmationDismiss;
-    }
-    return LogoutConfirmationDismiss;
-}());
+var authApiActions = /*#__PURE__*/Object.freeze({
+    AuthApiActionTypes: AuthApiActionTypes,
+    LoginSuccess: LoginSuccess,
+    LoginFailure: LoginFailure,
+    LoginRedirect: LoginRedirect,
+    RefreshToken: RefreshToken
+});
 
 /**
  * @fileoverview added by tsickle
@@ -733,6 +757,17 @@ var AuthService = /** @class */ (function () {
         var url = this._config.meUrl;
         return this._http.get(url);
     };
+    /**
+     * @return {?}
+     */
+    AuthService.prototype.getLoggedInUser = /**
+     * @return {?}
+     */
+    function () {
+        return this._config.loggedInUserGetter
+            ? this._config.loggedInUserGetter()
+            : null;
+    };
     AuthService.decorators = [
         { type: Injectable, args: [{ providedIn: 'root' },] },
     ];
@@ -789,7 +824,7 @@ var AuthGuard = /** @class */ (function () {
          * @param {?} init
          * @return {?}
          */
-        function (init) { return init; })), switchMap((/**
+        function (init) { return init; })), concatMap((/**
          * @return {?}
          */
         function () { return _this.store.pipe(select(getLoggedIn)); })), map((/**
@@ -988,6 +1023,9 @@ var AuthEffects = /** @class */ (function () {
             var refreshTokenKey = _this.config.refreshTokenKey || 'refresh_token';
             _this.jwtHelperService.tokenSetter(payload[tokenKey]);
             _this.jwtHelperService.refreshTokenSetter(payload[refreshTokenKey]);
+            if (_this.config.loggedInUserSetter) {
+                _this.config.loggedInUserSetter(payload.user_id);
+            }
             _this.router.navigate(['/']);
         })), map((/**
          * @return {?}
@@ -1213,5 +1251,5 @@ var AuthModule = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { AUTH_OPTIONS, AuthGuard, AuthModule, AuthService, AuthUserInteractionsService, JWT_OPTIONS, JwtHelperService, JwtInterceptor, LoginComponent, reducers$1 as reducers, reducers as ɵb, reducer as ɵc, reducer$1 as ɵd, AuthEffects as ɵe };
+export { AUTH_OPTIONS, authActions as AuthActions, authApiActions as AuthApiActions, AuthGuard, AuthModule, AuthService, AuthUserInteractionsService, JWT_OPTIONS, JwtHelperService, JwtInterceptor, LoginComponent, reducers$1 as reducers, reducers as ɵb, reducer as ɵc, reducer$1 as ɵd, AuthEffects as ɵe };
 //# sourceMappingURL=auth.es5.js.map

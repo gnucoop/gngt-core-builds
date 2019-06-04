@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {Actions} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
 
-import {ModelService} from '@gngt/core/model';
+import {ModelActions, ModelService} from '@gngt/core/model';
 import {State} from '@gngt/core/reducers';
 
 import * as <%= camelize(model) %>Actions from './<%= dasherize(model) %>.actions';
@@ -17,25 +17,13 @@ export class <%= classify(model) %>Service
     extends ModelService<
       <%= classify(model) %>,
       from<%= classify(model) %>.State,
-      <%= camelize(model) %>Actions.<%= classify(model) %>GetAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>ListAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>CreateAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>UpdateAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>PatchAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>DeleteAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>DeleteAllAction
+      <%= camelize(model) %>Actions.<%= classify(model) %>ActionTypes
     > {
-  constructor(store: Store<State>, actions: Actions) {
+  constructor(store: Store<State>, actions: Actions<ModelActions.ModelBaseAction>) {
     super(
       store,
       actions,
-      <%= camelize(model) %>Actions.<%= classify(model) %>GetAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>ListAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>CreateAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>UpdateAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>PatchAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>DeleteAction,
-      <%= camelize(model) %>Actions.<%= classify(model) %>DeleteAllAction,
+      <%= camelize(model) %>Actions.<%= camelize(model) %>ActionTypes,
       [fromPackage.packageStatePrefix, from<%= classify(model) %>.<%= camelize(model) %>StatePrefix]
     );
   }

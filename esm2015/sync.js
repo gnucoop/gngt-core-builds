@@ -763,7 +763,7 @@ class SyncService {
          * @return {?}
          */
         (err) => {
-            if (err.status !== 417) {
+            if (err.status !== 409) {
                 return throwError(err);
             }
             p.hasNext = true;

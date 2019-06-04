@@ -27,4 +27,4 @@ export * from './model-options-token';
 export * from './model-reducer';
 export * from './model-service';
 export { ModelActions, reducers };
-export { Model, ModelGetParams, ModelJoin, ModelListParams, ModelListResult } from '@gngt/core/common';
+export { Model, ModelGetParams, ModelJoin, ModelListParams, ModelListResult, ModelQueryParams } from '@gngt/core/common';

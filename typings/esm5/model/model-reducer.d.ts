@@ -18,58 +18,73 @@
  * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
  *
  */
-import { Action } from '@ngrx/store';
 import { Model, ModelGetParams, ModelListParams, ModelListResult, ModelQueryParams } from '@gngt/core/common';
 import * as ModelActions from './model-actions';
+export interface ModelGetState<M extends Model> {
+    uuid: string;
+    loading: boolean;
+    options: ModelGetParams;
+    id: number | null;
+    object: M | null;
+    error: any;
+}
+export interface ModelListState<M extends Model> {
+    uuid: string;
+    loading: boolean;
+    options: ModelListParams;
+    objects: ModelListResult<M> | null;
+    error: any;
+}
+export interface ModelCreateState<M extends Model> {
+    uuid: string;
+    loading: boolean;
+    object: M | null;
+    error: any;
+}
+export interface ModelUpdateState<M extends Model> {
+    uuid: string;
+    loading: boolean;
+    id: number | null;
+    object: M | null;
+    error: any;
+}
+export interface ModelPatchState<M extends Model> {
+    uuid: string;
+    loading: boolean;
+    id: number | null;
+    object: M | null;
+    error: any;
+}
+export interface ModelDeleteState<M extends Model> {
+    uuid: string;
+    loading: boolean;
+    id: number | null;
+    object: M | null;
+    error: any;
+}
+export interface ModelDeleteAllState<M extends Model> {
+    uuid: string;
+    loading: boolean;
+    ids: number[] | null;
+    objects: M[] | null;
+    error: any;
+}
+export interface ModelQueryState<M extends Model> {
+    uuid: string;
+    loading: boolean;
+    options: ModelQueryParams | null;
+    objects: ModelListResult<M> | null;
+    error: any;
+}
 export interface State<M extends Model> {
-    get: {
-        loading: boolean;
-        options: ModelGetParams;
-        id: number | null;
-        object: M | null;
-        error: any;
-    };
-    list: {
-        loading: boolean;
-        options: ModelListParams;
-        objects: ModelListResult<M> | null;
-        error: any;
-    };
-    create: {
-        loading: boolean;
-        object: M | null;
-        error: any;
-    };
-    update: {
-        loading: boolean;
-        id: number | null;
-        object: M | null;
-        error: any;
-    };
-    patch: {
-        loading: boolean;
-        id: number | null;
-        object: M | null;
-        error: any;
-    };
-    delete: {
-        loading: boolean;
-        id: number | null;
-        object: M | null;
-        error: any;
-    };
-    deleteAll: {
-        loading: boolean;
-        ids: number[] | null;
-        objects: M[] | null;
-        error: any;
-    };
-    query: {
-        loading: boolean;
-        options: ModelQueryParams | null;
-        objects: ModelListResult<M> | null;
-        error: any;
-    };
+    get: ModelGetState<M>[];
+    list: ModelListState<M>[];
+    create: ModelCreateState<M>[];
+    update: ModelUpdateState<M>[];
+    patch: ModelPatchState<M>[];
+    delete: ModelDeleteState<M>[];
+    deleteAll: ModelDeleteAllState<M>[];
+    query: ModelQueryState<M>[];
 }
 export declare function generateInitialModelState<M extends Model>(): State<M>;
-export declare function modelReducer<M extends Model>(state: State<M>, action: Action, actionTypes: ModelActions.ModelActionTypes): State<M>;
+export declare function modelReducer<M extends Model>(state: State<M>, action: ModelActions.ModelBaseAction, actionTypes: ModelActions.ModelActionTypes): State<M>;

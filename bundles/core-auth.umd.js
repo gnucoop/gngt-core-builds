@@ -67,6 +67,68 @@
      */
 
     /** @enum {string} */
+    var AuthActionTypes = {
+        InitUser: '[Auth] Init user',
+        InitUserComplete: '[Auth] Init user complete',
+        InitComplete: '[Auth] Init complete',
+        Logout: '[Auth] Logout',
+        LogoutConfirmation: '[Auth] Logout Confirmation',
+        LogoutConfirmationDismiss: '[Auth] Logout Confirmation Dismiss',
+    };
+    var InitUser = /** @class */ (function () {
+        function InitUser() {
+            this.type = AuthActionTypes.InitUser;
+        }
+        return InitUser;
+    }());
+    var InitUserComplete = /** @class */ (function () {
+        function InitUserComplete(payload) {
+            this.payload = payload;
+            this.type = AuthActionTypes.InitUserComplete;
+        }
+        return InitUserComplete;
+    }());
+    var InitComplete = /** @class */ (function () {
+        function InitComplete() {
+            this.type = AuthActionTypes.InitComplete;
+        }
+        return InitComplete;
+    }());
+    var Logout = /** @class */ (function () {
+        function Logout() {
+            this.type = AuthActionTypes.Logout;
+        }
+        return Logout;
+    }());
+    var LogoutConfirmation = /** @class */ (function () {
+        function LogoutConfirmation() {
+            this.type = AuthActionTypes.LogoutConfirmation;
+        }
+        return LogoutConfirmation;
+    }());
+    var LogoutConfirmationDismiss = /** @class */ (function () {
+        function LogoutConfirmationDismiss() {
+            this.type = AuthActionTypes.LogoutConfirmationDismiss;
+        }
+        return LogoutConfirmationDismiss;
+    }());
+
+    var authActions = /*#__PURE__*/Object.freeze({
+        AuthActionTypes: AuthActionTypes,
+        InitUser: InitUser,
+        InitUserComplete: InitUserComplete,
+        InitComplete: InitComplete,
+        Logout: Logout,
+        LogoutConfirmation: LogoutConfirmation,
+        LogoutConfirmationDismiss: LogoutConfirmationDismiss
+    });
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
+
+    /** @enum {string} */
     var AuthApiActionTypes = {
         LoginSuccess: '[Auth/API] Login Success',
         LoginFailure: '[Auth/API] Login Failure',
@@ -101,51 +163,13 @@
         return RefreshToken;
     }());
 
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-
-    /** @enum {string} */
-    var AuthActionTypes = {
-        InitUser: '[Auth] Init user',
-        InitUserComplete: '[Auth] Init user complete',
-        InitComplete: '[Auth] Init complete',
-        Logout: '[Auth] Logout',
-        LogoutConfirmation: '[Auth] Logout Confirmation',
-        LogoutConfirmationDismiss: '[Auth] Logout Confirmation Dismiss',
-    };
-    var InitUser = /** @class */ (function () {
-        function InitUser() {
-            this.type = AuthActionTypes.InitUser;
-        }
-        return InitUser;
-    }());
-    var InitUserComplete = /** @class */ (function () {
-        function InitUserComplete(payload) {
-            this.payload = payload;
-            this.type = AuthActionTypes.InitUserComplete;
-        }
-        return InitUserComplete;
-    }());
-    var InitComplete = /** @class */ (function () {
-        function InitComplete() {
-            this.type = AuthActionTypes.InitComplete;
-        }
-        return InitComplete;
-    }());
-    var Logout = /** @class */ (function () {
-        function Logout() {
-            this.type = AuthActionTypes.Logout;
-        }
-        return Logout;
-    }());
-    var LogoutConfirmationDismiss = /** @class */ (function () {
-        function LogoutConfirmationDismiss() {
-            this.type = AuthActionTypes.LogoutConfirmationDismiss;
-        }
-        return LogoutConfirmationDismiss;
-    }());
+    var authApiActions = /*#__PURE__*/Object.freeze({
+        AuthApiActionTypes: AuthApiActionTypes,
+        LoginSuccess: LoginSuccess,
+        LoginFailure: LoginFailure,
+        LoginRedirect: LoginRedirect,
+        RefreshToken: RefreshToken
+    });
 
     /**
      * @fileoverview added by tsickle
@@ -763,6 +787,17 @@
             var url = this._config.meUrl;
             return this._http.get(url);
         };
+        /**
+         * @return {?}
+         */
+        AuthService.prototype.getLoggedInUser = /**
+         * @return {?}
+         */
+        function () {
+            return this._config.loggedInUserGetter
+                ? this._config.loggedInUserGetter()
+                : null;
+        };
         AuthService.decorators = [
             { type: core.Injectable, args: [{ providedIn: 'root' },] },
         ];
@@ -819,7 +854,7 @@
              * @param {?} init
              * @return {?}
              */
-            function (init) { return init; })), operators.switchMap((/**
+            function (init) { return init; })), operators.concatMap((/**
              * @return {?}
              */
             function () { return _this.store.pipe(store.select(getLoggedIn)); })), operators.map((/**
@@ -1018,6 +1053,9 @@
                 var refreshTokenKey = _this.config.refreshTokenKey || 'refresh_token';
                 _this.jwtHelperService.tokenSetter(payload[tokenKey]);
                 _this.jwtHelperService.refreshTokenSetter(payload[refreshTokenKey]);
+                if (_this.config.loggedInUserSetter) {
+                    _this.config.loggedInUserSetter(payload.user_id);
+                }
                 _this.router.navigate(['/']);
             })), operators.map((/**
              * @return {?}
@@ -1234,6 +1272,8 @@
     }());
 
     exports.AUTH_OPTIONS = AUTH_OPTIONS;
+    exports.AuthActions = authActions;
+    exports.AuthApiActions = authApiActions;
     exports.AuthGuard = AuthGuard;
     exports.AuthModule = AuthModule;
     exports.AuthService = AuthService;

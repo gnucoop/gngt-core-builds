@@ -41,10 +41,10 @@ export declare class AuthEffects {
     login$: Observable<AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure>;
     loginSuccess$: Observable<AuthApiActions.RefreshToken>;
     loginFailure$: Observable<AuthApiActions.LoginFailure>;
-    refreshToken$: Observable<AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure | AuthApiActions.LoginRedirect | AuthApiActions.RefreshToken | AuthActions.InitUser | AuthActions.InitUserComplete | AuthActions.InitComplete | AuthActions.Logout | AuthActions.LogoutConfirmation | AuthActions.LogoutConfirmationDismiss>;
+    refreshToken$: Observable<AuthActions.InitUser | AuthActions.InitUserComplete | AuthActions.InitComplete | AuthActions.Logout | AuthActions.LogoutConfirmation | AuthActions.LogoutConfirmationDismiss | AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure | AuthApiActions.LoginRedirect | AuthApiActions.RefreshToken>;
     loginRedirect$: Observable<never>;
     logoutConfirmation$: Observable<AuthActions.Logout | AuthActions.LogoutConfirmationDismiss>;
-    init$: Observable<AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure | AuthApiActions.LoginRedirect | AuthApiActions.RefreshToken | AuthActions.InitUser | AuthActions.InitUserComplete | AuthActions.InitComplete | AuthActions.Logout | AuthActions.LogoutConfirmation | AuthActions.LogoutConfirmationDismiss>;
+    init$: Observable<AuthActions.InitUser | AuthActions.InitUserComplete | AuthActions.InitComplete | AuthActions.Logout | AuthActions.LogoutConfirmation | AuthActions.LogoutConfirmationDismiss | AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure | AuthApiActions.LoginRedirect | AuthApiActions.RefreshToken>;
     constructor(actions$: Actions, authService: AuthService, jwtHelperService: JwtHelperService, userInteractionsService: AuthUserInteractionsService, router: Router, ts: TranslateService, config: AuthOptions);
     private _getRefreshTokenAction;
     private _getScopesFromToken;

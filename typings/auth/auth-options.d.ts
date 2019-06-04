@@ -27,4 +27,6 @@ export interface AuthOptions {
     scopesPath?: string[];
     tokenKey?: string;
     refreshTokenKey?: string;
+    loggedInUserGetter?: () => number | null;
+    loggedInUserSetter?: (id: number | null) => void;
 }

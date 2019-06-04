@@ -18,8 +18,8 @@
  * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
  *
  */
-import { Action } from '@ngrx/store';
 import { Model, ModelListParams, ModelListResult, ModelQueryParams } from '@gngt/core/common';
+import { ModelGenericAction } from './model-generic-action';
 export interface ModelActionTypes {
     GET: string;
     GET_FAILURE: string;
@@ -47,25 +47,29 @@ export interface ModelActionTypes {
     QUERY_FAILURE: string;
 }
 export declare function generateModelActionTypes(typeName: string): ModelActionTypes;
-export declare abstract class ModelGetAction implements Action {
+export declare abstract class ModelBaseAction implements ModelGenericAction {
+    payload: any;
+    abstract type: string;
+    uuid: string;
+    constructor(payload: any);
+}
+export declare abstract class ModelGetAction extends ModelBaseAction {
     payload: {
         id: number;
     };
-    abstract type: string;
     constructor(payload: {
         id: number;
     });
 }
-export declare abstract class ModelGetSuccessAction<T extends Model> implements Action {
+export declare abstract class ModelGetSuccessAction<T extends Model> extends ModelBaseAction {
     payload: {
         item: T;
     };
-    abstract type: string;
     constructor(payload: {
         item: T;
     });
 }
-export declare abstract class ModelGetFailureAction implements Action {
+export declare abstract class ModelGetFailureAction extends ModelBaseAction {
     payload: {
         error: any;
     };
@@ -74,7 +78,7 @@ export declare abstract class ModelGetFailureAction implements Action {
         error: any;
     });
 }
-export declare abstract class ModelListAction implements Action {
+export declare abstract class ModelListAction extends ModelBaseAction {
     payload: {
         params: ModelListParams;
     };
@@ -83,7 +87,7 @@ export declare abstract class ModelListAction implements Action {
         params: ModelListParams;
     });
 }
-export declare abstract class ModelListSuccessAction<T extends Model> implements Action {
+export declare abstract class ModelListSuccessAction<T extends Model> extends ModelBaseAction {
     payload: {
         result: ModelListResult<T>;
     };
@@ -92,7 +96,7 @@ export declare abstract class ModelListSuccessAction<T extends Model> implements
         result: ModelListResult<T>;
     });
 }
-export declare abstract class ModelListFailureAction implements Action {
+export declare abstract class ModelListFailureAction extends ModelBaseAction {
     payload: {
         error: any;
     };
@@ -101,7 +105,7 @@ export declare abstract class ModelListFailureAction implements Action {
         error: any;
     });
 }
-export declare abstract class ModelCreateAction<T extends Model> implements Action {
+export declare abstract class ModelCreateAction<T extends Model> extends ModelBaseAction {
     payload: {
         item: T;
     };
@@ -110,7 +114,7 @@ export declare abstract class ModelCreateAction<T extends Model> implements Acti
         item: T;
     });
 }
-export declare abstract class ModelCreateSuccessAction<T extends Model> implements Action {
+export declare abstract class ModelCreateSuccessAction<T extends Model> extends ModelBaseAction {
     payload: {
         item: T;
     };
@@ -119,34 +123,7 @@ export declare abstract class ModelCreateSuccessAction<T extends Model> implemen
         item: T;
     });
 }
-export declare abstract class ModelCreateFailureAction implements Action {
-    payload: {
-        error: any;
-    };
-    abstract type: string;
-    constructor(payload: {
-        error: any;
-    });
-}
-export declare abstract class ModelUpdateAction<T extends Model> implements Action {
-    payload: {
-        item: T;
-    };
-    abstract type: string;
-    constructor(payload: {
-        item: T;
-    });
-}
-export declare abstract class ModelUpdateSuccessAction<T extends Model> implements Action {
-    payload: {
-        item: T;
-    };
-    abstract type: string;
-    constructor(payload: {
-        item: T;
-    });
-}
-export declare abstract class ModelUpdateFailureAction implements Action {
+export declare abstract class ModelCreateFailureAction extends ModelBaseAction {
     payload: {
         error: any;
     };
@@ -155,7 +132,7 @@ export declare abstract class ModelUpdateFailureAction implements Action {
         error: any;
     });
 }
-export declare abstract class ModelPatchAction<T extends Model> implements Action {
+export declare abstract class ModelUpdateAction<T extends Model> extends ModelBaseAction {
     payload: {
         item: T;
     };
@@ -164,7 +141,7 @@ export declare abstract class ModelPatchAction<T extends Model> implements Actio
         item: T;
     });
 }
-export declare abstract class ModelPatchSuccessAction<T extends Model> implements Action {
+export declare abstract class ModelUpdateSuccessAction<T extends Model> extends ModelBaseAction {
     payload: {
         item: T;
     };
@@ -173,34 +150,7 @@ export declare abstract class ModelPatchSuccessAction<T extends Model> implement
         item: T;
     });
 }
-export declare abstract class ModelPatchFailureAction implements Action {
-    payload: {
-        error: any;
-    };
-    abstract type: string;
-    constructor(payload: {
-        error: any;
-    });
-}
-export declare abstract class ModelDeleteAction<T extends Model> implements Action {
-    payload: {
-        item: T;
-    };
-    abstract type: string;
-    constructor(payload: {
-        item: T;
-    });
-}
-export declare abstract class ModelDeleteSuccessAction<T extends Model> implements Action {
-    payload: {
-        item: T;
-    };
-    abstract type: string;
-    constructor(payload: {
-        item: T;
-    });
-}
-export declare abstract class ModelDeleteFailureAction implements Action {
+export declare abstract class ModelUpdateFailureAction extends ModelBaseAction {
     payload: {
         error: any;
     };
@@ -209,7 +159,61 @@ export declare abstract class ModelDeleteFailureAction implements Action {
         error: any;
     });
 }
-export declare abstract class ModelDeleteAllAction<T extends Model> implements Action {
+export declare abstract class ModelPatchAction<T extends Model> extends ModelBaseAction {
+    payload: {
+        item: T;
+    };
+    abstract type: string;
+    constructor(payload: {
+        item: T;
+    });
+}
+export declare abstract class ModelPatchSuccessAction<T extends Model> extends ModelBaseAction {
+    payload: {
+        item: T;
+    };
+    abstract type: string;
+    constructor(payload: {
+        item: T;
+    });
+}
+export declare abstract class ModelPatchFailureAction extends ModelBaseAction {
+    payload: {
+        error: any;
+    };
+    abstract type: string;
+    constructor(payload: {
+        error: any;
+    });
+}
+export declare abstract class ModelDeleteAction<T extends Model> extends ModelBaseAction {
+    payload: {
+        item: T;
+    };
+    abstract type: string;
+    constructor(payload: {
+        item: T;
+    });
+}
+export declare abstract class ModelDeleteSuccessAction<T extends Model> extends ModelBaseAction {
+    payload: {
+        item: T;
+    };
+    abstract type: string;
+    constructor(payload: {
+        item: T;
+    });
+}
+export declare abstract class ModelDeleteFailureAction extends ModelBaseAction {
+    payload: {
+        error: any;
+    };
+    abstract type: string;
+    constructor(payload: {
+        error: any;
+    });
+}
+export declare abstract class ModelDeleteAllAction<T extends Model> extends ModelBaseAction {
     payload: {
         items: T[];
     };
@@ -218,7 +222,7 @@ export declare abstract class ModelDeleteAllAction<T extends Model> implements A
         items: T[];
     });
 }
-export declare abstract class ModelDeleteAllSuccessAction<T extends Model> implements Action {
+export declare abstract class ModelDeleteAllSuccessAction<T extends Model> extends ModelBaseAction {
     payload: {
         items: T[];
     };
@@ -227,7 +231,7 @@ export declare abstract class ModelDeleteAllSuccessAction<T extends Model> imple
         items: T[];
     });
 }
-export declare abstract class ModelDeleteAllFailureAction implements Action {
+export declare abstract class ModelDeleteAllFailureAction extends ModelBaseAction {
     payload: {
         error: any;
     };
@@ -236,7 +240,7 @@ export declare abstract class ModelDeleteAllFailureAction implements Action {
         error: any;
     });
 }
-export declare abstract class ModelQueryAction implements Action {
+export declare abstract class ModelQueryAction extends ModelBaseAction {
     payload: {
         params: ModelQueryParams;
     };
@@ -245,7 +249,7 @@ export declare abstract class ModelQueryAction implements Action {
         params: ModelQueryParams;
     });
 }
-export declare abstract class ModelQuerySuccessAction<T extends Model> implements Action {
+export declare abstract class ModelQuerySuccessAction<T extends Model> extends ModelBaseAction {
     payload: {
         result: ModelListResult<T>;
     };
@@ -254,7 +258,7 @@ export declare abstract class ModelQuerySuccessAction<T extends Model> implement
         result: ModelListResult<T>;
     });
 }
-export declare abstract class ModelQueryFailureAction implements Action {
+export declare abstract class ModelQueryFailureAction extends ModelBaseAction {
     payload: {
         error: any;
     };

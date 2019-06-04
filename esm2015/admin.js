@@ -40,7 +40,7 @@ class AdminUserInteractionsService {
  */
 /**
  * @abstract
- * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8
+ * @template T, S, A
  */
 class AdminEditComponent {
     /**
@@ -400,7 +400,7 @@ const AdminEditFieldType = {
  */
 /**
  * @abstract
- * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8, MS
+ * @template T, S, A, MS
  */
 class AdminListComponent {
     /**

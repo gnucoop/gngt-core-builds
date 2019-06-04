@@ -18,58 +18,28 @@
  * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
  *
  */
-import { MemoizedSelector, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Actions } from '@ngrx/effects';
+import { MemoizedSelector, Store } from '@ngrx/store';
 import * as fromRoot from '@gngt/core/reducers';
 import { Model, ModelGetParams, ModelListParams, ModelListResult, ModelQueryParams } from '@gngt/core/common';
 import * as ModelActions from './model-actions';
+import { ModelGenericAction } from './model-generic-action';
 import * as fromModel from './reducers';
-export declare abstract class ModelService<T extends Model, S extends fromModel.State<T>, A1 extends ModelActions.ModelGetAction, A2 extends ModelActions.ModelListAction, A3 extends ModelActions.ModelCreateAction<T>, A4 extends ModelActions.ModelUpdateAction<T>, A5 extends ModelActions.ModelPatchAction<T>, A6 extends ModelActions.ModelDeleteAction<T>, A7 extends ModelActions.ModelDeleteAllAction<T>, A8 extends ModelActions.ModelQueryAction> {
+export declare abstract class ModelService<T extends Model, S extends fromModel.State<T>, A extends ModelActions.ModelActionTypes> {
     protected _store: Store<fromRoot.State>;
     private _actions;
-    private _getAction;
-    private _listAction;
-    private _createAction;
-    private _updateAction;
-    private _patchAction;
-    private _deleteAction;
-    private _deleteAllAction;
-    private _queryAction;
+    private _actionTypes;
     protected _modelState: MemoizedSelector<object, S>;
-    constructor(_store: Store<fromRoot.State>, _actions: Actions, _getAction: {
-        new (p: {
-            id: number;
-        }): A1;
-    }, _listAction: {
-        new (p: {
-            params: ModelListParams;
-        }): A2;
-    }, _createAction: {
-        new (p: {
-            item: T;
-        }): A3;
-    }, _updateAction: {
-        new (p: {
-            item: T;
-        }): A4;
-    }, _patchAction: {
-        new (p: {
-            item: T;
-        }): A5;
-    }, _deleteAction: {
-        new (p: {
-            item: T;
-        }): A6;
-    }, _deleteAllAction: {
-        new (p: {
-            items: T[];
-        }): A7;
-    }, _queryAction: {
-        new (p: {
-            params: ModelQueryParams;
-        }): A8;
-    }, statePrefixes: [string, string]);
+    private _lastGetEntry;
+    private _lastListEntry;
+    private _lastCreateEntry;
+    private _lastPatchEntry;
+    private _lastUpdateEntry;
+    private _lastDeleteEntry;
+    private _lastDeleteAllEntry;
+    private _lastQueryEntry;
+    constructor(_store: Store<fromRoot.State>, _actions: Actions<ModelGenericAction>, _actionTypes: A, statePrefixes: [string, string]);
     getGetLoading(): Observable<boolean>;
     getGetOptions(): Observable<ModelGetParams>;
     getGetId(): Observable<number | null>;
@@ -111,12 +81,12 @@ export declare abstract class ModelService<T extends Model, S extends fromModel.
     getPatchSuccess(): Observable<ModelActions.ModelUpdateSuccessAction<T>>;
     getDeleteSuccess(): Observable<ModelActions.ModelDeleteSuccessAction<T>>;
     getDeleteAllSuccess(): Observable<ModelActions.ModelDeleteAllSuccessAction<T>>;
-    get(id: number): void;
-    list(options?: ModelListParams): void;
-    create(data: T): void;
-    update(data: T): void;
-    patch(data: T): void;
-    delete(data: T): void;
-    deleteAll(data: T[]): void;
-    query(options: ModelQueryParams): void;
+    get(id: number): Observable<T>;
+    list(options?: ModelListParams): Observable<ModelListResult<T>>;
+    create(data: Partial<T>): Observable<T>;
+    update(data: T): Observable<T>;
+    patch(data: T): Observable<T>;
+    delete(data: T): Observable<T>;
+    deleteAll(data: T[]): Observable<T[]>;
+    query(options: ModelQueryParams): Observable<ModelListResult<T>>;
 }

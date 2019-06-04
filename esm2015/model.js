@@ -19,9 +19,10 @@
  *
  */
 import { type } from '@gngt/core/reducers';
-import { of } from 'rxjs';
-import { switchMap, map, catchError } from 'rxjs/operators';
+import { of, pipe, throwError } from 'rxjs';
+import { mergeMap, map, catchError, filter, tap } from 'rxjs/operators';
 import { ofType } from '@ngrx/effects';
+import { v4 } from 'uuid';
 import { InjectionToken } from '@angular/core';
 import { createFeatureSelector, createSelector, select } from '@ngrx/store';
 
@@ -68,11 +69,23 @@ function generateModelActionTypes(typeName) {
 /**
  * @abstract
  */
-class ModelGetAction {
+class ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ */
+class ModelGetAction extends ModelBaseAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -80,56 +93,36 @@ class ModelGetAction {
  * @abstract
  * @template T
  */
-class ModelGetSuccessAction {
+class ModelGetSuccessAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
 /**
  * @abstract
  */
-class ModelGetFailureAction {
+class ModelGetFailureAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
 /**
  * @abstract
  */
-class ModelListAction {
+class ModelListAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
-        this.payload = payload;
-    }
-}
-/**
- * @abstract
- * @template T
- */
-class ModelListSuccessAction {
-    /**
-     * @param {?} payload
-     */
-    constructor(payload) {
-        this.payload = payload;
-    }
-}
-/**
- * @abstract
- */
-class ModelListFailureAction {
-    /**
-     * @param {?} payload
-     */
-    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -137,11 +130,24 @@ class ModelListFailureAction {
  * @abstract
  * @template T
  */
-class ModelCreateAction {
+class ModelListSuccessAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        super(payload);
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ */
+class ModelListFailureAction extends ModelBaseAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -149,22 +155,12 @@ class ModelCreateAction {
  * @abstract
  * @template T
  */
-class ModelCreateSuccessAction {
+class ModelCreateAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
-        this.payload = payload;
-    }
-}
-/**
- * @abstract
- */
-class ModelCreateFailureAction {
-    /**
-     * @param {?} payload
-     */
-    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -172,11 +168,24 @@ class ModelCreateFailureAction {
  * @abstract
  * @template T
  */
-class ModelUpdateAction {
+class ModelCreateSuccessAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        super(payload);
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ */
+class ModelCreateFailureAction extends ModelBaseAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -184,22 +193,12 @@ class ModelUpdateAction {
  * @abstract
  * @template T
  */
-class ModelUpdateSuccessAction {
+class ModelUpdateAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
-        this.payload = payload;
-    }
-}
-/**
- * @abstract
- */
-class ModelUpdateFailureAction {
-    /**
-     * @param {?} payload
-     */
-    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -207,11 +206,24 @@ class ModelUpdateFailureAction {
  * @abstract
  * @template T
  */
-class ModelPatchAction {
+class ModelUpdateSuccessAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        super(payload);
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ */
+class ModelUpdateFailureAction extends ModelBaseAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -219,22 +231,12 @@ class ModelPatchAction {
  * @abstract
  * @template T
  */
-class ModelPatchSuccessAction {
+class ModelPatchAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
-        this.payload = payload;
-    }
-}
-/**
- * @abstract
- */
-class ModelPatchFailureAction {
-    /**
-     * @param {?} payload
-     */
-    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -242,11 +244,24 @@ class ModelPatchFailureAction {
  * @abstract
  * @template T
  */
-class ModelDeleteAction {
+class ModelPatchSuccessAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        super(payload);
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ */
+class ModelPatchFailureAction extends ModelBaseAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -254,22 +269,12 @@ class ModelDeleteAction {
  * @abstract
  * @template T
  */
-class ModelDeleteSuccessAction {
+class ModelDeleteAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
-        this.payload = payload;
-    }
-}
-/**
- * @abstract
- */
-class ModelDeleteFailureAction {
-    /**
-     * @param {?} payload
-     */
-    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -277,11 +282,24 @@ class ModelDeleteFailureAction {
  * @abstract
  * @template T
  */
-class ModelDeleteAllAction {
+class ModelDeleteSuccessAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        super(payload);
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ */
+class ModelDeleteFailureAction extends ModelBaseAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -289,33 +307,12 @@ class ModelDeleteAllAction {
  * @abstract
  * @template T
  */
-class ModelDeleteAllSuccessAction {
+class ModelDeleteAllAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
-        this.payload = payload;
-    }
-}
-/**
- * @abstract
- */
-class ModelDeleteAllFailureAction {
-    /**
-     * @param {?} payload
-     */
-    constructor(payload) {
-        this.payload = payload;
-    }
-}
-/**
- * @abstract
- */
-class ModelQueryAction {
-    /**
-     * @param {?} payload
-     */
-    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -323,22 +320,61 @@ class ModelQueryAction {
  * @abstract
  * @template T
  */
-class ModelQuerySuccessAction {
+class ModelDeleteAllSuccessAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
 /**
  * @abstract
  */
-class ModelQueryFailureAction {
+class ModelDeleteAllFailureAction extends ModelBaseAction {
     /**
      * @param {?} payload
      */
     constructor(payload) {
+        super(payload);
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ */
+class ModelQueryAction extends ModelBaseAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        super(payload);
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ * @template T
+ */
+class ModelQuerySuccessAction extends ModelBaseAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        super(payload);
+        this.payload = payload;
+    }
+}
+/**
+ * @abstract
+ */
+class ModelQueryFailureAction extends ModelBaseAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        super(payload);
         this.payload = payload;
     }
 }
@@ -346,6 +382,7 @@ class ModelQueryFailureAction {
 var modelActions = /*#__PURE__*/Object.freeze({
     ModelActionTypes: ModelActionTypes,
     generateModelActionTypes: generateModelActionTypes,
+    ModelBaseAction: ModelBaseAction,
     ModelGetAction: ModelGetAction,
     ModelGetSuccessAction: ModelGetSuccessAction,
     ModelGetFailureAction: ModelGetFailureAction,
@@ -376,60 +413,23 @@ var modelActions = /*#__PURE__*/Object.freeze({
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+
+/** @type {?} */
+const stateQueueLimit = 20;
 /**
  * @template M
  * @return {?}
  */
 function generateInitialModelState() {
     return {
-        get: {
-            loading: false,
-            options: { id: null },
-            id: null,
-            object: null,
-            error: null
-        },
-        list: {
-            loading: false,
-            options: {},
-            objects: null,
-            error: null
-        },
-        create: {
-            loading: false,
-            object: null,
-            error: null
-        },
-        update: {
-            loading: false,
-            id: null,
-            object: null,
-            error: null
-        },
-        patch: {
-            loading: false,
-            id: null,
-            object: null,
-            error: null
-        },
-        delete: {
-            loading: false,
-            id: null,
-            object: null,
-            error: null
-        },
-        deleteAll: {
-            loading: false,
-            ids: null,
-            objects: null,
-            error: null
-        },
-        query: {
-            loading: false,
-            options: null,
-            objects: null,
-            error: null
-        },
+        get: [],
+        list: [],
+        create: [],
+        update: [],
+        patch: [],
+        delete: [],
+        deleteAll: [],
+        query: [],
     };
 }
 /**
@@ -442,57 +442,249 @@ function generateInitialModelState() {
 function modelReducer(state, action, actionTypes) {
     switch (action.type) {
         case actionTypes.GET:
-            return Object.assign({}, state, { get: Object.assign({}, state.get, { loading: true, options: { id: null }, id: ((/** @type {?} */ (action))).payload.id, object: null, error: null }) });
+            return Object.assign({}, state, { get: [{
+                        uuid: action.uuid,
+                        loading: true,
+                        options: { id: null },
+                        id: ((/** @type {?} */ (action))).payload.id,
+                        object: null,
+                        error: null
+                    }, ...state.get.slice(0, stateQueueLimit - 1)] });
         case actionTypes.GET_SUCCESS:
-            return Object.assign({}, state, { get: Object.assign({}, state.get, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+            /** @type {?} */
+            const successGetIdx = state.get.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (successGetIdx >= 0) {
+                return Object.assign({}, state, { get: [...state.get.slice(0, successGetIdx), Object.assign({}, state.get[successGetIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }), ...state.get.slice(successGetIdx + 1)] });
+            }
+            return state;
         case actionTypes.GET_FAILURE:
-            return Object.assign({}, state, { get: Object.assign({}, state.get, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+            /** @type {?} */
+            const failureGetIdx = state.get.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (failureGetIdx >= 0) {
+                return Object.assign({}, state, { get: [...state.get.slice(0, failureGetIdx), Object.assign({}, state.get[failureGetIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }), ...state.get.slice(failureGetIdx + 1)] });
+            }
+            return state;
         case actionTypes.LIST:
-            return Object.assign({}, state, { list: Object.assign({}, state.list, { loading: true, options: ((/** @type {?} */ (action))).payload.params, objects: null, error: null }) });
+            return Object.assign({}, state, { list: [{
+                        uuid: action.uuid,
+                        loading: true,
+                        options: ((/** @type {?} */ (action))).payload.params,
+                        objects: null,
+                        error: null
+                    }, ...state.list.slice(0, stateQueueLimit - 1)] });
         case actionTypes.LIST_SUCCESS:
-            return Object.assign({}, state, { list: Object.assign({}, state.list, { loading: false, objects: ((/** @type {?} */ (action))).payload.result, error: null }) });
+            /** @type {?} */
+            const successListIdx = state.list.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (successListIdx >= 0) {
+                return Object.assign({}, state, { list: [...state.list.slice(0, successListIdx), Object.assign({}, state.list[successListIdx], { loading: false, objects: ((/** @type {?} */ (action))).payload.result, error: null }), ...state.list.slice(successListIdx + 1)] });
+            }
+            return state;
         case actionTypes.LIST_FAILURE:
-            return Object.assign({}, state, { list: Object.assign({}, state.list, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
+            /** @type {?} */
+            const failureListIdx = state.list.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (failureListIdx >= 0) {
+                return Object.assign({}, state, { list: [...state.list.slice(0, failureListIdx), Object.assign({}, state.list[failureListIdx], { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }), ...state.list.slice(failureListIdx + 1)] });
+            }
+            return state;
         case actionTypes.CREATE:
-            return Object.assign({}, state, { create: Object.assign({}, state.create, { loading: true, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+            return Object.assign({}, state, { create: [{
+                        uuid: action.uuid,
+                        loading: true,
+                        object: ((/** @type {?} */ (action))).payload.item,
+                        error: null
+                    }, ...state.create.slice(0, stateQueueLimit - 1)] });
         case actionTypes.CREATE_SUCCESS:
-            return Object.assign({}, state, { create: Object.assign({}, state.create, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+            /** @type {?} */
+            const successCreateIdx = state.create.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (successCreateIdx >= 0) {
+                return Object.assign({}, state, { create: [...state.create.slice(0, successCreateIdx), Object.assign({}, state.create[successCreateIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }), ...state.create.slice(successCreateIdx + 1)] });
+            }
+            return state;
         case actionTypes.CREATE_FAILURE:
-            return Object.assign({}, state, { create: Object.assign({}, state.create, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+            /** @type {?} */
+            const failureCreateIdx = state.create.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (failureCreateIdx >= 0) {
+                return Object.assign({}, state, { create: [...state.create.slice(0, failureCreateIdx), Object.assign({}, state.create[failureCreateIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }), ...state.create.slice(failureCreateIdx + 1)] });
+            }
+            return state;
         case actionTypes.UPDATE:
-            return Object.assign({}, state, { update: Object.assign({}, state.update, { loading: true, id: ((/** @type {?} */ (action))).payload.item.id, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+            return Object.assign({}, state, { update: [{
+                        uuid: action.uuid,
+                        loading: true,
+                        id: ((/** @type {?} */ (action))).payload.item.id,
+                        object: ((/** @type {?} */ (action))).payload.item,
+                        error: null
+                    }, ...state.update.slice(0, stateQueueLimit - 1)] });
         case actionTypes.UPDATE_SUCCESS:
-            return Object.assign({}, state, { update: Object.assign({}, state.update, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+            /** @type {?} */
+            const successUpdateIdx = state.update.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (successUpdateIdx >= 0) {
+                return Object.assign({}, state, { update: [...state.update.slice(0, successUpdateIdx), Object.assign({}, state.update[successUpdateIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }), ...state.update.slice(successUpdateIdx + 1)] });
+            }
+            return state;
         case actionTypes.UPDATE_FAILURE:
-            return Object.assign({}, state, { update: Object.assign({}, state.update, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+            /** @type {?} */
+            const failureUpdateIdx = state.update.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (failureUpdateIdx >= 0) {
+                return Object.assign({}, state, { update: [...state.update.slice(0, failureUpdateIdx), Object.assign({}, state.update[failureUpdateIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }), ...state.update.slice(failureUpdateIdx + 1)] });
+            }
+            return state;
         case actionTypes.PATCH:
-            return Object.assign({}, state, { patch: Object.assign({}, state.patch, { loading: true, id: ((/** @type {?} */ (action))).payload.item.id, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+            return Object.assign({}, state, { patch: [{
+                        uuid: action.uuid,
+                        loading: true,
+                        id: ((/** @type {?} */ (action))).payload.item.id,
+                        object: ((/** @type {?} */ (action))).payload.item,
+                        error: null
+                    }, ...state.patch.slice(0, stateQueueLimit - 1)] });
         case actionTypes.PATCH_SUCCESS:
-            return Object.assign({}, state, { patch: Object.assign({}, state.patch, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+            /** @type {?} */
+            const successPatchIdx = state.patch.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (successPatchIdx >= 0) {
+                return Object.assign({}, state, { patch: [...state.patch.slice(0, successPatchIdx), Object.assign({}, state.patch[successPatchIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }), ...state.patch.slice(successPatchIdx + 1)] });
+            }
+            return state;
         case actionTypes.PATCH_FAILURE:
-            return Object.assign({}, state, { patch: Object.assign({}, state.patch, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+            /** @type {?} */
+            const failurePatchIdx = state.patch.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (failurePatchIdx >= 0) {
+                return Object.assign({}, state, { patch: [...state.patch.slice(0, failurePatchIdx), Object.assign({}, state.patch[failurePatchIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }), ...state.patch.slice(failurePatchIdx + 1)] });
+            }
+            return state;
         case actionTypes.DELETE:
-            return Object.assign({}, state, { delete: Object.assign({}, state.delete, { loading: true, id: ((/** @type {?} */ (action))).payload.item.id, object: null, error: null }) });
+            return Object.assign({}, state, { delete: [{
+                        uuid: action.uuid,
+                        loading: true,
+                        id: ((/** @type {?} */ (action))).payload.item.id,
+                        object: null,
+                        error: null
+                    }, ...state.delete.slice(0, stateQueueLimit - 1)] });
         case actionTypes.DELETE_SUCCESS:
-            return Object.assign({}, state, { delete: Object.assign({}, state.delete, { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }) });
+            /** @type {?} */
+            const successDeleteIdx = state.delete.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (successDeleteIdx >= 0) {
+                return Object.assign({}, state, { delete: [...state.delete.slice(0, successDeleteIdx), Object.assign({}, state.delete[successDeleteIdx], { loading: false, object: ((/** @type {?} */ (action))).payload.item, error: null }), ...state.delete.slice(successDeleteIdx + 1)] });
+            }
+            return state;
         case actionTypes.DELETE_FAILURE:
-            return Object.assign({}, state, { delete: Object.assign({}, state.delete, { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }) });
+            /** @type {?} */
+            const failureDeleteIdx = state.delete.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (failureDeleteIdx >= 0) {
+                return Object.assign({}, state, { delete: [...state.delete.slice(0, failureDeleteIdx), Object.assign({}, state.delete[failureDeleteIdx], { loading: false, object: null, error: ((/** @type {?} */ (action))).payload.error }), ...state.delete.slice(failureDeleteIdx + 1)] });
+            }
+            return state;
         case actionTypes.DELETE_ALL:
-            return Object.assign({}, state, { deleteAll: Object.assign({}, state.deleteAll, { loading: true, ids: ((/** @type {?} */ (action))).payload.items.map((/**
-                     * @param {?} i
-                     * @return {?}
-                     */
-                    i => i.id)), objects: null, error: null }) });
+            return Object.assign({}, state, { deleteAll: [{
+                        uuid: action.uuid,
+                        loading: true,
+                        ids: ((/** @type {?} */ (action))).payload.items.map((/**
+                         * @param {?} i
+                         * @return {?}
+                         */
+                        i => i.id)),
+                        objects: null,
+                        error: null
+                    }, ...state.deleteAll.slice(0, stateQueueLimit - 1)] });
         case actionTypes.DELETE_ALL_SUCCESS:
-            return Object.assign({}, state, { deleteAll: Object.assign({}, state.deleteAll, { loading: false, objects: ((/** @type {?} */ (action))).payload.items, error: null }) });
+            /** @type {?} */
+            const successDeleteAllIdx = state.deleteAll.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (successDeleteAllIdx >= 0) {
+                return Object.assign({}, state, { deleteAll: [...state.deleteAll.slice(0, successDeleteAllIdx), Object.assign({}, state.deleteAll[successDeleteAllIdx], { loading: false, objects: ((/** @type {?} */ (action))).payload.items, error: null }), ...state.deleteAll.slice(successDeleteAllIdx + 1)] });
+            }
+            return state;
         case actionTypes.DELETE_ALL_FAILURE:
-            return Object.assign({}, state, { deleteAll: Object.assign({}, state.deleteAll, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
+            /** @type {?} */
+            const failureDeleteAllIdx = state.deleteAll.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (failureDeleteAllIdx >= 0) {
+                return Object.assign({}, state, { deleteAll: [...state.deleteAll.slice(0, failureDeleteAllIdx), Object.assign({}, state.deleteAll[failureDeleteAllIdx], { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }), ...state.deleteAll.slice(failureDeleteAllIdx + 1)] });
+            }
+            return state;
         case actionTypes.QUERY:
-            return Object.assign({}, state, { list: Object.assign({}, state.list, { loading: true, options: ((/** @type {?} */ (action))).payload.params, objects: null, error: null }) });
+            return Object.assign({}, state, { query: [{
+                        uuid: action.uuid,
+                        loading: true,
+                        options: ((/** @type {?} */ (action))).payload.params,
+                        objects: null,
+                        error: null
+                    }, ...state.query.slice(0, stateQueueLimit - 1)] });
         case actionTypes.QUERY_SUCCESS:
-            return Object.assign({}, state, { list: Object.assign({}, state.list, { loading: false, objects: ((/** @type {?} */ (action))).payload.result, error: null }) });
+            /** @type {?} */
+            const successQueryIdx = state.query.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (successQueryIdx >= 0) {
+                return Object.assign({}, state, { query: [...state.query.slice(0, successQueryIdx), Object.assign({}, state.query[successQueryIdx], { loading: false, options: Object.assign({}, (/** @type {?} */ (state.query[successQueryIdx].options))), objects: ((/** @type {?} */ (action))).payload.result, error: null }), ...state.query.slice(successQueryIdx + 1)] });
+            }
+            return state;
         case actionTypes.QUERY_FAILURE:
-            return Object.assign({}, state, { list: Object.assign({}, state.list, { loading: false, objects: null, error: ((/** @type {?} */ (action))).payload.error }) });
+            /** @type {?} */
+            const failureQueryIdx = state.query.findIndex((/**
+             * @param {?} g
+             * @return {?}
+             */
+            g => g.uuid === action.uuid));
+            if (failureQueryIdx >= 0) {
+                return Object.assign({}, state, { query: [...state.query.slice(0, failureQueryIdx), Object.assign({}, state.query[failureQueryIdx], { loading: false, options: Object.assign({}, (/** @type {?} */ (state.query[failureQueryIdx].options))), objects: null, error: ((/** @type {?} */ (action))).payload.error }), ...state.query.slice(failureQueryIdx + 1)] });
+            }
+            return state;
         default:
             return state;
     }
@@ -518,113 +710,180 @@ var reducers = /*#__PURE__*/Object.freeze({
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+
+class ModelGenericAction {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        this.payload = payload;
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @template A
+ * @param {?} params
+ * @return {?}
+ */
+function createAction(params) {
+    /** @type {?} */
+    const action = new ModelGenericAction(params.payload);
+    action.type = params.type;
+    action.uuid = params.uuid || v4();
+    return (/** @type {?} */ (action));
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
 /**
  * @abstract
- * @template M, S, A, A1, A2, A3, A4, A5, A6, A7, A8
+ * @template M, S, A, AT
  */
 class ModelEffects {
     /**
      * @param {?} _actions
      * @param {?} _service
      * @param {?} _manager
-     * @param {?} _params
+     * @param {?} _actionTypes
      */
-    constructor(_actions, _service, _manager, _params) {
+    constructor(_actions, _service, _manager, _actionTypes) {
         this._actions = _actions;
         this._service = _service;
         this._manager = _manager;
-        this._params = _params;
-        this.modelGet$ = this._actions
-            .pipe(ofType(this._params.getActionType), switchMap((/**
+        this._actionTypes = _actionTypes;
+        this.modelGet$ = this._actions.pipe(ofType(this._actionTypes.GET), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
-        action => this._manager.get(action.payload.id)
-            .pipe(map((/**
+        action => this._manager.get(action.payload.id).pipe(map((/**
          * @param {?} item
          * @return {?}
          */
-        (item) => new this._params.getSuccessAction({ item }))), catchError((/**
+        (item) => createAction({
+            type: this._actionTypes.GET_SUCCESS,
+            payload: { item },
+            uuid: action.uuid
+        }))), catchError((/**
          * @param {?} error
          * @return {?}
          */
-        error => of(new this._params.getFailureAction({ error }))))))));
-        this.modelList$ = this._actions
-            .pipe(ofType(this._params.listActionType), switchMap((/**
+        error => of(createAction({
+            type: this._actionTypes.GET_FAILURE,
+            payload: { error },
+            uuid: action.uuid
+        }))))))));
+        this.modelList$ = this._actions.pipe(ofType(this._actionTypes.LIST), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
-        action => this._manager.list(action.payload.params)
-            .pipe(map((/**
+        action => this._manager.list(action.payload.params).pipe(map((/**
          * @param {?} result
          * @return {?}
          */
-        (result) => new this._params.listSuccessAction({ result }))), catchError((/**
+        (result) => createAction({
+            type: this._actionTypes.LIST_SUCCESS,
+            payload: { result },
+            uuid: action.uuid
+        }))), catchError((/**
          * @param {?} error
          * @return {?}
          */
-        error => of(new this._params.listFailureAction({ error }))))))));
-        this.modelCreate$ = this._actions
-            .pipe(ofType(this._params.createActionType), switchMap((/**
+        error => of(createAction({
+            type: this._actionTypes.LIST_FAILURE,
+            payload: { error },
+            uuid: action.uuid
+        }))))))));
+        this.modelCreate$ = this._actions.pipe(ofType(this._actionTypes.CREATE), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
-        action => this._manager.create(action.payload.item)
-            .pipe(map((/**
+        action => this._manager.create(action.payload.item).pipe(map((/**
          * @param {?} item
          * @return {?}
          */
-        (item) => new this._params.createSuccessAction({ item }))), catchError((/**
+        (item) => createAction({
+            type: this._actionTypes.CREATE_SUCCESS,
+            payload: { item },
+            uuid: action.uuid
+        }))), catchError((/**
          * @param {?} error
          * @return {?}
          */
-        error => of(new this._params.createFailureAction({ error }))))))));
+        error => of(createAction({
+            type: this._actionTypes.CREATE_FAILURE,
+            payload: { error },
+            uuid: action.uuid
+        }))))))));
         this.modelUpdate$ = this._actions
-            .pipe(ofType(this._params.updateActionType), switchMap((/**
+            .pipe(ofType(this._actionTypes.UPDATE), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
-        action => this._manager.update(action.payload.item.id, action.payload.item)
-            .pipe(map((/**
+        action => this._manager.update(action.payload.item.id, action.payload.item).pipe(map((/**
          * @param {?} item
          * @return {?}
          */
-        (item) => new this._params.updateSuccessAction({ item }))), catchError((/**
+        (item) => createAction({
+            type: this._actionTypes.UPDATE_SUCCESS,
+            payload: { item },
+            uuid: action.uuid
+        }))), catchError((/**
          * @param {?} error
          * @return {?}
          */
-        error => of(new this._params.updateFailureAction({ error }))))))));
-        this.modelPatch$ = this._actions
-            .pipe(ofType(this._params.patchActionType), switchMap((/**
+        error => of(createAction({
+            type: this._actionTypes.CREATE_FAILURE,
+            payload: { error },
+            uuid: action.uuid
+        }))))))));
+        this.modelPatch$ = this._actions.pipe(ofType(this._actionTypes.PATCH), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
-        action => this._manager.patch(action.payload.item.id, action.payload.item)
-            .pipe(map((/**
+        action => this._manager.patch(action.payload.item.id, action.payload.item).pipe(map((/**
          * @param {?} item
          * @return {?}
          */
-        (item) => new this._params.patchSuccessAction({ item }))), catchError((/**
+        (item) => createAction({
+            type: this._actionTypes.CREATE_SUCCESS,
+            payload: { item },
+            uuid: action.uuid
+        }))), catchError((/**
          * @param {?} error
          * @return {?}
          */
-        error => of(new this._params.patchFailureAction({ error }))))))));
-        this.modelDelete$ = this._actions
-            .pipe(ofType(this._params.deleteActionType), switchMap((/**
+        error => of(createAction({
+            type: this._actionTypes.CREATE_FAILURE,
+            payload: { error },
+            uuid: action.uuid
+        }))))))));
+        this.modelDelete$ = this._actions.pipe(ofType(this._actionTypes.DELETE), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
-        action => this._manager.delete(action.payload.item.id)
-            .pipe(map((/**
+        action => this._manager.delete(action.payload.item.id).pipe(map((/**
          * @return {?}
          */
-        () => new this._params.deleteSuccessAction({ item: action.payload.item }))), catchError((/**
+        () => createAction({
+            type: this._actionTypes.DELETE_SUCCESS,
+            payload: { item: action.payload.item },
+            uuid: action.uuid
+        }))), catchError((/**
          * @param {?} error
          * @return {?}
          */
-        error => of(new this._params.deleteFailureAction({ error }))))))));
-        this.modelDeleteAll$ = this._actions
-            .pipe(ofType(this._params.deleteAllActionType), switchMap((/**
+        error => of(createAction({
+            type: this._actionTypes.DELETE_FAILURE,
+            payload: { error },
+            uuid: action.uuid
+        }))))))));
+        this.modelDeleteAll$ = this._actions.pipe(ofType(this._actionTypes.DELETE_ALL), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -632,30 +891,43 @@ class ModelEffects {
          * @param {?} i
          * @return {?}
          */
-        i => i.id)))
-            .pipe(map((/**
+        i => i.id))).pipe(map((/**
          * @return {?}
          */
-        () => new this._params.deleteAllSuccessAction({ items: action.payload.items }))), catchError((/**
+        () => createAction({
+            type: this._actionTypes.DELETE_ALL_SUCCESS,
+            payload: { items: action.payload.items },
+            uuid: action.uuid
+        }))), catchError((/**
          * @param {?} error
          * @return {?}
          */
-        error => of(new this._params.deleteAllFailureAction({ error }))))))));
-        this.modelQuery$ = this._actions
-            .pipe(ofType(this._params.queryActionType), switchMap((/**
+        error => of(createAction({
+            type: this._actionTypes.DELETE_ALL_FAILURE,
+            payload: { error },
+            uuid: action.uuid
+        }))))))));
+        this.modelQuery$ = this._actions.pipe(ofType(this._actionTypes.QUERY), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
-        action => this._manager.query(action.payload.params)
-            .pipe(map((/**
+        action => this._manager.query(action.payload.params).pipe(map((/**
          * @param {?} result
          * @return {?}
          */
-        (result) => new this._params.querySuccessAction({ result }))), catchError((/**
+        (result) => createAction({
+            type: this._actionTypes.QUERY_SUCCESS,
+            payload: { result },
+            uuid: action.uuid
+        }))), catchError((/**
          * @param {?} error
          * @return {?}
          */
-        error => of(new this._params.queryFailureAction({ error }))))))));
+        error => of(createAction({
+            type: this._actionTypes.QUERY_FAILURE,
+            payload: { error },
+            uuid: action.uuid
+        }))))))));
     }
 }
 
@@ -856,106 +1128,20 @@ const MODEL_OPTIONS = new InjectionToken('MODEL_OPTIONS', {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /**
- * @template T
- * @param {?} type
- * @param {?} id
- * @return {?}
- */
-function createGetAction(type, id) {
-    return new type({ id });
-}
-/**
- * @template T
- * @param {?} type
- * @param {?} params
- * @return {?}
- */
-function createListAction(type, params) {
-    return new type({ params });
-}
-/**
- * @template T, M
- * @param {?} type
- * @param {?} item
- * @return {?}
- */
-function createCreateAction(type, item) {
-    return new type({ item });
-}
-/**
- * @template T, M
- * @param {?} type
- * @param {?} item
- * @return {?}
- */
-function createUpdateAction(type, item) {
-    return new type({ item });
-}
-/**
- * @template T, M
- * @param {?} type
- * @param {?} item
- * @return {?}
- */
-function createPatchAction(type, item) {
-    return new type({ item });
-}
-/**
- * @template T, M
- * @param {?} type
- * @param {?} item
- * @return {?}
- */
-function createDeleteAction(type, item) {
-    return new type({ item });
-}
-/**
- * @template T, M
- * @param {?} type
- * @param {?} items
- * @return {?}
- */
-function createDeleteAllAction(type, items) {
-    return new type({ items });
-}
-/**
- * @template T
- * @param {?} type
- * @param {?} params
- * @return {?}
- */
-function createQueryAction(type, params) {
-    return new type({ params });
-}
-/**
  * @abstract
- * @template T, S, A1, A2, A3, A4, A5, A6, A7, A8
+ * @template T, S, A
  */
 class ModelService {
     /**
      * @param {?} _store
      * @param {?} _actions
-     * @param {?} _getAction
-     * @param {?} _listAction
-     * @param {?} _createAction
-     * @param {?} _updateAction
-     * @param {?} _patchAction
-     * @param {?} _deleteAction
-     * @param {?} _deleteAllAction
-     * @param {?} _queryAction
+     * @param {?} _actionTypes
      * @param {?} statePrefixes
      */
-    constructor(_store, _actions, _getAction, _listAction, _createAction, _updateAction, _patchAction, _deleteAction, _deleteAllAction, _queryAction, statePrefixes) {
+    constructor(_store, _actions, _actionTypes, statePrefixes) {
         this._store = _store;
         this._actions = _actions;
-        this._getAction = _getAction;
-        this._listAction = _listAction;
-        this._createAction = _createAction;
-        this._updateAction = _updateAction;
-        this._patchAction = _patchAction;
-        this._deleteAction = _deleteAction;
-        this._deleteAllAction = _deleteAllAction;
-        this._queryAction = _queryAction;
+        this._actionTypes = _actionTypes;
         /** @type {?} */
         const packageState = createFeatureSelector(statePrefixes[0]);
         this._modelState = createSelector(packageState, (/**
@@ -963,462 +1149,876 @@ class ModelService {
          * @return {?}
          */
         s => (/** @type {?} */ (((/** @type {?} */ (s)))[statePrefixes[1]]))));
+        this._lastGetEntry = pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.get))), filter((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g.length > 0)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g[0])));
+        this._lastListEntry = pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.list))), filter((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g.length > 0)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g[0])));
+        this._lastCreateEntry = pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.create))), filter((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g.length > 0)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g[0])));
+        this._lastPatchEntry = pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.patch))), filter((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g.length > 0)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g[0])));
+        this._lastUpdateEntry = pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.update))), filter((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g.length > 0)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g[0])));
+        this._lastDeleteEntry = pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.delete))), filter((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g.length > 0)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g[0])));
+        this._lastDeleteAllEntry = pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.deleteAll))), filter((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g.length > 0)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g[0])));
+        this._lastQueryEntry = pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.query))), filter((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g.length > 0)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g[0])));
     }
     /**
      * @return {?}
      */
     getGetLoading() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastGetEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.get.loading))));
+        g => g.loading)));
     }
     /**
      * @return {?}
      */
     getGetOptions() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastGetEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.get.options))));
+        g => g.options)));
     }
     /**
      * @return {?}
      */
     getGetId() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastGetEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.get.id))));
+        g => g.id)));
     }
     /**
      * @return {?}
      */
     getGetObject() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastGetEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.get.object))));
+        g => g.object)));
     }
     /**
      * @return {?}
      */
     getGetError() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastGetEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.get.error))));
+        g => g.error)));
     }
     /**
      * @return {?}
      */
     getListLoading() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastListEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.list.loading))));
+        g => g.loading)));
     }
     /**
      * @return {?}
      */
     getListOptions() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastListEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.list.options))));
+        g => g.options)));
     }
     /**
      * @return {?}
      */
     getListObjects() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastListEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.list.objects))));
+        g => g.objects)));
     }
     /**
      * @return {?}
      */
     getListError() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastListEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.list.error))));
+        g => g.error)));
     }
     /**
      * @return {?}
      */
     getListHasNext() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastListEntry, filter((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.list.objects && state.list.objects.next))));
+        g => g.objects != null)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => (/** @type {?} */ (g.objects)).next)));
     }
     /**
      * @return {?}
      */
     getListCurrentStart() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastListEntry, filter((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => {
-            if (state.list.options && state.list.options.start != null) {
-                return state.list.options.start;
-            }
-            return 1;
-        }))));
+        g => g.options != null)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => (/** @type {?} */ (g.options)).start != null ? (/** @type {?} */ (g.options)).start : 1)));
     }
     /**
      * @return {?}
      */
     getCreateLoading() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastCreateEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.create.loading))));
+        g => g.loading)));
     }
     /**
      * @return {?}
      */
     getCreateObject() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastCreateEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.create.object))));
+        g => g.object)));
     }
     /**
      * @return {?}
      */
     getCreateError() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastCreateEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.create.error))));
+        g => g.error)));
     }
     /**
      * @return {?}
      */
     getUpdateLoading() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastUpdateEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.update.loading))));
+        g => g.loading)));
     }
     /**
      * @return {?}
      */
     getUpdateId() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastUpdateEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.update.id))));
+        g => g.id)));
     }
     /**
      * @return {?}
      */
     getUpdateObject() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastUpdateEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.update.object))));
+        g => g.object)));
     }
     /**
      * @return {?}
      */
     getUpdateError() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastUpdateEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.update.error))));
+        g => g.error)));
     }
     /**
      * @return {?}
      */
     getPatchLoading() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastPatchEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.patch.loading))));
+        g => g.loading)));
     }
     /**
      * @return {?}
      */
     getPatchId() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastPatchEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.patch.id))));
+        g => g.id)));
     }
     /**
      * @return {?}
      */
     getPatchObject() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastPatchEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.patch.object))));
+        g => g.object)));
     }
     /**
      * @return {?}
      */
     getPatchError() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastPatchEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.patch.error))));
+        g => g.error)));
     }
     /**
      * @return {?}
      */
     getDeleteLoading() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastDeleteEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.delete.loading))));
+        g => g.loading)));
     }
     /**
      * @return {?}
      */
     getDeleteId() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastDeleteEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.delete.id))));
+        g => g.id)));
     }
     /**
      * @return {?}
      */
     getDeleteObject() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastDeleteEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.delete.object))));
+        g => g.object)));
     }
     /**
      * @return {?}
      */
     getDeleteError() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastDeleteEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.delete.error))));
+        g => g.error)));
     }
     /**
      * @return {?}
      */
     getDeleteAllLoading() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastDeleteAllEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.deleteAll.loading))));
+        g => g.loading)));
     }
     /**
      * @return {?}
      */
     getDeleteAllIds() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastDeleteAllEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.deleteAll.ids))));
+        g => g.ids)));
     }
     /**
      * @return {?}
      */
     getDeleteAllObjects() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastDeleteAllEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.deleteAll.objects))));
+        g => g.objects)));
     }
     /**
      * @return {?}
      */
     getDeleteAllError() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastDeleteAllEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.deleteAll.error))));
+        g => g.error)));
     }
     /**
      * @return {?}
      */
     getQueryLoading() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastQueryEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.query.loading))));
+        g => g.loading)));
     }
     /**
      * @return {?}
      */
     getQueryOptions() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastQueryEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.query.options))));
+        g => g.options)));
     }
     /**
      * @return {?}
      */
     getQueryObjects() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastQueryEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.query.objects))));
+        g => g.objects)));
     }
     /**
      * @return {?}
      */
     getQueryError() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastQueryEntry, map((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.query.error))));
+        g => g.error)));
     }
     /**
      * @return {?}
      */
     getQueryHasNext() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastQueryEntry, filter((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => state.query.objects && state.query.objects.next))));
+        g => g.objects != null)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => (/** @type {?} */ (g.objects)).next)));
     }
     /**
      * @return {?}
      */
     getQueryCurrentStart() {
-        return this._store.pipe(select(createSelector(this._modelState, (/**
-         * @param {?} state
+        return this._store.pipe(this._lastQueryEntry, filter((/**
+         * @param {?} g
          * @return {?}
          */
-        (state) => {
-            if (state.query.options && state.query.options.start != null) {
-                return state.query.options.start;
-            }
-            return 1;
-        }))));
+        g => g.options != null)), map((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => (/** @type {?} */ (g.options)).start != null ? (/** @type {?} */ (g.options)).start : 1)));
     }
     /**
      * @return {?}
      */
     getCreateSuccess() {
-        return this._actions.pipe(ofType(new this._createAction((/** @type {?} */ (null))).type));
+        return this._actions.pipe(ofType(this._actionTypes.CREATE_SUCCESS));
     }
     /**
      * @return {?}
      */
     getUpdateSuccess() {
-        return this._actions.pipe(ofType(new this._updateAction((/** @type {?} */ (null))).type));
+        return this._actions.pipe(ofType(this._actionTypes.UPDATE_SUCCESS));
     }
     /**
      * @return {?}
      */
     getPatchSuccess() {
-        return this._actions.pipe(ofType(new this._patchAction((/** @type {?} */ (null))).type));
+        return this._actions.pipe(ofType(this._actionTypes.PATCH_SUCCESS));
     }
     /**
      * @return {?}
      */
     getDeleteSuccess() {
-        return this._actions.pipe(ofType(new this._deleteAction((/** @type {?} */ (null))).type));
+        return this._actions.pipe(ofType(this._actionTypes.DELETE_SUCCESS));
     }
     /**
      * @return {?}
      */
     getDeleteAllSuccess() {
-        return this._actions.pipe(ofType(new this._deleteAllAction((/** @type {?} */ (null))).type));
+        return this._actions.pipe(ofType(this._actionTypes.DELETE_ALL_SUCCESS));
     }
     /**
      * @param {?} id
      * @return {?}
      */
     get(id) {
-        this._store.dispatch(createGetAction(this._getAction, id));
+        /** @type {?} */
+        const action = createAction({
+            type: this._actionTypes.GET,
+            payload: { id }
+        });
+        this._store.dispatch(action);
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.get))), map((/**
+         * @param {?} gets
+         * @return {?}
+         */
+        gets => gets.find((/**
+         * @param {?} g
+         * @return {?}
+         */
+        g => g.uuid === action.uuid)))), filter((/**
+         * @param {?} get
+         * @return {?}
+         */
+        get => get != null)), tap((/**
+         * @param {?} get
+         * @return {?}
+         */
+        get => {
+            if ((/** @type {?} */ (get)).error != null) {
+                throwError((/** @type {?} */ (get)).error);
+            }
+        })), filter((/**
+         * @param {?} get
+         * @return {?}
+         */
+        get => (/** @type {?} */ (get)).object != null)), map((/**
+         * @param {?} get
+         * @return {?}
+         */
+        get => (/** @type {?} */ ((/** @type {?} */ (get)).object)))));
     }
     /**
      * @param {?=} options
      * @return {?}
      */
     list(options) {
-        this._store.dispatch(createListAction(this._listAction, options || {}));
+        /** @type {?} */
+        const action = createAction({
+            type: this._actionTypes.LIST,
+            payload: { params: options || {} }
+        });
+        this._store.dispatch(action);
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.list))), map((/**
+         * @param {?} lists
+         * @return {?}
+         */
+        lists => lists.find((/**
+         * @param {?} l
+         * @return {?}
+         */
+        l => l.uuid === action.uuid)))), filter((/**
+         * @param {?} list
+         * @return {?}
+         */
+        list => list != null)), tap((/**
+         * @param {?} list
+         * @return {?}
+         */
+        list => {
+            if ((/** @type {?} */ (list)).error != null) {
+                throwError((/** @type {?} */ (list)).error);
+            }
+        })), filter((/**
+         * @param {?} list
+         * @return {?}
+         */
+        list => (/** @type {?} */ (list)).objects != null)), map((/**
+         * @param {?} list
+         * @return {?}
+         */
+        list => (/** @type {?} */ ((/** @type {?} */ (list)).objects)))));
     }
     /**
      * @param {?} data
      * @return {?}
      */
     create(data) {
-        this._store.dispatch(createCreateAction(this._createAction, data));
+        /** @type {?} */
+        const action = createAction({
+            type: this._actionTypes.CREATE,
+            payload: { item: data },
+        });
+        this._store.dispatch(action);
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.create))), map((/**
+         * @param {?} creates
+         * @return {?}
+         */
+        creates => creates.find((/**
+         * @param {?} c
+         * @return {?}
+         */
+        c => c.uuid === action.uuid)))), filter((/**
+         * @param {?} creates
+         * @return {?}
+         */
+        creates => creates != null)), tap((/**
+         * @param {?} create
+         * @return {?}
+         */
+        create => {
+            if ((/** @type {?} */ (create)).error != null) {
+                throwError((/** @type {?} */ (create)).error);
+            }
+        })), filter((/**
+         * @param {?} create
+         * @return {?}
+         */
+        create => (/** @type {?} */ (create)).object != null)), map((/**
+         * @param {?} create
+         * @return {?}
+         */
+        create => (/** @type {?} */ ((/** @type {?} */ (create)).object)))));
     }
     /**
      * @param {?} data
      * @return {?}
      */
     update(data) {
-        this._store.dispatch(createUpdateAction(this._updateAction, data));
+        /** @type {?} */
+        const action = createAction({
+            type: this._actionTypes.UPDATE,
+            payload: { item: data },
+        });
+        this._store.dispatch(action);
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.update))), map((/**
+         * @param {?} updates
+         * @return {?}
+         */
+        updates => updates.find((/**
+         * @param {?} u
+         * @return {?}
+         */
+        u => u.uuid === action.uuid)))), filter((/**
+         * @param {?} updates
+         * @return {?}
+         */
+        updates => updates != null)), tap((/**
+         * @param {?} update
+         * @return {?}
+         */
+        update => {
+            if ((/** @type {?} */ (update)).error != null) {
+                throwError((/** @type {?} */ (update)).error);
+            }
+        })), filter((/**
+         * @param {?} update
+         * @return {?}
+         */
+        update => (/** @type {?} */ (update)).object != null)), map((/**
+         * @param {?} update
+         * @return {?}
+         */
+        update => (/** @type {?} */ ((/** @type {?} */ (update)).object)))));
     }
     /**
      * @param {?} data
      * @return {?}
      */
     patch(data) {
-        this._store.dispatch(createPatchAction(this._patchAction, data));
+        /** @type {?} */
+        const action = createAction({
+            type: this._actionTypes.PATCH,
+            payload: { item: data }
+        });
+        this._store.dispatch(action);
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.patch))), map((/**
+         * @param {?} patches
+         * @return {?}
+         */
+        patches => patches.find((/**
+         * @param {?} p
+         * @return {?}
+         */
+        p => p.uuid === action.uuid)))), filter((/**
+         * @param {?} patches
+         * @return {?}
+         */
+        patches => patches != null)), tap((/**
+         * @param {?} patch
+         * @return {?}
+         */
+        patch => {
+            if ((/** @type {?} */ (patch)).error != null) {
+                throwError((/** @type {?} */ (patch)).error);
+            }
+        })), filter((/**
+         * @param {?} patch
+         * @return {?}
+         */
+        patch => (/** @type {?} */ (patch)).object != null)), map((/**
+         * @param {?} patch
+         * @return {?}
+         */
+        patch => (/** @type {?} */ ((/** @type {?} */ (patch)).object)))));
     }
     /**
      * @param {?} data
      * @return {?}
      */
     delete(data) {
-        this._store.dispatch(createDeleteAction(this._deleteAction, data));
+        /** @type {?} */
+        const action = createAction({
+            type: this._actionTypes.DELETE,
+            payload: { item: data }
+        });
+        this._store.dispatch(action);
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.delete))), map((/**
+         * @param {?} dels
+         * @return {?}
+         */
+        dels => dels.find((/**
+         * @param {?} d
+         * @return {?}
+         */
+        d => d.uuid === action.uuid)))), filter((/**
+         * @param {?} dels
+         * @return {?}
+         */
+        dels => dels != null)), tap((/**
+         * @param {?} del
+         * @return {?}
+         */
+        del => {
+            if ((/** @type {?} */ (del)).error != null) {
+                throwError((/** @type {?} */ (del)).error);
+            }
+        })), filter((/**
+         * @param {?} del
+         * @return {?}
+         */
+        del => (/** @type {?} */ (del)).object != null)), map((/**
+         * @param {?} del
+         * @return {?}
+         */
+        del => (/** @type {?} */ ((/** @type {?} */ (del)).object)))));
     }
     /**
      * @param {?} data
      * @return {?}
      */
     deleteAll(data) {
-        this._store.dispatch(createDeleteAllAction(this._deleteAllAction, data));
+        /** @type {?} */
+        const action = createAction({
+            type: this._actionTypes.DELETE_ALL,
+            payload: { items: data }
+        });
+        this._store.dispatch(action);
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.deleteAll))), map((/**
+         * @param {?} deleteAlls
+         * @return {?}
+         */
+        deleteAlls => deleteAlls.find((/**
+         * @param {?} d
+         * @return {?}
+         */
+        d => d.uuid === action.uuid)))), filter((/**
+         * @param {?} deleteAlls
+         * @return {?}
+         */
+        deleteAlls => deleteAlls != null)), tap((/**
+         * @param {?} deleteAll
+         * @return {?}
+         */
+        deleteAll => {
+            if ((/** @type {?} */ (deleteAll)).error != null) {
+                throwError((/** @type {?} */ (deleteAll)).error);
+            }
+        })), filter((/**
+         * @param {?} deleteAll
+         * @return {?}
+         */
+        deleteAll => (/** @type {?} */ (deleteAll)).objects != null)), map((/**
+         * @param {?} deleteAll
+         * @return {?}
+         */
+        deleteAll => (/** @type {?} */ ((/** @type {?} */ (deleteAll)).objects)))));
     }
     /**
      * @param {?} options
      * @return {?}
      */
     query(options) {
-        this._store.dispatch(createQueryAction(this._queryAction, options || {}));
+        /** @type {?} */
+        const action = createAction({
+            type: this._actionTypes.QUERY,
+            payload: { params: options || {} }
+        });
+        this._store.dispatch(action);
+        return this._store.pipe(select(createSelector(this._modelState, (/**
+         * @param {?} state
+         * @return {?}
+         */
+        (state) => state.query))), map((/**
+         * @param {?} queries
+         * @return {?}
+         */
+        queries => queries.find((/**
+         * @param {?} q
+         * @return {?}
+         */
+        q => q.uuid === action.uuid)))), filter((/**
+         * @param {?} queries
+         * @return {?}
+         */
+        queries => queries != null)), tap((/**
+         * @param {?} query
+         * @return {?}
+         */
+        query => {
+            if ((/** @type {?} */ (query)).error != null) {
+                throwError((/** @type {?} */ (query)).error);
+            }
+        })), filter((/**
+         * @param {?} query
+         * @return {?}
+         */
+        query => (/** @type {?} */ (query)).objects != null)), map((/**
+         * @param {?} query
+         * @return {?}
+         */
+        query => (/** @type {?} */ ((/** @type {?} */ (query)).objects)))));
     }
 }
 
@@ -1432,5 +2032,5 @@ class ModelService {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { MODEL_OPTIONS, modelActions as ModelActions, ModelEffects, ModelManager, ModelService, generateInitialModelState, modelReducer, reducers };
+export { MODEL_OPTIONS, modelActions as ModelActions, ModelEffects, ModelManager, ModelService, generateInitialModelState, modelReducer, reducers, ModelGenericAction as ɵa };
 //# sourceMappingURL=model.js.map

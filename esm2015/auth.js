@@ -22,7 +22,7 @@ import { createFeatureSelector, createSelector, select, Store, StoreModule } fro
 import { InjectionToken, Injectable, Inject, defineInjectable, inject, EventEmitter, NgModule } from '@angular/core';
 import * as URLParse from 'url-parse';
 import { HttpClient } from '@angular/common/http';
-import { filter, switchMap, map, take, exhaustMap, catchError, tap, delayWhen } from 'rxjs/operators';
+import { filter, concatMap, map, take, exhaustMap, catchError, tap, delayWhen, switchMap } from 'rxjs/operators';
 import { Validators } from '@angular/forms';
 import { Subscription, of, zip, timer, defer } from 'rxjs';
 import { forceBooleanProp } from '@gngt/core/common';
@@ -30,6 +30,65 @@ import { ofType, Actions, Effect, EffectsModule } from '@ngrx/effects';
 import { __decorate, __metadata } from 'tslib';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/** @enum {string} */
+const AuthActionTypes = {
+    InitUser: '[Auth] Init user',
+    InitUserComplete: '[Auth] Init user complete',
+    InitComplete: '[Auth] Init complete',
+    Logout: '[Auth] Logout',
+    LogoutConfirmation: '[Auth] Logout Confirmation',
+    LogoutConfirmationDismiss: '[Auth] Logout Confirmation Dismiss',
+};
+class InitUser {
+    constructor() {
+        this.type = AuthActionTypes.InitUser;
+    }
+}
+class InitUserComplete {
+    /**
+     * @param {?} payload
+     */
+    constructor(payload) {
+        this.payload = payload;
+        this.type = AuthActionTypes.InitUserComplete;
+    }
+}
+class InitComplete {
+    constructor() {
+        this.type = AuthActionTypes.InitComplete;
+    }
+}
+class Logout {
+    constructor() {
+        this.type = AuthActionTypes.Logout;
+    }
+}
+class LogoutConfirmation {
+    constructor() {
+        this.type = AuthActionTypes.LogoutConfirmation;
+    }
+}
+class LogoutConfirmationDismiss {
+    constructor() {
+        this.type = AuthActionTypes.LogoutConfirmationDismiss;
+    }
+}
+
+var authActions = /*#__PURE__*/Object.freeze({
+    AuthActionTypes: AuthActionTypes,
+    InitUser: InitUser,
+    InitUserComplete: InitUserComplete,
+    InitComplete: InitComplete,
+    Logout: Logout,
+    LogoutConfirmation: LogoutConfirmation,
+    LogoutConfirmationDismiss: LogoutConfirmationDismiss
+});
 
 /**
  * @fileoverview added by tsickle
@@ -76,49 +135,13 @@ class RefreshToken {
     }
 }
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/** @enum {string} */
-const AuthActionTypes = {
-    InitUser: '[Auth] Init user',
-    InitUserComplete: '[Auth] Init user complete',
-    InitComplete: '[Auth] Init complete',
-    Logout: '[Auth] Logout',
-    LogoutConfirmation: '[Auth] Logout Confirmation',
-    LogoutConfirmationDismiss: '[Auth] Logout Confirmation Dismiss',
-};
-class InitUser {
-    constructor() {
-        this.type = AuthActionTypes.InitUser;
-    }
-}
-class InitUserComplete {
-    /**
-     * @param {?} payload
-     */
-    constructor(payload) {
-        this.payload = payload;
-        this.type = AuthActionTypes.InitUserComplete;
-    }
-}
-class InitComplete {
-    constructor() {
-        this.type = AuthActionTypes.InitComplete;
-    }
-}
-class Logout {
-    constructor() {
-        this.type = AuthActionTypes.Logout;
-    }
-}
-class LogoutConfirmationDismiss {
-    constructor() {
-        this.type = AuthActionTypes.LogoutConfirmationDismiss;
-    }
-}
+var authApiActions = /*#__PURE__*/Object.freeze({
+    AuthApiActionTypes: AuthApiActionTypes,
+    LoginSuccess: LoginSuccess,
+    LoginFailure: LoginFailure,
+    LoginRedirect: LoginRedirect,
+    RefreshToken: RefreshToken
+});
 
 /**
  * @fileoverview added by tsickle
@@ -674,6 +697,14 @@ class AuthService {
         const url = this._config.meUrl;
         return this._http.get(url);
     }
+    /**
+     * @return {?}
+     */
+    getLoggedInUser() {
+        return this._config.loggedInUserGetter
+            ? this._config.loggedInUserGetter()
+            : null;
+    }
 }
 AuthService.decorators = [
     { type: Injectable, args: [{ providedIn: 'root' },] },
@@ -719,7 +750,7 @@ class AuthGuard {
          * @param {?} init
          * @return {?}
          */
-        init => init)), switchMap((/**
+        init => init)), concatMap((/**
          * @return {?}
          */
         () => this.store.pipe(select(getLoggedIn)))), map((/**
@@ -906,6 +937,9 @@ class AuthEffects {
             const refreshTokenKey = this.config.refreshTokenKey || 'refresh_token';
             this.jwtHelperService.tokenSetter(payload[tokenKey]);
             this.jwtHelperService.refreshTokenSetter(payload[refreshTokenKey]);
+            if (this.config.loggedInUserSetter) {
+                this.config.loggedInUserSetter(payload.user_id);
+            }
             this.router.navigate(['/']);
         })), map((/**
          * @return {?}
@@ -1113,5 +1147,5 @@ AuthModule.decorators = [
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { AUTH_OPTIONS, AuthGuard, AuthModule, AuthService, AuthUserInteractionsService, JWT_OPTIONS, JwtHelperService, JwtInterceptor, LoginComponent, reducers$1 as reducers, reducers as ɵb, reducer as ɵc, reducer$1 as ɵd, AuthEffects as ɵe };
+export { AUTH_OPTIONS, authActions as AuthActions, authApiActions as AuthApiActions, AuthGuard, AuthModule, AuthService, AuthUserInteractionsService, JWT_OPTIONS, JwtHelperService, JwtInterceptor, LoginComponent, reducers$1 as reducers, reducers as ɵb, reducer as ɵc, reducer$1 as ɵd, AuthEffects as ɵe };
 //# sourceMappingURL=auth.js.map

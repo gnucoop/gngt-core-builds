@@ -933,7 +933,7 @@
              * @return {?}
              */
             function (err) {
-                if (err.status !== 417) {
+                if (err.status !== 409) {
                     return rxjs.throwError(err);
                 }
                 p.hasNext = true;

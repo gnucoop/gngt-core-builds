@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AdminEditField } from './edit-field';
 import { Model, ModelActions, ModelService, reducers as fromModel } from '@gngt/core/model';
-export declare abstract class AdminEditComponent<T extends Model, S extends fromModel.State<T>, A1 extends ModelActions.ModelGetAction, A2 extends ModelActions.ModelListAction, A3 extends ModelActions.ModelCreateAction<T>, A4 extends ModelActions.ModelUpdateAction<T>, A5 extends ModelActions.ModelPatchAction<T>, A6 extends ModelActions.ModelDeleteAction<T>, A7 extends ModelActions.ModelDeleteAllAction<T>, A8 extends ModelActions.ModelQueryAction> implements OnDestroy {
+export declare abstract class AdminEditComponent<T extends Model, S extends fromModel.State<T>, A extends ModelActions.ModelActionTypes> implements OnDestroy {
     private _cdr;
     private _fb;
     private _router;
@@ -37,7 +37,7 @@ export declare abstract class AdminEditComponent<T extends Model, S extends from
     private _saveLabel;
     saveLabel: string;
     private _service;
-    service: ModelService<T, S, A1, A2, A3, A4, A5, A6, A7, A8>;
+    service: ModelService<T, S, A>;
     private _fields;
     fields: AdminEditField[];
     private _id;
