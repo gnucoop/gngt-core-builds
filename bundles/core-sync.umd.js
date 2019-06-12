@@ -38,6 +38,20 @@
     See the Apache Version 2.0 License for specific language governing permissions
     and limitations under the License.
     ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
 
     var __assign = function() {
         __assign = Object.assign || function __assign(t) {
@@ -59,6 +73,14 @@
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
+
+    /** @type {?} */
+    var SYNC_REGISTERED_MODELS = [];
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
     /** @type {?} */
     var SYNC_OPTIONS = new core.InjectionToken('SYNC_OPTIONS');
 
@@ -72,8 +94,6 @@
             this._httpClient = _httpClient;
             this._status = new rxjs.BehaviorSubject({ status: 'initializing' });
             this.status = this._status.asObservable();
-            this.registeredModels = [];
-            this._modelRegister = new core.EventEmitter();
             this._timerSub = rxjs.Subscription.EMPTY;
             this._syncing = false;
             this._remoteCheckpointKey = 'gngt_remote_sync_checkpoint';
@@ -84,7 +104,6 @@
                 index: { name: 'relational_model_idx', fields: ['table_name', 'object_id'] }
             };
             this._databaseInit = new rxjs.BehaviorSubject(false);
-            this.modelRegister = this._modelRegister.asObservable();
             if (this._opts.syncInterval == null) {
                 this._opts.syncInterval = 300000;
             }
@@ -100,28 +119,6 @@
              */
             function (i) { return i; })));
         }
-        /**
-         * @param {?} endpoint
-         * @param {?} tableName
-         * @return {?}
-         */
-        SyncService.prototype.registerModel = /**
-         * @param {?} endpoint
-         * @param {?} tableName
-         * @return {?}
-         */
-        function (endpoint, tableName) {
-            if (this.registeredModels.find((/**
-             * @param {?} r
-             * @return {?}
-             */
-            function (r) { return r.tableName === tableName; })) == null) {
-                /** @type {?} */
-                var registeredModel = { tableName: tableName, endpoint: endpoint };
-                this.registeredModels.push(registeredModel);
-                this._modelRegister.emit(registeredModel);
-            }
-        };
         /**
          * @param {?=} immediate
          * @return {?}
@@ -1358,17 +1355,7 @@
      */
     var OfflineInterceptor = /** @class */ (function () {
         function OfflineInterceptor(_syncService) {
-            var _this = this;
             this._syncService = _syncService;
-            this._models = [];
-            this._models = _syncService.registeredModels.slice();
-            _syncService.modelRegister.subscribe((/**
-             * @param {?} _
-             * @return {?}
-             */
-            function (_) {
-                return _this._models = _syncService.registeredModels.slice();
-            }));
         }
         /**
          * @param {?} req
@@ -1502,7 +1489,7 @@
          * @return {?}
          */
         function (req) {
-            return this._models.filter((/**
+            return SYNC_REGISTERED_MODELS.filter((/**
              * @param {?} m
              * @return {?}
              */
@@ -1527,6 +1514,67 @@
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
+    /**
+     * @param {?} endpoint
+     * @param {?} tableName
+     * @return {?}
+     */
+    function registerSyncModel(endpoint, tableName) {
+        if (SYNC_REGISTERED_MODELS.find((/**
+         * @param {?} r
+         * @return {?}
+         */
+        function (r) { return r.tableName === tableName; })) == null) {
+            /** @type {?} */
+            var registeredModel = { tableName: tableName, endpoint: endpoint };
+            SYNC_REGISTERED_MODELS.push(registeredModel);
+            console.log("Registered sync model " + tableName + " with endpoint " + endpoint);
+        }
+    }
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
+    /** @type {?} */
+    var ANNOTATIONS = '__gngt_annotations__';
+    // WARNING: interface has both a type and a value, skipping emit
+    /**
+     * @template T
+     * @param {?} opts
+     * @return {?}
+     */
+    function SyncModel(opts) {
+        return (/**
+         * @param {?} cls
+         * @return {?}
+         */
+        function SyncModelFactory(cls) {
+            /** @type {?} */
+            var annotations = cls.hasOwnProperty(ANNOTATIONS)
+                ? ((/** @type {?} */ (cls)))[ANNOTATIONS]
+                : Object.defineProperty(cls, ANNOTATIONS, { value: [] })[ANNOTATIONS];
+            annotations.push({ sync_model: true });
+            return (/** @type {?} */ (/** @class */ (function (_super) {
+                __extends(class_1, _super);
+                function class_1() {
+                    var args = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        args[_i] = arguments[_i];
+                    }
+                    var _this = _super.apply(this, args) || this;
+                    registerSyncModel(((/** @type {?} */ (_this))).endPoint, opts.tableName);
+                    return _this;
+                }
+                return class_1;
+            }(cls))));
+        });
+    }
 
     /**
      * @fileoverview added by tsickle
@@ -1561,6 +1609,7 @@
 
     exports.OfflineInterceptor = OfflineInterceptor;
     exports.SYNC_OPTIONS = SYNC_OPTIONS;
+    exports.SyncModel = SyncModel;
     exports.SyncModule = SyncModule;
     exports.SyncService = SyncService;
 

@@ -18,9 +18,10 @@
  * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
  *
  */
+import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { EventEmitter, Input, Output } from '@angular/core';
-import { BehaviorSubject, Subscription, combineLatest, of, merge } from 'rxjs';
-import { filter, switchMap, tap, shareReplay, map, withLatestFrom } from 'rxjs/operators';
+import { BehaviorSubject, Subscription, combineLatest, of, Observable, merge } from 'rxjs';
+import { filter, switchMap, tap, mapTo, shareReplay, map, withLatestFrom } from 'rxjs/operators';
 import '@gngt/core/model';
 
 /**
@@ -58,16 +59,6 @@ class AdminEditComponent {
         this._service = new BehaviorSubject(null);
         this._fields = [];
         this._id = new BehaviorSubject(null);
-        this._processObject = (/**
-         * @param {?} _
-         * @return {?}
-         */
-        (_) => { });
-        this._processFormData = (/**
-         * @param {?} _
-         * @return {?}
-         */
-        (_) => { });
         this._updateFormEvt = new EventEmitter();
         this._saveEvt = new EventEmitter();
         this._saveSub = Subscription.EMPTY;
@@ -92,14 +83,24 @@ class AdminEditComponent {
          * @param {?} o
          * @return {?}
          */
-        o => o != null)), tap((/**
+        o => o != null)), switchMap((/**
          * @param {?} o
          * @return {?}
          */
         o => {
             if (this._processObject) {
-                this._processObject(o);
+                if (this._processObject instanceof Observable) {
+                    return this._processObject.pipe(tap((/**
+                     * @param {?} po
+                     * @return {?}
+                     */
+                    po => po(o))), mapTo(o));
+                }
+                else {
+                    this._processObject(o);
+                }
             }
+            return of(o);
         })), shareReplay(1));
         this.form = combineLatest(objObs, this._updateFormEvt).pipe(map((/**
          * @param {?} r
@@ -126,20 +127,35 @@ class AdminEditComponent {
          */
         (form) => form.valueChanges)));
         this._saveSub = this._saveEvt.pipe(withLatestFrom(this.form, this._service, this._id), filter((/**
-         * @param {?} r
+         * @param {?} __0
          * @return {?}
          */
-        r => r[2] != null))).subscribe((/**
+        ([_, form, service, __]) => form != null && service != null && form.valid)), switchMap((/**
          * @param {?} __0
          * @return {?}
          */
         ([_, form, service, id]) => {
-            if (form == null || service == null && !form.valid) {
-                return;
-            }
             /** @type {?} */
             const formValue = Object.assign({}, form.value);
-            this._applyProcessFormData(formValue);
+            this._defaultProcessData(formValue);
+            if (this._processFormData) {
+                if (this._processFormData instanceof Observable) {
+                    return this._processFormData.pipe(tap((/**
+                     * @param {?} pd
+                     * @return {?}
+                     */
+                    pd => pd(formValue))), mapTo([formValue, service, id]));
+                }
+                else {
+                    this._processFormData(formValue);
+                }
+            }
+            return of([formValue, service, id]);
+        }))).subscribe((/**
+         * @param {?} __0
+         * @return {?}
+         */
+        ([formValue, service, id]) => {
             if (id === 'new') {
                 delete formValue['id'];
                 (/** @type {?} */ (service)).create(formValue);
@@ -260,6 +276,51 @@ class AdminEditComponent {
     /**
      * @return {?}
      */
+    get readonly() { return this._readonly; }
+    /**
+     * @param {?} readonly
+     * @return {?}
+     */
+    set readonly(readonly) {
+        readonly = coerceBooleanProperty(readonly);
+        if (readonly !== this._readonly) {
+            this._readonly = readonly;
+            this._cdr.markForCheck();
+        }
+    }
+    /**
+     * @return {?}
+     */
+    get hideSaveButton() { return this._hideSaveButton; }
+    /**
+     * @param {?} hideSaveButton
+     * @return {?}
+     */
+    set hideSaveButton(hideSaveButton) {
+        hideSaveButton = coerceBooleanProperty(hideSaveButton);
+        if (hideSaveButton !== this._hideSaveButton) {
+            this._hideSaveButton = hideSaveButton;
+            this._cdr.markForCheck();
+        }
+    }
+    /**
+     * @return {?}
+     */
+    get canSave() { return this._canSave; }
+    /**
+     * @param {?} canSave
+     * @return {?}
+     */
+    set canSave(canSave) {
+        canSave = coerceBooleanProperty(canSave);
+        if (canSave !== this._canSave) {
+            this._canSave = canSave;
+            this._cdr.markForCheck();
+        }
+    }
+    /**
+     * @return {?}
+     */
     get valueChanges$() {
         return this._valueChanges$;
     }
@@ -283,15 +344,6 @@ class AdminEditComponent {
         this._saveEvt.complete();
         this._saveSub.unsubscribe();
         this._savedSub.unsubscribe();
-    }
-    /**
-     * @private
-     * @param {?} value
-     * @return {?}
-     */
-    _applyProcessFormData(value) {
-        this._defaultProcessData(value);
-        this._processFormData(value);
     }
     /**
      * @private
@@ -338,6 +390,9 @@ AdminEditComponent.propDecorators = {
     id: [{ type: Input }],
     processObject: [{ type: Input }],
     processFormData: [{ type: Input }],
+    readonly: [{ type: Input }],
+    hideSaveButton: [{ type: Input }],
+    canSave: [{ type: Input }],
     valueChanges$: [{ type: Output }]
 };
 
@@ -580,6 +635,11 @@ class AdminListComponent {
         () => this.refreshList()));
     }
 }
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
 
 /**
  * @fileoverview added by tsickle

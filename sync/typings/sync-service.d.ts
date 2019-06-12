@@ -21,7 +21,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ModelGetParams, ModelListParams } from '@gngt/core/common';
-import { RegisteredModel } from './registered-model';
 import { SyncOptions } from './sync-options';
 import { SyncStatus } from './sync-status';
 export declare class SyncService {
@@ -29,9 +28,6 @@ export declare class SyncService {
     private _httpClient;
     private _status;
     readonly status: Observable<SyncStatus>;
-    readonly registeredModels: RegisteredModel[];
-    private _modelRegister;
-    readonly modelRegister: Observable<RegisteredModel>;
     private _timerSub;
     private _syncing;
     private _database;
@@ -45,7 +41,6 @@ export declare class SyncService {
     private readonly _databaseInit;
     private readonly _databaseIsInit;
     constructor(_opts: SyncOptions, _httpClient: HttpClient);
-    registerModel(endpoint: string, tableName: string): void;
     start(immediate?: boolean): void;
     stop(): void;
     get(tableName: string, params: ModelGetParams): Observable<any>;

@@ -19,9 +19,10 @@
  *
  */
 import { __assign } from 'tslib';
+import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { Input, Output, EventEmitter } from '@angular/core';
-import { BehaviorSubject, Subscription, combineLatest, of, merge } from 'rxjs';
-import { filter, switchMap, tap, shareReplay, map, withLatestFrom } from 'rxjs/operators';
+import { BehaviorSubject, Subscription, combineLatest, of, Observable, merge } from 'rxjs';
+import { filter, switchMap, tap, mapTo, shareReplay, map, withLatestFrom } from 'rxjs/operators';
 import '@gngt/core/model';
 
 /**
@@ -61,16 +62,6 @@ var AdminEditComponent = /** @class */ (function () {
         this._service = new BehaviorSubject(null);
         this._fields = [];
         this._id = new BehaviorSubject(null);
-        this._processObject = (/**
-         * @param {?} _
-         * @return {?}
-         */
-        function (_) { });
-        this._processFormData = (/**
-         * @param {?} _
-         * @return {?}
-         */
-        function (_) { });
         this._updateFormEvt = new EventEmitter();
         this._saveEvt = new EventEmitter();
         this._saveSub = Subscription.EMPTY;
@@ -99,14 +90,24 @@ var AdminEditComponent = /** @class */ (function () {
          * @param {?} o
          * @return {?}
          */
-        function (o) { return o != null; })), tap((/**
+        function (o) { return o != null; })), switchMap((/**
          * @param {?} o
          * @return {?}
          */
         function (o) {
             if (_this._processObject) {
-                _this._processObject(o);
+                if (_this._processObject instanceof Observable) {
+                    return _this._processObject.pipe(tap((/**
+                     * @param {?} po
+                     * @return {?}
+                     */
+                    function (po) { return po(o); })), mapTo(o));
+                }
+                else {
+                    _this._processObject(o);
+                }
             }
+            return of(o);
         })), shareReplay(1));
         this.form = combineLatest(objObs, this._updateFormEvt).pipe(map((/**
          * @param {?} r
@@ -133,21 +134,40 @@ var AdminEditComponent = /** @class */ (function () {
          */
         function (form) { return form.valueChanges; })));
         this._saveSub = this._saveEvt.pipe(withLatestFrom(this.form, this._service, this._id), filter((/**
-         * @param {?} r
+         * @param {?} __0
          * @return {?}
          */
-        function (r) { return r[2] != null; }))).subscribe((/**
+        function (_a) {
+            var _ = _a[0], form = _a[1], service = _a[2], __ = _a[3];
+            return form != null && service != null && form.valid;
+        })), switchMap((/**
          * @param {?} __0
          * @return {?}
          */
         function (_a) {
             var _ = _a[0], form = _a[1], service = _a[2], id = _a[3];
-            if (form == null || service == null && !form.valid) {
-                return;
-            }
             /** @type {?} */
             var formValue = __assign({}, form.value);
-            _this._applyProcessFormData(formValue);
+            _this._defaultProcessData(formValue);
+            if (_this._processFormData) {
+                if (_this._processFormData instanceof Observable) {
+                    return _this._processFormData.pipe(tap((/**
+                     * @param {?} pd
+                     * @return {?}
+                     */
+                    function (pd) { return pd(formValue); })), mapTo([formValue, service, id]));
+                }
+                else {
+                    _this._processFormData(formValue);
+                }
+            }
+            return of([formValue, service, id]);
+        }))).subscribe((/**
+         * @param {?} __0
+         * @return {?}
+         */
+        function (_a) {
+            var formValue = _a[0], service = _a[1], id = _a[2];
             if (id === 'new') {
                 delete formValue['id'];
                 (/** @type {?} */ (service)).create(formValue);
@@ -301,6 +321,63 @@ var AdminEditComponent = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(AdminEditComponent.prototype, "readonly", {
+        get: /**
+         * @return {?}
+         */
+        function () { return this._readonly; },
+        set: /**
+         * @param {?} readonly
+         * @return {?}
+         */
+        function (readonly) {
+            readonly = coerceBooleanProperty(readonly);
+            if (readonly !== this._readonly) {
+                this._readonly = readonly;
+                this._cdr.markForCheck();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AdminEditComponent.prototype, "hideSaveButton", {
+        get: /**
+         * @return {?}
+         */
+        function () { return this._hideSaveButton; },
+        set: /**
+         * @param {?} hideSaveButton
+         * @return {?}
+         */
+        function (hideSaveButton) {
+            hideSaveButton = coerceBooleanProperty(hideSaveButton);
+            if (hideSaveButton !== this._hideSaveButton) {
+                this._hideSaveButton = hideSaveButton;
+                this._cdr.markForCheck();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AdminEditComponent.prototype, "canSave", {
+        get: /**
+         * @return {?}
+         */
+        function () { return this._canSave; },
+        set: /**
+         * @param {?} canSave
+         * @return {?}
+         */
+        function (canSave) {
+            canSave = coerceBooleanProperty(canSave);
+            if (canSave !== this._canSave) {
+                this._canSave = canSave;
+                this._cdr.markForCheck();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(AdminEditComponent.prototype, "valueChanges$", {
         get: /**
          * @return {?}
@@ -340,20 +417,6 @@ var AdminEditComponent = /** @class */ (function () {
         this._saveEvt.complete();
         this._saveSub.unsubscribe();
         this._savedSub.unsubscribe();
-    };
-    /**
-     * @private
-     * @param {?} value
-     * @return {?}
-     */
-    AdminEditComponent.prototype._applyProcessFormData = /**
-     * @private
-     * @param {?} value
-     * @return {?}
-     */
-    function (value) {
-        this._defaultProcessData(value);
-        this._processFormData(value);
     };
     /**
      * @private
@@ -408,6 +471,9 @@ var AdminEditComponent = /** @class */ (function () {
         id: [{ type: Input }],
         processObject: [{ type: Input }],
         processFormData: [{ type: Input }],
+        readonly: [{ type: Input }],
+        hideSaveButton: [{ type: Input }],
+        canSave: [{ type: Input }],
         valueChanges$: [{ type: Output }]
     };
     return AdminEditComponent;
@@ -709,6 +775,11 @@ AdminListComponent = /** @class */ (function () {
     };
     return AdminListComponent;
 }());
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
 
 /**
  * @fileoverview added by tsickle

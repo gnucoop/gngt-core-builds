@@ -154,10 +154,12 @@ function forceBooleanProp(value) {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
+class ModelManager {
+    /**
+     * @param {...?} _args
+     */
+    constructor(..._args) { }
+}
 
 /**
  * @fileoverview added by tsickle
@@ -174,5 +176,15 @@ function forceBooleanProp(value) {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { CommonModule, FormDisabledDirective, forceBooleanProp, GetObjectProperty as ɵa };
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+export { CommonModule, FormDisabledDirective, ModelManager, forceBooleanProp, GetObjectProperty as ɵa };
 //# sourceMappingURL=common.js.map

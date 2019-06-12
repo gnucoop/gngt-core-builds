@@ -1,6 +1,6 @@
 {
   "name": "@gngt/core",
-  "version": "7.0.7-c09251e",
+  "version": "7.0.8-214dfee",
   "description": "",
   "main": "./bundles/core.umd.js",
   "module": "./esm5/core.es5.js",
@@ -37,7 +37,7 @@
     "migrations": "./schematics/migration.json"
   },
   "sideEffects": false,
-  "releaseGitCommitSha": "c09251e29c1448584d77edde604c7f273d6f120a",
-  "releaseGitBranch": "master",
-  "releaseGitUser": "trik <marco.marche@gnucoop.com>"
+  "releaseGitCommitSha": "214dfee060e91f1d78b5a59995e77111f844f1a4",
+  "releaseGitBranch": "",
+  "releaseGitUser": " <>"
 }

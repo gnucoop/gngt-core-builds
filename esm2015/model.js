@@ -23,6 +23,7 @@ import { of, pipe, throwError } from 'rxjs';
 import { mergeMap, map, catchError, filter, tap } from 'rxjs/operators';
 import { ofType } from '@ngrx/effects';
 import { v4 } from 'uuid';
+import { ModelManager as ModelManager$1 } from '@gngt/core/common';
 import { InjectionToken } from '@angular/core';
 import { createFeatureSelector, createSelector, select } from '@ngrx/store';
 
@@ -935,25 +936,24 @@ class ModelEffects {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-
 /**
  * @abstract
  * @template M
  */
-class ModelManager {
+class ModelManager extends ModelManager$1 {
     /**
      * @param {?} _config
      * @param {?} _endPoint
      * @param {?} _http
      */
     constructor(_config, _endPoint, _http) {
+        super();
         this._config = _config;
         this._endPoint = _endPoint;
         this._http = _http;
         this._baseUrl = `${this._config.baseApiUrl}${this._endPoint}`;
     }
     /**
-     * @protected
      * @return {?}
      */
     get endPoint() { return this._endPoint; }

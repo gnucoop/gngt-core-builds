@@ -19,10 +19,10 @@
  *
  */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs'), require('rxjs/operators'), require('@gngt/core/model')) :
-    typeof define === 'function' && define.amd ? define('@gngt/core/admin', ['exports', '@angular/core', 'rxjs', 'rxjs/operators', '@gngt/core/model'], factory) :
-    (global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = global.dewco.core || {}, global.dewco.core.admin = {}), global.ng.core, global.rxjs, global.rxjs.operators));
-}(this, function (exports, core, rxjs, operators) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/cdk/coercion'), require('@angular/core'), require('rxjs'), require('rxjs/operators'), require('@gngt/core/model')) :
+    typeof define === 'function' && define.amd ? define('@gngt/core/admin', ['exports', '@angular/cdk/coercion', '@angular/core', 'rxjs', 'rxjs/operators', '@gngt/core/model'], factory) :
+    (global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = global.dewco.core || {}, global.dewco.core.admin = {}), global.ng.cdk.coercion, global.ng.core, global.rxjs, global.rxjs.operators));
+}(this, function (exports, coercion, core, rxjs, operators) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -87,16 +87,6 @@
             this._service = new rxjs.BehaviorSubject(null);
             this._fields = [];
             this._id = new rxjs.BehaviorSubject(null);
-            this._processObject = (/**
-             * @param {?} _
-             * @return {?}
-             */
-            function (_) { });
-            this._processFormData = (/**
-             * @param {?} _
-             * @return {?}
-             */
-            function (_) { });
             this._updateFormEvt = new core.EventEmitter();
             this._saveEvt = new core.EventEmitter();
             this._saveSub = rxjs.Subscription.EMPTY;
@@ -125,14 +115,24 @@
              * @param {?} o
              * @return {?}
              */
-            function (o) { return o != null; })), operators.tap((/**
+            function (o) { return o != null; })), operators.switchMap((/**
              * @param {?} o
              * @return {?}
              */
             function (o) {
                 if (_this._processObject) {
-                    _this._processObject(o);
+                    if (_this._processObject instanceof rxjs.Observable) {
+                        return _this._processObject.pipe(operators.tap((/**
+                         * @param {?} po
+                         * @return {?}
+                         */
+                        function (po) { return po(o); })), operators.mapTo(o));
+                    }
+                    else {
+                        _this._processObject(o);
+                    }
                 }
+                return rxjs.of(o);
             })), operators.shareReplay(1));
             this.form = rxjs.combineLatest(objObs, this._updateFormEvt).pipe(operators.map((/**
              * @param {?} r
@@ -159,21 +159,40 @@
              */
             function (form) { return form.valueChanges; })));
             this._saveSub = this._saveEvt.pipe(operators.withLatestFrom(this.form, this._service, this._id), operators.filter((/**
-             * @param {?} r
+             * @param {?} __0
              * @return {?}
              */
-            function (r) { return r[2] != null; }))).subscribe((/**
+            function (_a) {
+                var _ = _a[0], form = _a[1], service = _a[2], __ = _a[3];
+                return form != null && service != null && form.valid;
+            })), operators.switchMap((/**
              * @param {?} __0
              * @return {?}
              */
             function (_a) {
                 var _ = _a[0], form = _a[1], service = _a[2], id = _a[3];
-                if (form == null || service == null && !form.valid) {
-                    return;
-                }
                 /** @type {?} */
                 var formValue = __assign({}, form.value);
-                _this._applyProcessFormData(formValue);
+                _this._defaultProcessData(formValue);
+                if (_this._processFormData) {
+                    if (_this._processFormData instanceof rxjs.Observable) {
+                        return _this._processFormData.pipe(operators.tap((/**
+                         * @param {?} pd
+                         * @return {?}
+                         */
+                        function (pd) { return pd(formValue); })), operators.mapTo([formValue, service, id]));
+                    }
+                    else {
+                        _this._processFormData(formValue);
+                    }
+                }
+                return rxjs.of([formValue, service, id]);
+            }))).subscribe((/**
+             * @param {?} __0
+             * @return {?}
+             */
+            function (_a) {
+                var formValue = _a[0], service = _a[1], id = _a[2];
                 if (id === 'new') {
                     delete formValue['id'];
                     (/** @type {?} */ (service)).create(formValue);
@@ -327,6 +346,63 @@
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(AdminEditComponent.prototype, "readonly", {
+            get: /**
+             * @return {?}
+             */
+            function () { return this._readonly; },
+            set: /**
+             * @param {?} readonly
+             * @return {?}
+             */
+            function (readonly) {
+                readonly = coercion.coerceBooleanProperty(readonly);
+                if (readonly !== this._readonly) {
+                    this._readonly = readonly;
+                    this._cdr.markForCheck();
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(AdminEditComponent.prototype, "hideSaveButton", {
+            get: /**
+             * @return {?}
+             */
+            function () { return this._hideSaveButton; },
+            set: /**
+             * @param {?} hideSaveButton
+             * @return {?}
+             */
+            function (hideSaveButton) {
+                hideSaveButton = coercion.coerceBooleanProperty(hideSaveButton);
+                if (hideSaveButton !== this._hideSaveButton) {
+                    this._hideSaveButton = hideSaveButton;
+                    this._cdr.markForCheck();
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(AdminEditComponent.prototype, "canSave", {
+            get: /**
+             * @return {?}
+             */
+            function () { return this._canSave; },
+            set: /**
+             * @param {?} canSave
+             * @return {?}
+             */
+            function (canSave) {
+                canSave = coercion.coerceBooleanProperty(canSave);
+                if (canSave !== this._canSave) {
+                    this._canSave = canSave;
+                    this._cdr.markForCheck();
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(AdminEditComponent.prototype, "valueChanges$", {
             get: /**
              * @return {?}
@@ -366,20 +442,6 @@
             this._saveEvt.complete();
             this._saveSub.unsubscribe();
             this._savedSub.unsubscribe();
-        };
-        /**
-         * @private
-         * @param {?} value
-         * @return {?}
-         */
-        AdminEditComponent.prototype._applyProcessFormData = /**
-         * @private
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this._defaultProcessData(value);
-            this._processFormData(value);
         };
         /**
          * @private
@@ -434,6 +496,9 @@
             id: [{ type: core.Input }],
             processObject: [{ type: core.Input }],
             processFormData: [{ type: core.Input }],
+            readonly: [{ type: core.Input }],
+            hideSaveButton: [{ type: core.Input }],
+            canSave: [{ type: core.Input }],
             valueChanges$: [{ type: core.Output }]
         };
         return AdminEditComponent;

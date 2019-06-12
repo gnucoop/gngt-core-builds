@@ -23,7 +23,6 @@ import { Observable } from 'rxjs';
 import { SyncService } from './sync-service';
 export declare class OfflineInterceptor implements HttpInterceptor {
     private _syncService;
-    private _models;
     constructor(_syncService: SyncService);
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
     private _doOfflineRequest;

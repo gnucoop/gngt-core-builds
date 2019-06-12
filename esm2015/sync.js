@@ -19,7 +19,7 @@
  *
  */
 import { HttpClient, HttpResponse, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { InjectionToken, EventEmitter, Injectable, Inject, NgModule } from '@angular/core';
+import { InjectionToken, Injectable, Inject, NgModule } from '@angular/core';
 import { BehaviorSubject, Subscription, timer, from, zip, of, throwError } from 'rxjs';
 import { filter, delayWhen, exhaustMap, take, switchMap, map, catchError, mapTo, tap, concatMap } from 'rxjs/operators';
 import * as PouchDB from 'pouchdb';
@@ -31,6 +31,14 @@ import * as PouchDBFind from 'pouchdb-find';
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/** @type {?} */
+const SYNC_REGISTERED_MODELS = [];
 
 /**
  * @fileoverview added by tsickle
@@ -53,8 +61,6 @@ class SyncService {
         this._httpClient = _httpClient;
         this._status = new BehaviorSubject({ status: 'initializing' });
         this.status = this._status.asObservable();
-        this.registeredModels = [];
-        this._modelRegister = new EventEmitter();
         this._timerSub = Subscription.EMPTY;
         this._syncing = false;
         this._remoteCheckpointKey = 'gngt_remote_sync_checkpoint';
@@ -65,7 +71,6 @@ class SyncService {
             index: { name: 'relational_model_idx', fields: ['table_name', 'object_id'] }
         };
         this._databaseInit = new BehaviorSubject(false);
-        this.modelRegister = this._modelRegister.asObservable();
         if (this._opts.syncInterval == null) {
             this._opts.syncInterval = 300000;
         }
@@ -80,23 +85,6 @@ class SyncService {
          * @return {?}
          */
         i => i)));
-    }
-    /**
-     * @param {?} endpoint
-     * @param {?} tableName
-     * @return {?}
-     */
-    registerModel(endpoint, tableName) {
-        if (this.registeredModels.find((/**
-         * @param {?} r
-         * @return {?}
-         */
-        r => r.tableName === tableName)) == null) {
-            /** @type {?} */
-            const registeredModel = { tableName, endpoint };
-            this.registeredModels.push(registeredModel);
-            this._modelRegister.emit(registeredModel);
-        }
     }
     /**
      * @param {?=} immediate
@@ -1119,13 +1107,6 @@ class OfflineInterceptor {
      */
     constructor(_syncService) {
         this._syncService = _syncService;
-        this._models = [];
-        this._models = [..._syncService.registeredModels];
-        _syncService.modelRegister.subscribe((/**
-         * @param {?} _
-         * @return {?}
-         */
-        _ => this._models = [..._syncService.registeredModels]));
     }
     /**
      * @param {?} req
@@ -1235,7 +1216,7 @@ class OfflineInterceptor {
      * @return {?}
      */
     _checkOfflineRequest(req) {
-        return this._models.filter((/**
+        return SYNC_REGISTERED_MODELS.filter((/**
          * @param {?} m
          * @return {?}
          */
@@ -1259,6 +1240,63 @@ OfflineInterceptor.ctorParameters = () => [
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @param {?} endpoint
+ * @param {?} tableName
+ * @return {?}
+ */
+function registerSyncModel(endpoint, tableName) {
+    if (SYNC_REGISTERED_MODELS.find((/**
+     * @param {?} r
+     * @return {?}
+     */
+    r => r.tableName === tableName)) == null) {
+        /** @type {?} */
+        const registeredModel = { tableName, endpoint };
+        SYNC_REGISTERED_MODELS.push(registeredModel);
+        console.log(`Registered sync model ${tableName} with endpoint ${endpoint}`);
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/** @type {?} */
+const ANNOTATIONS = '__gngt_annotations__';
+// WARNING: interface has both a type and a value, skipping emit
+/**
+ * @template T
+ * @param {?} opts
+ * @return {?}
+ */
+function SyncModel(opts) {
+    return (/**
+     * @param {?} cls
+     * @return {?}
+     */
+    function SyncModelFactory(cls) {
+        /** @type {?} */
+        const annotations = cls.hasOwnProperty(ANNOTATIONS)
+            ? ((/** @type {?} */ (cls)))[ANNOTATIONS]
+            : Object.defineProperty(cls, ANNOTATIONS, { value: [] })[ANNOTATIONS];
+        annotations.push({ sync_model: true });
+        return (/** @type {?} */ (class extends cls {
+            /**
+             * @param {...?} args
+             */
+            constructor(...args) {
+                super(...args);
+                registerSyncModel(((/** @type {?} */ (this))).endPoint, opts.tableName);
+            }
+        }));
+    });
+}
 
 /**
  * @fileoverview added by tsickle
@@ -1299,5 +1337,5 @@ SyncModule.decorators = [
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { OfflineInterceptor, SYNC_OPTIONS, SyncModule, SyncService };
+export { OfflineInterceptor, SYNC_OPTIONS, SyncModel, SyncModule, SyncService };
 //# sourceMappingURL=sync.js.map

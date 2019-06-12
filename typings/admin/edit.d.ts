@@ -22,8 +22,9 @@ import { ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { AdminEditField } from './edit-field';
 import { Model, ModelActions, ModelService, reducers as fromModel } from '@gngt/core/model';
+import { AdminEditField } from './edit-field';
+import { ProcessDataFn } from './process-data-fn';
 export declare abstract class AdminEditComponent<T extends Model, S extends fromModel.State<T>, A extends ModelActions.ModelActionTypes> implements OnDestroy {
     private _cdr;
     private _fb;
@@ -43,9 +44,15 @@ export declare abstract class AdminEditComponent<T extends Model, S extends from
     private _id;
     id: number | 'new';
     private _processObject;
-    processObject: (value: any) => void;
+    processObject: ProcessDataFn | Observable<ProcessDataFn>;
     private _processFormData;
-    processFormData: (value: any) => void;
+    processFormData: ProcessDataFn | Observable<ProcessDataFn>;
+    private _readonly;
+    readonly: boolean;
+    private _hideSaveButton;
+    hideSaveButton: boolean;
+    private _canSave;
+    canSave: boolean;
     readonly form: Observable<FormGroup>;
     readonly loading: Observable<boolean>;
     private _updateFormEvt;
@@ -58,7 +65,6 @@ export declare abstract class AdminEditComponent<T extends Model, S extends from
     goBack(): void;
     save(): void;
     ngOnDestroy(): void;
-    private _applyProcessFormData;
     private _defaultProcessData;
     private _updateForm;
 }

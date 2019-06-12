@@ -167,10 +167,15 @@ function forceBooleanProp(value) {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
+var ModelManager = /** @class */ (function () {
+    function ModelManager() {
+        var _args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            _args[_i] = arguments[_i];
+        }
+    }
+    return ModelManager;
+}());
 
 /**
  * @fileoverview added by tsickle
@@ -187,5 +192,15 @@ function forceBooleanProp(value) {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { CommonModule, FormDisabledDirective, forceBooleanProp, GetObjectProperty as ɵa };
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+export { CommonModule, FormDisabledDirective, ModelManager, forceBooleanProp, GetObjectProperty as ɵa };
 //# sourceMappingURL=common.es5.js.map

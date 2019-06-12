@@ -24,6 +24,7 @@ import { of, throwError, pipe } from 'rxjs';
 import { mergeMap, map, catchError, filter, tap } from 'rxjs/operators';
 import { ofType } from '@ngrx/effects';
 import { v4 } from 'uuid';
+import { ModelManager as ModelManager$1 } from '@gngt/core/common';
 import { InjectionToken } from '@angular/core';
 import { select, createSelector, createFeatureSelector } from '@ngrx/store';
 
@@ -1020,7 +1021,6 @@ ModelEffects = /** @class */ (function () {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-
 /**
  * @abstract
  * @template M
@@ -1029,16 +1029,18 @@ var  /**
  * @abstract
  * @template M
  */
-ModelManager = /** @class */ (function () {
+ModelManager = /** @class */ (function (_super) {
+    __extends(ModelManager, _super);
     function ModelManager(_config, _endPoint, _http) {
-        this._config = _config;
-        this._endPoint = _endPoint;
-        this._http = _http;
-        this._baseUrl = "" + this._config.baseApiUrl + this._endPoint;
+        var _this = _super.call(this) || this;
+        _this._config = _config;
+        _this._endPoint = _endPoint;
+        _this._http = _http;
+        _this._baseUrl = "" + _this._config.baseApiUrl + _this._endPoint;
+        return _this;
     }
     Object.defineProperty(ModelManager.prototype, "endPoint", {
         get: /**
-         * @protected
          * @return {?}
          */
         function () { return this._endPoint; },
@@ -1238,7 +1240,7 @@ ModelManager = /** @class */ (function () {
         return params;
     };
     return ModelManager;
-}());
+}(ModelManager$1));
 
 /**
  * @fileoverview added by tsickle

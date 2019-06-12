@@ -20,13 +20,13 @@
  */
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Model, ModelListParams, ModelListResult, ModelQueryParams } from '@gngt/core/common';
+import { Model, ModelListParams, ModelListResult, ModelManager as BaseModelManager, ModelQueryParams } from '@gngt/core/common';
 import { ModelOptions } from './model-options';
-export declare abstract class ModelManager<M extends Model> {
+export declare abstract class ModelManager<M extends Model> extends BaseModelManager {
     private _config;
     private _endPoint;
     protected _http: HttpClient;
-    protected readonly endPoint: string;
+    readonly endPoint: string;
     private _baseUrl;
     constructor(_config: ModelOptions, _endPoint: string, _http: HttpClient);
     get(id: number): Observable<M>;

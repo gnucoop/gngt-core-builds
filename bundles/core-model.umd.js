@@ -19,10 +19,10 @@
  *
  */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@gngt/core/reducers'), require('rxjs'), require('rxjs/operators'), require('@ngrx/effects'), require('uuid'), require('@angular/core'), require('@ngrx/store')) :
-    typeof define === 'function' && define.amd ? define('@gngt/core/model', ['exports', '@gngt/core/reducers', 'rxjs', 'rxjs/operators', '@ngrx/effects', 'uuid', '@angular/core', '@ngrx/store'], factory) :
-    (global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = global.dewco.core || {}, global.dewco.core.model = {}), global.gngt.core.reducers, global.rxjs, global.rxjs.operators, global.ngrx.effects, global.uuid, global.ng.core, global.ngrx.store));
-}(this, function (exports, reducers$1, rxjs, operators, effects, uuid, core, store) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@gngt/core/reducers'), require('rxjs'), require('rxjs/operators'), require('@ngrx/effects'), require('uuid'), require('@gngt/core/common'), require('@angular/core'), require('@ngrx/store')) :
+    typeof define === 'function' && define.amd ? define('@gngt/core/model', ['exports', '@gngt/core/reducers', 'rxjs', 'rxjs/operators', '@ngrx/effects', 'uuid', '@gngt/core/common', '@angular/core', '@ngrx/store'], factory) :
+    (global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = global.dewco.core || {}, global.dewco.core.model = {}), global.gngt.core.reducers, global.rxjs, global.rxjs.operators, global.ngrx.effects, global.uuid, global.gngt.core.common, global.ng.core, global.ngrx.store));
+}(this, function (exports, reducers$1, rxjs, operators, effects, uuid, common, core, store) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -1057,7 +1057,6 @@
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
-
     /**
      * @abstract
      * @template M
@@ -1066,16 +1065,18 @@
      * @abstract
      * @template M
      */
-    ModelManager = /** @class */ (function () {
+    ModelManager = /** @class */ (function (_super) {
+        __extends(ModelManager, _super);
         function ModelManager(_config, _endPoint, _http) {
-            this._config = _config;
-            this._endPoint = _endPoint;
-            this._http = _http;
-            this._baseUrl = "" + this._config.baseApiUrl + this._endPoint;
+            var _this = _super.call(this) || this;
+            _this._config = _config;
+            _this._endPoint = _endPoint;
+            _this._http = _http;
+            _this._baseUrl = "" + _this._config.baseApiUrl + _this._endPoint;
+            return _this;
         }
         Object.defineProperty(ModelManager.prototype, "endPoint", {
             get: /**
-             * @protected
              * @return {?}
              */
             function () { return this._endPoint; },
@@ -1275,7 +1276,7 @@
             return params;
         };
         return ModelManager;
-    }());
+    }(common.ModelManager));
 
     /**
      * @fileoverview added by tsickle
