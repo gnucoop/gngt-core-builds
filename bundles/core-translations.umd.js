@@ -21,7 +21,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@ngx-translate/core')) :
     typeof define === 'function' && define.amd ? define('@gngt/core/translations', ['exports', '@angular/core', '@ngx-translate/core'], factory) :
-    (global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = global.dewco.core || {}, global.dewco.core.translations = {}), global.ng.core, global.ngxt.core));
+    (global = global || self, factory((global.gngt = global.gngt || {}, global.gngt.core = global.gngt.core || {}, global.gngt.core.translations = {}), global.ng.core, global.ngxt.core));
 }(this, function (exports, core, core$1) { 'use strict';
 
     /*! *****************************************************************************

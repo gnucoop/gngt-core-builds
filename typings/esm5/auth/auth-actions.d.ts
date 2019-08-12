@@ -21,12 +21,16 @@
 import { Action } from '@ngrx/store';
 import { User } from './user';
 export declare enum AuthActionTypes {
+    Init = "[Auth] Init",
     InitUser = "[Auth] Init user",
     InitUserComplete = "[Auth] Init user complete",
     InitComplete = "[Auth] Init complete",
     Logout = "[Auth] Logout",
     LogoutConfirmation = "[Auth] Logout Confirmation",
     LogoutConfirmationDismiss = "[Auth] Logout Confirmation Dismiss"
+}
+export declare class Init implements Action {
+    readonly type = AuthActionTypes.Init;
 }
 export declare class InitUser implements Action {
     readonly type = AuthActionTypes.InitUser;
@@ -52,4 +56,4 @@ export declare class LogoutConfirmation implements Action {
 export declare class LogoutConfirmationDismiss implements Action {
     readonly type = AuthActionTypes.LogoutConfirmationDismiss;
 }
-export declare type AuthActionsUnion = InitUser | InitUserComplete | InitComplete | Logout | LogoutConfirmation | LogoutConfirmationDismiss;
+export declare type AuthActionsUnion = Init | InitUser | InitUserComplete | InitComplete | Logout | LogoutConfirmation | LogoutConfirmationDismiss;

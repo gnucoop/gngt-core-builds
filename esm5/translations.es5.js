@@ -62,15 +62,5 @@ var TranslationsModule = /** @class */ (function () {
     return TranslationsModule;
 }());
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
 export { MissingTranslationHandler, TranslationsModule };
 //# sourceMappingURL=translations.es5.js.map

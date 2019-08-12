@@ -23,8 +23,8 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import * as fromAuth from './reducers';
 export declare class AuthGuard implements CanActivate, CanActivateChild {
-    private store;
-    constructor(store: Store<fromAuth.State>);
+    private _store;
+    constructor(_store: Store<fromAuth.State>);
     canActivate(): Observable<boolean>;
     canActivateChild(_cr: ActivatedRouteSnapshot, _state: RouterStateSnapshot): Observable<boolean>;
     private _guard;

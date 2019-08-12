@@ -20,8 +20,8 @@
  */
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { EventEmitter, Input, Output } from '@angular/core';
-import { BehaviorSubject, Subscription, combineLatest, of, Observable, merge } from 'rxjs';
-import { filter, switchMap, tap, mapTo, shareReplay, map, withLatestFrom } from 'rxjs/operators';
+import { BehaviorSubject, Subscription, combineLatest, of, Observable } from 'rxjs';
+import { filter, switchMap, tap, mapTo, shareReplay, map, withLatestFrom, take } from 'rxjs/operators';
 import '@gngt/core/model';
 
 /**
@@ -59,10 +59,11 @@ class AdminEditComponent {
         this._service = new BehaviorSubject(null);
         this._fields = [];
         this._id = new BehaviorSubject(null);
+        this._loading = new BehaviorSubject(false);
+        this.loading = this._loading.asObservable();
         this._updateFormEvt = new EventEmitter();
         this._saveEvt = new EventEmitter();
         this._saveSub = Subscription.EMPTY;
-        this._savedSub = Subscription.EMPTY;
         this._processFormData = this._defaultProcessData;
         /** @type {?} */
         const objObs = combineLatest(this._service, this._id).pipe(filter((/**
@@ -126,7 +127,13 @@ class AdminEditComponent {
          * @return {?}
          */
         (form) => form.valueChanges)));
-        this._saveSub = this._saveEvt.pipe(withLatestFrom(this.form, this._service, this._id), filter((/**
+        /** @type {?} */
+        const serviceObs = this._service.pipe(filter((/**
+         * @param {?} s
+         * @return {?}
+         */
+        s => s != null)));
+        this._saveSub = this._saveEvt.pipe(withLatestFrom(this.form, serviceObs, this._id), filter((/**
          * @param {?} __0
          * @return {?}
          */
@@ -151,46 +158,29 @@ class AdminEditComponent {
                 }
             }
             return of([formValue, service, id]);
-        }))).subscribe((/**
+        })), tap((/**
+         * @return {?}
+         */
+        () => this._loading.next(true))), switchMap((/**
          * @param {?} __0
          * @return {?}
          */
         ([formValue, service, id]) => {
             if (id === 'new') {
                 delete formValue['id'];
-                (/** @type {?} */ (service)).create(formValue);
+                return (/** @type {?} */ (service)).create(formValue);
             }
-            else {
-                (/** @type {?} */ (service)).patch(formValue);
-            }
-        }));
-        /** @type {?} */
-        const serviceObs = this._service.pipe(filter((/**
-         * @param {?} s
+            return (/** @type {?} */ (service)).patch(formValue);
+        })), take(1)).subscribe((/**
          * @return {?}
          */
-        s => s != null)));
-        this.loading = serviceObs.pipe(filter((/**
-         * @param {?} s
+        () => {
+            this._loading.next(false);
+            this.goBack();
+        }), (/**
          * @return {?}
          */
-        s => s != null)), switchMap((/**
-         * @param {?} s
-         * @return {?}
-         */
-        s => merge((/** @type {?} */ (s)).getGetLoading(), (/** @type {?} */ (s)).getCreateLoading(), (/** @type {?} */ (s)).getPatchLoading()))));
-        this._savedSub = serviceObs.pipe(filter((/**
-         * @param {?} s
-         * @return {?}
-         */
-        s => s != null)), switchMap((/**
-         * @param {?} s
-         * @return {?}
-         */
-        s => merge((/** @type {?} */ (s)).getCreateSuccess(), (/** @type {?} */ (s)).getPatchSuccess())))).subscribe((/**
-         * @return {?}
-         */
-        () => this.goBack()));
+        () => this._loading.next(false)));
     }
     /**
      * @return {?}
@@ -343,7 +333,6 @@ class AdminEditComponent {
         this._updateFormEvt.complete();
         this._saveEvt.complete();
         this._saveSub.unsubscribe();
-        this._savedSub.unsubscribe();
     }
     /**
      * @private
@@ -401,16 +390,6 @@ AdminEditComponent.propDecorators = {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
 /** @enum {string} */
 const AdminEditFieldSubtype = {
     Color: 'color',
@@ -448,11 +427,6 @@ const AdminEditFieldType = {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 /**
  * @abstract
  * @template T, S, A, MS
@@ -471,6 +445,7 @@ class AdminListComponent {
         this._newItemPath = 'new';
         this._actionProcessed = new EventEmitter();
         this.actionProcessed = this._actionProcessed.asObservable();
+        this._deletionEvt = new EventEmitter();
         this._deletionSub = Subscription.EMPTY;
     }
     /**
@@ -562,6 +537,7 @@ class AdminListComponent {
      */
     ngOnDestroy() {
         this._deletionSub.unsubscribe();
+        this._deletionEvt.complete();
     }
     /**
      * @param {?} action
@@ -629,32 +605,41 @@ class AdminListComponent {
      * @return {?}
      */
     _initService() {
-        this._deletionSub = merge(this._service.getDeleteSuccess(), this._service.getDeleteAllSuccess()).subscribe((/**
+        this._deletionSub.unsubscribe();
+        this._deletionSub = this._deletionEvt.pipe(switchMap((/**
+         * @param {?} selected
          * @return {?}
          */
-        () => this.refreshList()));
+        selected => this._aui.askDeleteConfirm().pipe(map((/**
+         * @param {?} res
+         * @return {?}
+         */
+        res => ({ res, selected })))))), switchMap((/**
+         * @param {?} __0
+         * @return {?}
+         */
+        ({ res, selected }) => {
+            if (res) {
+                if (selected.length === 1) {
+                    return this._service.delete(selected[0]);
+                }
+                return this._service.deleteAll(selected);
+            }
+            return of(null);
+        })), filter((/**
+         * @param {?} r
+         * @return {?}
+         */
+        r => r != null)), take(1)).subscribe((/**
+         * @return {?}
+         */
+        () => {
+            this._actionProcessed.emit('delete');
+            this.clearSelection();
+            this.refreshList();
+        }));
     }
 }
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 
 export { AdminEditComponent, AdminEditFieldSubtype, AdminEditFieldType, AdminListComponent, AdminUserInteractionsService };
 //# sourceMappingURL=admin.js.map

@@ -21,7 +21,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/forms'), require('date-fns')) :
     typeof define === 'function' && define.amd ? define('@gngt/core/calendar', ['exports', '@angular/core', '@angular/forms', 'date-fns'], factory) :
-    (global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = global.dewco.core || {}, global.dewco.core.calendar = {}), global.ng.core, global.ng.forms, global['date-fns']));
+    (global = global || self, factory((global.gngt = global.gngt || {}, global.gngt.core = global.gngt.core || {}, global.gngt.core.calendar = {}), global.ng.core, global.ng.forms, global.dateFns));
 }(this, function (exports, core, forms, dateFns) { 'use strict';
 
     /**

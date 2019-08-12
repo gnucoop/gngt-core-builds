@@ -19,15 +19,15 @@
  *
  */
 import { createFeatureSelector, createSelector, select, Store, StoreModule } from '@ngrx/store';
-import { __assign, __decorate, __metadata } from 'tslib';
-import { InjectionToken, Injectable, Inject, defineInjectable, inject, EventEmitter, NgModule } from '@angular/core';
+import { __assign } from 'tslib';
+import { InjectionToken, Injectable, Inject, ɵɵdefineInjectable, ɵɵinject, EventEmitter, NgModule } from '@angular/core';
 import * as URLParse from 'url-parse';
 import { HttpClient } from '@angular/common/http';
-import { filter, concatMap, map, take, exhaustMap, catchError, tap, delayWhen, switchMap } from 'rxjs/operators';
+import { filter, concatMap, map, take, exhaustMap, catchError, tap, mergeMap, delayWhen, switchMap } from 'rxjs/operators';
 import { Validators } from '@angular/forms';
-import { Subscription, of, zip, timer, defer } from 'rxjs';
+import { Subscription, of, zip, timer } from 'rxjs';
 import { forceBooleanProp } from '@gngt/core/common';
-import { Actions, Effect, ofType, EffectsModule } from '@ngrx/effects';
+import { Actions, createEffect, ofType, EffectsModule } from '@ngrx/effects';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -38,6 +38,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 /** @enum {string} */
 var AuthActionTypes = {
+    Init: '[Auth] Init',
     InitUser: '[Auth] Init user',
     InitUserComplete: '[Auth] Init user complete',
     InitComplete: '[Auth] Init complete',
@@ -45,6 +46,12 @@ var AuthActionTypes = {
     LogoutConfirmation: '[Auth] Logout Confirmation',
     LogoutConfirmationDismiss: '[Auth] Logout Confirmation Dismiss',
 };
+var Init = /** @class */ (function () {
+    function Init() {
+        this.type = AuthActionTypes.Init;
+    }
+    return Init;
+}());
 var InitUser = /** @class */ (function () {
     function InitUser() {
         this.type = AuthActionTypes.InitUser;
@@ -85,6 +92,7 @@ var LogoutConfirmationDismiss = /** @class */ (function () {
 
 var authActions = /*#__PURE__*/Object.freeze({
     AuthActionTypes: AuthActionTypes,
+    Init: Init,
     InitUser: InitUser,
     InitUserComplete: InitUserComplete,
     InitComplete: InitComplete,
@@ -269,28 +277,31 @@ var reducers = {
 };
 /** @type {?} */
 var selectAuthState = createFeatureSelector('auth');
-/** @type {?} */
-var selectAuthStatusState = createSelector(selectAuthState, (/**
+var ɵ0 = /**
  * @param {?} state
  * @return {?}
  */
-function (state) { return state.status; }));
+function (state) { return state.status; };
+/** @type {?} */
+var selectAuthStatusState = createSelector(selectAuthState, (ɵ0));
 /** @type {?} */
 var getInit$1 = createSelector(selectAuthStatusState, getInit);
 /** @type {?} */
 var getUser$1 = createSelector(selectAuthStatusState, getUser);
-/** @type {?} */
-var getLoggedIn = createSelector(getUser$1, (/**
+var ɵ1 = /**
  * @param {?} user
  * @return {?}
  */
-function (user) { return user != null; }));
+function (user) { return user != null; };
 /** @type {?} */
-var selectLoginPageState = createSelector(selectAuthState, (/**
+var getLoggedIn = createSelector(getUser$1, (ɵ1));
+var ɵ2 = /**
  * @param {?} state
  * @return {?}
  */
-function (state) { return state.loginPage; }));
+function (state) { return state.loginPage; };
+/** @type {?} */
+var selectLoginPageState = createSelector(selectAuthState, (ɵ2));
 /** @type {?} */
 var getLoginPageError = createSelector(selectLoginPageState, getError);
 /** @type {?} */
@@ -307,38 +318,11 @@ var reducers$1 = /*#__PURE__*/Object.freeze({
     getLoggedIn: getLoggedIn,
     selectLoginPageState: selectLoginPageState,
     getLoginPageError: getLoginPageError,
-    getLoginPagePending: getLoginPagePending
+    getLoginPagePending: getLoginPagePending,
+    ɵ0: ɵ0,
+    ɵ1: ɵ1,
+    ɵ2: ɵ2
 });
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 
 /**
  * @fileoverview added by tsickle
@@ -425,7 +409,7 @@ var JwtHelperService = /** @class */ (function () {
                 throw new Error('Illegal base64url string!');
             }
         }
-        return this.b64DecodeUnicode(output);
+        return this._b64DecodeUnicode(output);
     };
     // credits for decoder goes to https://github.com/atk
     // credits for decoder goes to https://github.com/atk
@@ -434,7 +418,7 @@ var JwtHelperService = /** @class */ (function () {
      * @param {?} str
      * @return {?}
      */
-    JwtHelperService.prototype.b64decode = 
+    JwtHelperService.prototype._b64decode = 
     // credits for decoder goes to https://github.com/atk
     /**
      * @private
@@ -475,14 +459,14 @@ var JwtHelperService = /** @class */ (function () {
      * @param {?} str
      * @return {?}
      */
-    JwtHelperService.prototype.b64DecodeUnicode = /**
+    JwtHelperService.prototype._b64DecodeUnicode = /**
      * @private
      * @param {?} str
      * @return {?}
      */
     function (str) {
         return decodeURIComponent(Array.prototype.map
-            .call(this.b64decode(str), (/**
+            .call(this._b64decode(str), (/**
          * @param {?} c
          * @return {?}
          */
@@ -568,7 +552,7 @@ var JwtHelperService = /** @class */ (function () {
     JwtHelperService.ctorParameters = function () { return [
         { type: undefined, decorators: [{ type: Inject, args: [JWT_OPTIONS,] }] }
     ]; };
-    /** @nocollapse */ JwtHelperService.ngInjectableDef = defineInjectable({ factory: function JwtHelperService_Factory() { return new JwtHelperService(inject(JWT_OPTIONS)); }, token: JwtHelperService, providedIn: "root" });
+    /** @nocollapse */ JwtHelperService.ngInjectableDef = ɵɵdefineInjectable({ factory: function JwtHelperService_Factory() { return new JwtHelperService(ɵɵinject(JWT_OPTIONS)); }, token: JwtHelperService, providedIn: "root" });
     return JwtHelperService;
 }());
 
@@ -696,7 +680,7 @@ var JwtInterceptor = /** @class */ (function () {
         { type: undefined, decorators: [{ type: Inject, args: [JWT_OPTIONS,] }] },
         { type: JwtHelperService }
     ]; };
-    /** @nocollapse */ JwtInterceptor.ngInjectableDef = defineInjectable({ factory: function JwtInterceptor_Factory() { return new JwtInterceptor(inject(JWT_OPTIONS), inject(JwtHelperService)); }, token: JwtInterceptor, providedIn: "root" });
+    /** @nocollapse */ JwtInterceptor.ngInjectableDef = ɵɵdefineInjectable({ factory: function JwtInterceptor_Factory() { return new JwtInterceptor(ɵɵinject(JWT_OPTIONS), ɵɵinject(JwtHelperService)); }, token: JwtInterceptor, providedIn: "root" });
     return JwtInterceptor;
 }());
 
@@ -776,7 +760,7 @@ var AuthService = /** @class */ (function () {
         { type: HttpClient },
         { type: undefined, decorators: [{ type: Inject, args: [AUTH_OPTIONS,] }] }
     ]; };
-    /** @nocollapse */ AuthService.ngInjectableDef = defineInjectable({ factory: function AuthService_Factory() { return new AuthService(inject(HttpClient), inject(AUTH_OPTIONS)); }, token: AuthService, providedIn: "root" });
+    /** @nocollapse */ AuthService.ngInjectableDef = ɵɵdefineInjectable({ factory: function AuthService_Factory() { return new AuthService(ɵɵinject(HttpClient), ɵɵinject(AUTH_OPTIONS)); }, token: AuthService, providedIn: "root" });
     return AuthService;
 }());
 
@@ -785,8 +769,8 @@ var AuthService = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 var AuthGuard = /** @class */ (function () {
-    function AuthGuard(store) {
-        this.store = store;
+    function AuthGuard(_store) {
+        this._store = _store;
     }
     /**
      * @return {?}
@@ -820,20 +804,20 @@ var AuthGuard = /** @class */ (function () {
      */
     function () {
         var _this = this;
-        return this.store.pipe(select(getInit$1), filter((/**
+        return this._store.pipe(select(getInit$1), filter((/**
          * @param {?} init
          * @return {?}
          */
         function (init) { return init; })), concatMap((/**
          * @return {?}
          */
-        function () { return _this.store.pipe(select(getLoggedIn)); })), map((/**
+        function () { return _this._store.pipe(select(getLoggedIn)); })), map((/**
          * @param {?} authed
          * @return {?}
          */
         function (authed) {
             if (!authed) {
-                _this.store.dispatch(new LoginRedirect());
+                _this._store.dispatch(new LoginRedirect());
                 return false;
             }
             return true;
@@ -846,7 +830,7 @@ var AuthGuard = /** @class */ (function () {
     AuthGuard.ctorParameters = function () { return [
         { type: Store }
     ]; };
-    /** @nocollapse */ AuthGuard.ngInjectableDef = defineInjectable({ factory: function AuthGuard_Factory() { return new AuthGuard(inject(Store)); }, token: AuthGuard, providedIn: "root" });
+    /** @nocollapse */ AuthGuard.ngInjectableDef = ɵɵdefineInjectable({ factory: function AuthGuard_Factory() { return new AuthGuard(ɵɵinject(Store)); }, token: AuthGuard, providedIn: "root" });
     return AuthGuard;
 }());
 
@@ -940,40 +924,51 @@ LoginComponent = /** @class */ (function () {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 var AuthEffects = /** @class */ (function () {
-    function AuthEffects(actions$, authService, jwtHelperService, userInteractionsService, router, ts, config) {
+    function AuthEffects(_actions$, _authService, _jwtHelperService, _userInteractionsService, _router, _ts, _config) {
         var _this = this;
-        this.actions$ = actions$;
-        this.authService = authService;
-        this.jwtHelperService = jwtHelperService;
-        this.userInteractionsService = userInteractionsService;
-        this.router = router;
-        this.ts = ts;
-        this.config = config;
-        this.initUser$ = this.actions$.pipe(ofType(AuthActionTypes.InitUser), exhaustMap((/**
+        this._actions$ = _actions$;
+        this._authService = _authService;
+        this._jwtHelperService = _jwtHelperService;
+        this._userInteractionsService = _userInteractionsService;
+        this._router = _router;
+        this._ts = _ts;
+        this._config = _config;
+        this.initUser$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions$.pipe(ofType(AuthActionTypes.InitUser), exhaustMap((/**
          * @return {?}
          */
         function () {
-            return _this.authService.getCurrentUser().pipe(catchError((/**
+            return _this._authService.getCurrentUser().pipe(catchError((/**
              * @param {?} _
              * @return {?}
              */
-            function (_) { return of(null); })));
+            function (_) {
+                return of(_this._config.meGetter != null ? _this._config.meGetter() : null);
+            })));
         })), map((/**
          * @param {?} user
          * @return {?}
          */
-        function (user) { return new InitUserComplete({ user: user }); })));
-        this.initUserComplete$ = this.actions$.pipe(ofType(AuthActionTypes.InitUserComplete), map((/**
+        function (user) {
+            if (_this._config.meSetter != null) {
+                _this._config.meSetter(user);
+            }
+            return new InitUserComplete({ user: user });
+        }))); }));
+        this.initUserComplete$ = createEffect((/**
          * @return {?}
          */
-        function () { return new InitComplete(); })));
-        this.login$ = this.actions$.pipe(ofType(LoginPageActionTypes.Login), map((/**
+        function () { return _this._actions$.pipe(ofType(AuthActionTypes.InitUserComplete), map((/**
+         * @return {?}
+         */
+        function () { return new InitComplete(); }))); }));
+        this.login$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions$.pipe(ofType(LoginPageActionTypes.Login), map((/**
          * @param {?} action
          * @return {?}
          */
@@ -982,7 +977,7 @@ var AuthEffects = /** @class */ (function () {
          * @return {?}
          */
         function (auth) {
-            return _this.authService.login(auth).pipe(map((/**
+            return _this._authService.login(auth).pipe(map((/**
              * @param {?} res
              * @return {?}
              */
@@ -1003,14 +998,17 @@ var AuthEffects = /** @class */ (function () {
                  * @param {?} e
                  * @return {?}
                  */
-                function (e) { return (/** @type {?} */ (_this.ts.get(e))); }))).pipe(map((/**
+                function (e) { return (/** @type {?} */ (_this._ts.get(e))); }))).pipe(map((/**
                  * @param {?} error
                  * @return {?}
                  */
                 function (error) { return new LoginFailure({ error: error }); })));
             })));
-        })));
-        this.loginSuccess$ = this.actions$.pipe(ofType(AuthApiActionTypes.LoginSuccess), tap((/**
+        }))); }));
+        this.loginSuccess$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions$.pipe(ofType(AuthApiActionTypes.LoginSuccess), tap((/**
          * @param {?} action
          * @return {?}
          */
@@ -1018,29 +1016,37 @@ var AuthEffects = /** @class */ (function () {
             /** @type {?} */
             var payload = (/** @type {?} */ (action.payload));
             /** @type {?} */
-            var tokenKey = _this.config.tokenKey || 'access_token';
+            var tokenKey = _this._config.tokenKey || 'access_token';
             /** @type {?} */
-            var refreshTokenKey = _this.config.refreshTokenKey || 'refresh_token';
-            _this.jwtHelperService.tokenSetter(payload[tokenKey]);
-            _this.jwtHelperService.refreshTokenSetter(payload[refreshTokenKey]);
-            if (_this.config.loggedInUserSetter) {
-                _this.config.loggedInUserSetter(payload.user_id);
+            var refreshTokenKey = _this._config.refreshTokenKey || 'refresh_token';
+            _this._jwtHelperService.tokenSetter(payload[tokenKey]);
+            _this._jwtHelperService.refreshTokenSetter(payload[refreshTokenKey]);
+            if (_this._config.loggedInUserSetter) {
+                _this._config.loggedInUserSetter(payload.user_id);
             }
-            _this.router.navigate(['/']);
-        })), map((/**
+            _this._router.navigate(['/']);
+        })), mergeMap((/**
+         * @param {?} action
          * @return {?}
          */
-        function () {
-            return _this._getRefreshTokenAction();
-        })));
-        this.loginFailure$ = this.actions$.pipe(ofType(AuthApiActionTypes.LoginFailure), tap((/**
+        function (action) { return [
+            _this._getRefreshTokenAction(),
+            new InitUserComplete({ user: action.payload.user }),
+        ]; }))); }));
+        this.loginFailure$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions$.pipe(ofType(AuthApiActionTypes.LoginFailure), tap((/**
          * @param {?} action
          * @return {?}
          */
         function (action) {
-            _this.userInteractionsService.showLoginError(action.payload.error.join('\n'));
-        })));
-        this.refreshToken$ = this.actions$.pipe(ofType(AuthApiActionTypes.RefreshToken), delayWhen((/**
+            _this._userInteractionsService.showLoginError(action.payload.error.join('\n'));
+        }))); }), { dispatch: false });
+        this.refreshToken$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions$.pipe(ofType(AuthApiActionTypes.RefreshToken), delayWhen((/**
          * @param {?} action
          * @return {?}
          */
@@ -1049,7 +1055,7 @@ var AuthEffects = /** @class */ (function () {
          * @return {?}
          */
         function (action) {
-            return _this.authService.refreshToken(_this.jwtHelperService.refreshTokenGetter() || '').pipe(switchMap((/**
+            return _this._authService.refreshToken(_this._jwtHelperService.refreshTokenGetter() || '').pipe(switchMap((/**
              * @param {?} payload
              * @return {?}
              */
@@ -1057,8 +1063,8 @@ var AuthEffects = /** @class */ (function () {
                 /** @type {?} */
                 var res = [];
                 /** @type {?} */
-                var tokenKey = _this.config.tokenKey || 'access_token';
-                _this.jwtHelperService.tokenSetter(payload[tokenKey]);
+                var tokenKey = _this._config.tokenKey || 'access_token';
+                _this._jwtHelperService.tokenSetter(payload[tokenKey]);
                 if (action.payload.fromInit) {
                     res.push(new InitUser());
                 }
@@ -1068,18 +1074,24 @@ var AuthEffects = /** @class */ (function () {
              * @return {?}
              */
             function () { return of(new InitComplete()); })));
-        })));
-        this.loginRedirect$ = this.actions$.pipe(ofType(AuthApiActionTypes.LoginRedirect, AuthActionTypes.Logout), tap((/**
+        }))); }));
+        this.loginRedirect$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions$.pipe(ofType(AuthApiActionTypes.LoginRedirect, AuthActionTypes.Logout), tap((/**
          * @param {?} _authed
          * @return {?}
          */
         function (_authed) {
-            _this.router.navigate(['/login']);
-        })));
-        this.logoutConfirmation$ = this.actions$.pipe(ofType(AuthActionTypes.LogoutConfirmation), exhaustMap((/**
+            _this._router.navigate(['/login']);
+        }))); }), { dispatch: false });
+        this.logoutConfirmation$ = createEffect((/**
          * @return {?}
          */
-        function () { return _this.userInteractionsService.askLogoutConfirm(); })), map((/**
+        function () { return _this._actions$.pipe(ofType(AuthActionTypes.LogoutConfirmation), exhaustMap((/**
+         * @return {?}
+         */
+        function () { return _this._userInteractionsService.askLogoutConfirm(); })), map((/**
          * @param {?} result
          * @return {?}
          */
@@ -1087,26 +1099,26 @@ var AuthEffects = /** @class */ (function () {
             return result
                 ? new Logout()
                 : new LogoutConfirmationDismiss();
-        })));
-        this.init$ = defer((/**
+        }))); }));
+        this.init$ = createEffect((/**
          * @return {?}
          */
-        function () { return of(null); })).pipe(switchMap((/**
+        function () { return _this._actions$.pipe(ofType(AuthActionTypes.Init), switchMap((/**
          * @return {?}
          */
         function () {
             /** @type {?} */
             var res = [];
             /** @type {?} */
-            var token = _this.jwtHelperService.tokenGetter();
+            var token = _this._jwtHelperService.tokenGetter();
             if (token) {
                 try {
-                    if (!_this.jwtHelperService.isTokenExpired(token)) {
+                    if (!_this._jwtHelperService.isTokenExpired(token)) {
                         /** @type {?} */
-                        var decoded = _this.jwtHelperService.decodeToken(token);
+                        var decoded = _this._jwtHelperService.decodeToken(token);
                         /** @type {?} */
-                        var scopes = _this.config.disableScopes ? [] : _this._getScopesFromToken(decoded);
-                        if (_this.config.disableScopes || scopes.indexOf('admin') > -1) {
+                        var scopes = _this._config.disableScopes ? [] : _this._getScopesFromToken(decoded);
+                        if (_this._config.disableScopes || scopes.indexOf('admin') > -1) {
                             res.push(new InitUser());
                             res.push(_this._getRefreshTokenAction());
                         }
@@ -1123,8 +1135,17 @@ var AuthEffects = /** @class */ (function () {
                 res.push(new InitComplete());
             }
             return res;
-        })));
+        }))); }));
     }
+    /**
+     * @return {?}
+     */
+    AuthEffects.prototype.ngrxOnInitEffects = /**
+     * @return {?}
+     */
+    function () {
+        return new Init();
+    };
     /**
      * @private
      * @param {?=} fromInit
@@ -1137,9 +1158,9 @@ var AuthEffects = /** @class */ (function () {
      */
     function (fromInit) {
         /** @type {?} */
-        var accessToken = this.jwtHelperService.tokenGetter();
+        var accessToken = this._jwtHelperService.tokenGetter();
         /** @type {?} */
-        var exp = this.jwtHelperService.getTokenExpirationDate(accessToken) || new Date();
+        var exp = this._jwtHelperService.getTokenExpirationDate(accessToken) || new Date();
         /** @type {?} */
         var refreshDelay = Math.max(0, Math.round((exp.getTime() - new Date().getTime()) * 0.8));
         return new RefreshToken({ refreshDelay: refreshDelay, fromInit: fromInit });
@@ -1156,7 +1177,7 @@ var AuthEffects = /** @class */ (function () {
      */
     function (token) {
         /** @type {?} */
-        var scopesPath = this.config.scopesPath || ['scopes'];
+        var scopesPath = this._config.scopesPath || ['scopes'];
         scopesPath.forEach((/**
          * @param {?} p
          * @return {?}
@@ -1177,42 +1198,6 @@ var AuthEffects = /** @class */ (function () {
         { type: TranslateService },
         { type: undefined, decorators: [{ type: Inject, args: [AUTH_OPTIONS,] }] }
     ]; };
-    __decorate([
-        Effect(),
-        __metadata("design:type", Object)
-    ], AuthEffects.prototype, "initUser$", void 0);
-    __decorate([
-        Effect(),
-        __metadata("design:type", Object)
-    ], AuthEffects.prototype, "initUserComplete$", void 0);
-    __decorate([
-        Effect(),
-        __metadata("design:type", Object)
-    ], AuthEffects.prototype, "login$", void 0);
-    __decorate([
-        Effect(),
-        __metadata("design:type", Object)
-    ], AuthEffects.prototype, "loginSuccess$", void 0);
-    __decorate([
-        Effect({ dispatch: false }),
-        __metadata("design:type", Object)
-    ], AuthEffects.prototype, "loginFailure$", void 0);
-    __decorate([
-        Effect(),
-        __metadata("design:type", Object)
-    ], AuthEffects.prototype, "refreshToken$", void 0);
-    __decorate([
-        Effect({ dispatch: false }),
-        __metadata("design:type", Object)
-    ], AuthEffects.prototype, "loginRedirect$", void 0);
-    __decorate([
-        Effect(),
-        __metadata("design:type", Object)
-    ], AuthEffects.prototype, "logoutConfirmation$", void 0);
-    __decorate([
-        Effect(),
-        __metadata("design:type", Object)
-    ], AuthEffects.prototype, "init$", void 0);
     return AuthEffects;
 }());
 
@@ -1240,16 +1225,6 @@ var AuthModule = /** @class */ (function () {
     ];
     return AuthModule;
 }());
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 
 export { AUTH_OPTIONS, authActions as AuthActions, authApiActions as AuthApiActions, AuthGuard, AuthModule, AuthService, AuthUserInteractionsService, JWT_OPTIONS, JwtHelperService, JwtInterceptor, LoginComponent, reducers$1 as reducers, reducers as ɵb, reducer as ɵc, reducer$1 as ɵd, AuthEffects as ɵe };
 //# sourceMappingURL=auth.es5.js.map

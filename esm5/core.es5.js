@@ -28,17 +28,7 @@ import { Version } from '@angular/core';
  * Current version of Gngt.
  * @type {?}
  */
-var VERSION = new Version('7.0.8-214dfee');
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
+var VERSION = new Version('8.0.2-32e7ee1');
 
 export { VERSION };
 //# sourceMappingURL=core.es5.js.map

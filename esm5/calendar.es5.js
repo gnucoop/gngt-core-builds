@@ -866,15 +866,5 @@ Calendar = /** @class */ (function () {
     return Calendar;
 }());
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
 export { CALENDAR_CONTROL_VALUE_ACCESSOR, Calendar, CalendarChange, CalendarEntry, CalendarPeriod };
 //# sourceMappingURL=calendar.es5.js.map

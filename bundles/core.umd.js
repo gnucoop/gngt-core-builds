@@ -21,7 +21,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
 	typeof define === 'function' && define.amd ? define('@gngt/core', ['exports', '@angular/core'], factory) :
-	(global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = {}), global.ng.core));
+	(global = global || self, factory((global.gngt = global.gngt || {}, global.gngt.core = {}), global.ng.core));
 }(this, function (exports, core) { 'use strict';
 
 	/**
@@ -32,7 +32,7 @@
 	 * Current version of Gngt.
 	 * @type {?}
 	 */
-	var VERSION = new core.Version('7.0.8-214dfee');
+	var VERSION = new core.Version('8.0.2-32e7ee1');
 
 	exports.VERSION = VERSION;
 

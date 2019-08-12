@@ -20,11 +20,13 @@
  */
 import { type } from '@gngt/core/reducers';
 import { of, pipe, throwError } from 'rxjs';
-import { mergeMap, map, catchError, filter, tap } from 'rxjs/operators';
-import { ofType } from '@ngrx/effects';
+import { mergeMap, map, catchError, filter, switchMap, tap } from 'rxjs/operators';
+import { createEffect, ofType } from '@ngrx/effects';
 import { v4 } from 'uuid';
+import { HttpClient } from '@angular/common/http';
+import { Optional, InjectionToken } from '@angular/core';
 import { ModelManager as ModelManager$1 } from '@gngt/core/common';
-import { InjectionToken } from '@angular/core';
+import { SyncService } from '@gngt/core/sync';
 import { createFeatureSelector, createSelector, select } from '@ngrx/store';
 
 /**
@@ -758,7 +760,10 @@ class ModelEffects {
         this._service = _service;
         this._manager = _manager;
         this._actionTypes = _actionTypes;
-        this.modelGet$ = this._actions.pipe(ofType(this._actionTypes.GET), mergeMap((/**
+        this.modelGet$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions.pipe(ofType(this._actionTypes.GET), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -778,8 +783,11 @@ class ModelEffects {
             type: this._actionTypes.GET_FAILURE,
             payload: { error },
             uuid: action.uuid
-        }))))))));
-        this.modelList$ = this._actions.pipe(ofType(this._actionTypes.LIST), mergeMap((/**
+        }))))))))));
+        this.modelList$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions.pipe(ofType(this._actionTypes.LIST), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -799,8 +807,11 @@ class ModelEffects {
             type: this._actionTypes.LIST_FAILURE,
             payload: { error },
             uuid: action.uuid
-        }))))))));
-        this.modelCreate$ = this._actions.pipe(ofType(this._actionTypes.CREATE), mergeMap((/**
+        }))))))))));
+        this.modelCreate$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions.pipe(ofType(this._actionTypes.CREATE), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -820,9 +831,11 @@ class ModelEffects {
             type: this._actionTypes.CREATE_FAILURE,
             payload: { error },
             uuid: action.uuid
-        }))))))));
-        this.modelUpdate$ = this._actions
-            .pipe(ofType(this._actionTypes.UPDATE), mergeMap((/**
+        }))))))))));
+        this.modelUpdate$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions.pipe(ofType(this._actionTypes.UPDATE), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -842,8 +855,11 @@ class ModelEffects {
             type: this._actionTypes.CREATE_FAILURE,
             payload: { error },
             uuid: action.uuid
-        }))))))));
-        this.modelPatch$ = this._actions.pipe(ofType(this._actionTypes.PATCH), mergeMap((/**
+        }))))))))));
+        this.modelPatch$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions.pipe(ofType(this._actionTypes.PATCH), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -863,8 +879,11 @@ class ModelEffects {
             type: this._actionTypes.CREATE_FAILURE,
             payload: { error },
             uuid: action.uuid
-        }))))))));
-        this.modelDelete$ = this._actions.pipe(ofType(this._actionTypes.DELETE), mergeMap((/**
+        }))))))))));
+        this.modelDelete$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions.pipe(ofType(this._actionTypes.DELETE), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -883,8 +902,11 @@ class ModelEffects {
             type: this._actionTypes.DELETE_FAILURE,
             payload: { error },
             uuid: action.uuid
-        }))))))));
-        this.modelDeleteAll$ = this._actions.pipe(ofType(this._actionTypes.DELETE_ALL), mergeMap((/**
+        }))))))))));
+        this.modelDeleteAll$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions.pipe(ofType(this._actionTypes.DELETE_ALL), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -907,8 +929,11 @@ class ModelEffects {
             type: this._actionTypes.DELETE_ALL_FAILURE,
             payload: { error },
             uuid: action.uuid
-        }))))))));
-        this.modelQuery$ = this._actions.pipe(ofType(this._actionTypes.QUERY), mergeMap((/**
+        }))))))))));
+        this.modelQuery$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions.pipe(ofType(this._actionTypes.QUERY), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -928,7 +953,7 @@ class ModelEffects {
             type: this._actionTypes.QUERY_FAILURE,
             payload: { error },
             uuid: action.uuid
-        }))))))));
+        }))))))))));
     }
 }
 
@@ -942,21 +967,35 @@ class ModelEffects {
  */
 class ModelManager extends ModelManager$1 {
     /**
-     * @param {?} _config
+     * @param {?} config
      * @param {?} _endPoint
      * @param {?} _http
+     * @param {?=} syncService
      */
-    constructor(_config, _endPoint, _http) {
+    constructor(config, _endPoint, _http, syncService) {
         super();
-        this._config = _config;
         this._endPoint = _endPoint;
         this._http = _http;
-        this._baseUrl = `${this._config.baseApiUrl}${this._endPoint}`;
+        this._useTrailingSlash = false;
+        this._baseUrl = `${config.baseApiUrl}${this._endPoint}`;
+        this._useTrailingSlash = config.addTrailingSlash != null
+            ? config.addTrailingSlash
+            : false;
+        if (syncService != null && config.syncModel) {
+            if (config.tableName == null) {
+                throw new Error(`Table name must be set for model ${this._endPoint}`);
+            }
+            syncService.registerSyncModel(this._baseUrl, config.tableName);
+        }
     }
     /**
      * @return {?}
      */
     get endPoint() { return this._endPoint; }
+    /**
+     * @return {?}
+     */
+    get baseUrl() { return this._baseUrl; }
     /**
      * @param {?} id
      * @return {?}
@@ -1010,7 +1049,7 @@ class ModelManager extends ModelManager$1 {
     deleteAll(ids) {
         /** @type {?} */
         let url = `${this._baseUrl}/delete_all`;
-        if (this._config.addTrailingSlash) {
+        if (this._useTrailingSlash) {
             url = `${url}/`;
         }
         return this._http.post(url, { ids });
@@ -1022,7 +1061,7 @@ class ModelManager extends ModelManager$1 {
     query(params) {
         /** @type {?} */
         let url = `${this._baseUrl}/query`;
-        if (this._config.addTrailingSlash) {
+        if (this._useTrailingSlash) {
             url = `${url}/`;
         }
         return this._http.post(url, params);
@@ -1035,7 +1074,7 @@ class ModelManager extends ModelManager$1 {
     _getObjectUrl(id) {
         /** @type {?} */
         let url = `${this._baseUrl}/${id}`;
-        if (this._config.addTrailingSlash) {
+        if (this._useTrailingSlash) {
             url = `${url}/`;
         }
         return url;
@@ -1047,7 +1086,7 @@ class ModelManager extends ModelManager$1 {
     _getListUrl() {
         /** @type {?} */
         let url = this._baseUrl;
-        if (this._config.addTrailingSlash) {
+        if (this._useTrailingSlash) {
             url = `${url}/`;
         }
         return url;
@@ -1102,11 +1141,13 @@ class ModelManager extends ModelManager$1 {
         return params;
     }
 }
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
+/** @nocollapse */
+ModelManager.ctorParameters = () => [
+    { type: undefined },
+    { type: String },
+    { type: HttpClient },
+    { type: SyncService, decorators: [{ type: Optional }] }
+];
 
 /**
  * @fileoverview added by tsickle
@@ -1671,7 +1712,16 @@ class ModelService {
             payload: { id }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        const actResult = this._actions.pipe(ofType(this._actionTypes.GET_SUCCESS, this._actionTypes.GET_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        a => a.uuid === action.uuid)));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        () => this._store)), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -1716,7 +1766,16 @@ class ModelService {
             payload: { params: options || {} }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        const actResult = this._actions.pipe(ofType(this._actionTypes.LIST_SUCCESS, this._actionTypes.LIST_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        a => a.uuid === action.uuid)));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        () => this._store)), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -1761,7 +1820,16 @@ class ModelService {
             payload: { item: data },
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        const actResult = this._actions.pipe(ofType(this._actionTypes.CREATE_SUCCESS, this._actionTypes.CREATE_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        a => a.uuid === action.uuid)));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        () => this._store)), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -1806,7 +1874,16 @@ class ModelService {
             payload: { item: data },
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        const actResult = this._actions.pipe(ofType(this._actionTypes.UPDATE_SUCCESS, this._actionTypes.UPDATE_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        a => a.uuid === action.uuid)));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        () => this._store)), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -1851,7 +1928,16 @@ class ModelService {
             payload: { item: data }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        const actResult = this._actions.pipe(ofType(this._actionTypes.PATCH_SUCCESS, this._actionTypes.PATCH_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        a => a.uuid === action.uuid)));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        () => this._store)), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -1896,7 +1982,16 @@ class ModelService {
             payload: { item: data }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        const actResult = this._actions.pipe(ofType(this._actionTypes.DELETE_SUCCESS, this._actionTypes.DELETE_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        a => a.uuid === action.uuid)));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        () => this._store)), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -1941,7 +2036,16 @@ class ModelService {
             payload: { items: data }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        const actResult = this._actions.pipe(ofType(this._actionTypes.DELETE_ALL_SUCCESS, this._actionTypes.DELETE_ALL_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        a => a.uuid === action.uuid)));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        () => this._store)), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -1986,7 +2090,16 @@ class ModelService {
             payload: { params: options || {} }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        const actResult = this._actions.pipe(ofType(this._actionTypes.QUERY_SUCCESS, this._actionTypes.QUERY_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        a => a.uuid === action.uuid)));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        () => this._store)), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -2022,15 +2135,5 @@ class ModelService {
     }
 }
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-export { MODEL_OPTIONS, modelActions as ModelActions, ModelEffects, ModelManager, ModelService, generateInitialModelState, modelReducer, reducers, ModelGenericAction as ɵa };
+export { MODEL_OPTIONS, modelActions as ModelActions, ModelEffects, ModelGenericAction, ModelManager, ModelService, createAction, generateInitialModelState, modelReducer, reducers };
 //# sourceMappingURL=model.js.map

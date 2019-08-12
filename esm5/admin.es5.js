@@ -21,8 +21,8 @@
 import { __assign } from 'tslib';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { Input, Output, EventEmitter } from '@angular/core';
-import { BehaviorSubject, Subscription, combineLatest, of, Observable, merge } from 'rxjs';
-import { filter, switchMap, tap, mapTo, shareReplay, map, withLatestFrom } from 'rxjs/operators';
+import { BehaviorSubject, Subscription, combineLatest, of, Observable } from 'rxjs';
+import { filter, switchMap, tap, mapTo, shareReplay, map, withLatestFrom, take } from 'rxjs/operators';
 import '@gngt/core/model';
 
 /**
@@ -62,10 +62,11 @@ var AdminEditComponent = /** @class */ (function () {
         this._service = new BehaviorSubject(null);
         this._fields = [];
         this._id = new BehaviorSubject(null);
+        this._loading = new BehaviorSubject(false);
+        this.loading = this._loading.asObservable();
         this._updateFormEvt = new EventEmitter();
         this._saveEvt = new EventEmitter();
         this._saveSub = Subscription.EMPTY;
-        this._savedSub = Subscription.EMPTY;
         this._processFormData = this._defaultProcessData;
         /** @type {?} */
         var objObs = combineLatest(this._service, this._id).pipe(filter((/**
@@ -133,7 +134,13 @@ var AdminEditComponent = /** @class */ (function () {
          * @return {?}
          */
         function (form) { return form.valueChanges; })));
-        this._saveSub = this._saveEvt.pipe(withLatestFrom(this.form, this._service, this._id), filter((/**
+        /** @type {?} */
+        var serviceObs = this._service.pipe(filter((/**
+         * @param {?} s
+         * @return {?}
+         */
+        function (s) { return s != null; })));
+        this._saveSub = this._saveEvt.pipe(withLatestFrom(this.form, serviceObs, this._id), filter((/**
          * @param {?} __0
          * @return {?}
          */
@@ -162,7 +169,10 @@ var AdminEditComponent = /** @class */ (function () {
                 }
             }
             return of([formValue, service, id]);
-        }))).subscribe((/**
+        })), tap((/**
+         * @return {?}
+         */
+        function () { return _this._loading.next(true); })), switchMap((/**
          * @param {?} __0
          * @return {?}
          */
@@ -170,39 +180,19 @@ var AdminEditComponent = /** @class */ (function () {
             var formValue = _a[0], service = _a[1], id = _a[2];
             if (id === 'new') {
                 delete formValue['id'];
-                (/** @type {?} */ (service)).create(formValue);
+                return (/** @type {?} */ (service)).create(formValue);
             }
-            else {
-                (/** @type {?} */ (service)).patch(formValue);
-            }
-        }));
-        /** @type {?} */
-        var serviceObs = this._service.pipe(filter((/**
-         * @param {?} s
+            return (/** @type {?} */ (service)).patch(formValue);
+        })), take(1)).subscribe((/**
          * @return {?}
          */
-        function (s) { return s != null; })));
-        this.loading = serviceObs.pipe(filter((/**
-         * @param {?} s
+        function () {
+            _this._loading.next(false);
+            _this.goBack();
+        }), (/**
          * @return {?}
          */
-        function (s) { return s != null; })), switchMap((/**
-         * @param {?} s
-         * @return {?}
-         */
-        function (s) { return merge((/** @type {?} */ (s)).getGetLoading(), (/** @type {?} */ (s)).getCreateLoading(), (/** @type {?} */ (s)).getPatchLoading()); })));
-        this._savedSub = serviceObs.pipe(filter((/**
-         * @param {?} s
-         * @return {?}
-         */
-        function (s) { return s != null; })), switchMap((/**
-         * @param {?} s
-         * @return {?}
-         */
-        function (s) { return merge((/** @type {?} */ (s)).getCreateSuccess(), (/** @type {?} */ (s)).getPatchSuccess()); }))).subscribe((/**
-         * @return {?}
-         */
-        function () { return _this.goBack(); }));
+        function () { return _this._loading.next(false); }));
     }
     Object.defineProperty(AdminEditComponent.prototype, "title", {
         get: /**
@@ -416,7 +406,6 @@ var AdminEditComponent = /** @class */ (function () {
         this._updateFormEvt.complete();
         this._saveEvt.complete();
         this._saveSub.unsubscribe();
-        this._savedSub.unsubscribe();
     };
     /**
      * @private
@@ -484,16 +473,6 @@ var AdminEditComponent = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
 /** @enum {string} */
 var AdminEditFieldSubtype = {
     Color: 'color',
@@ -531,11 +510,6 @@ var AdminEditFieldType = {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 /**
  * @abstract
  * @template T, S, A, MS
@@ -554,6 +528,7 @@ AdminListComponent = /** @class */ (function () {
         this._newItemPath = 'new';
         this._actionProcessed = new EventEmitter();
         this.actionProcessed = this._actionProcessed.asObservable();
+        this._deletionEvt = new EventEmitter();
         this._deletionSub = Subscription.EMPTY;
     }
     Object.defineProperty(AdminListComponent.prototype, "title", {
@@ -678,6 +653,7 @@ AdminListComponent = /** @class */ (function () {
      */
     function () {
         this._deletionSub.unsubscribe();
+        this._deletionEvt.complete();
     };
     /**
      * @param {?} action
@@ -768,33 +744,43 @@ AdminListComponent = /** @class */ (function () {
      */
     function () {
         var _this = this;
-        this._deletionSub = merge(this._service.getDeleteSuccess(), this._service.getDeleteAllSuccess()).subscribe((/**
+        this._deletionSub.unsubscribe();
+        this._deletionSub = this._deletionEvt.pipe(switchMap((/**
+         * @param {?} selected
          * @return {?}
          */
-        function () { return _this.refreshList(); }));
+        function (selected) { return _this._aui.askDeleteConfirm().pipe(map((/**
+         * @param {?} res
+         * @return {?}
+         */
+        function (res) { return ({ res: res, selected: selected }); }))); })), switchMap((/**
+         * @param {?} __0
+         * @return {?}
+         */
+        function (_a) {
+            var res = _a.res, selected = _a.selected;
+            if (res) {
+                if (selected.length === 1) {
+                    return _this._service.delete(selected[0]);
+                }
+                return _this._service.deleteAll(selected);
+            }
+            return of(null);
+        })), filter((/**
+         * @param {?} r
+         * @return {?}
+         */
+        function (r) { return r != null; })), take(1)).subscribe((/**
+         * @return {?}
+         */
+        function () {
+            _this._actionProcessed.emit('delete');
+            _this.clearSelection();
+            _this.refreshList();
+        }));
     };
     return AdminListComponent;
 }());
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 
 export { AdminEditComponent, AdminEditFieldSubtype, AdminEditFieldType, AdminListComponent, AdminUserInteractionsService };
 //# sourceMappingURL=admin.es5.js.map

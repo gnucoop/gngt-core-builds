@@ -20,7 +20,7 @@
  */
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ModelGetParams, ModelListParams } from '@gngt/core/common';
+import { ModelGetParams, ModelListParams, ModelQueryParams } from '@gngt/core/common';
 import { SyncOptions } from './sync-options';
 import { SyncStatus } from './sync-status';
 export declare class SyncService {
@@ -41,13 +41,16 @@ export declare class SyncService {
     private readonly _databaseInit;
     private readonly _databaseIsInit;
     constructor(_opts: SyncOptions, _httpClient: HttpClient);
+    registerSyncModel(endPoint: string, tableName: string): void;
     start(immediate?: boolean): void;
     stop(): void;
     get(tableName: string, params: ModelGetParams): Observable<any>;
     list(tableName: string, params: ModelListParams): Observable<any[]>;
-    create(tableName: string, object: any): Observable<number>;
-    update(tableName: string, id: number, object: any): Observable<number>;
-    delete(tableName: string, id: number): Observable<number>;
+    create(tableName: string, object: any): Observable<any>;
+    update(tableName: string, id: number, object: any): Observable<any>;
+    delete(tableName: string, id: number): Observable<any>;
+    deleteAll(tableName: string, ids: number[]): Observable<any[]>;
+    query(tableName: string, params: ModelQueryParams): Observable<any[]>;
     private _getLocalDocsDb;
     private _getLocalSyncDb;
     private _getLocalSyncNumberDb;
@@ -76,7 +79,10 @@ export declare class SyncService {
     private _emitSyncSyncing;
     private _processDownwardChange;
     private _modelGetFindRequest;
+    private _modelBulkIdsFindRequest;
+    private _modelQueryFindRequest;
     private _modelListFindRequest;
+    private _normalizeSelector;
     private _normalizeSortParam;
     private _syncEntryFindRequest;
     private _syncEntryFindSelector;

@@ -19,15 +19,14 @@
  *
  */
 import { createFeatureSelector, createSelector, select, Store, StoreModule } from '@ngrx/store';
-import { InjectionToken, Injectable, Inject, defineInjectable, inject, EventEmitter, NgModule } from '@angular/core';
+import { InjectionToken, Injectable, Inject, ɵɵdefineInjectable, ɵɵinject, EventEmitter, NgModule } from '@angular/core';
 import * as URLParse from 'url-parse';
 import { HttpClient } from '@angular/common/http';
-import { filter, concatMap, map, take, exhaustMap, catchError, tap, delayWhen, switchMap } from 'rxjs/operators';
+import { filter, concatMap, map, take, exhaustMap, catchError, tap, mergeMap, delayWhen, switchMap } from 'rxjs/operators';
 import { Validators } from '@angular/forms';
-import { Subscription, of, zip, timer, defer } from 'rxjs';
+import { Subscription, of, zip, timer } from 'rxjs';
 import { forceBooleanProp } from '@gngt/core/common';
-import { ofType, Actions, Effect, EffectsModule } from '@ngrx/effects';
-import { __decorate, __metadata } from 'tslib';
+import { createEffect, ofType, Actions, EffectsModule } from '@ngrx/effects';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -38,6 +37,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 /** @enum {string} */
 const AuthActionTypes = {
+    Init: '[Auth] Init',
     InitUser: '[Auth] Init user',
     InitUserComplete: '[Auth] Init user complete',
     InitComplete: '[Auth] Init complete',
@@ -45,6 +45,11 @@ const AuthActionTypes = {
     LogoutConfirmation: '[Auth] Logout Confirmation',
     LogoutConfirmationDismiss: '[Auth] Logout Confirmation Dismiss',
 };
+class Init {
+    constructor() {
+        this.type = AuthActionTypes.Init;
+    }
+}
 class InitUser {
     constructor() {
         this.type = AuthActionTypes.InitUser;
@@ -82,6 +87,7 @@ class LogoutConfirmationDismiss {
 
 var authActions = /*#__PURE__*/Object.freeze({
     AuthActionTypes: AuthActionTypes,
+    Init: Init,
     InitUser: InitUser,
     InitUserComplete: InitUserComplete,
     InitComplete: InitComplete,
@@ -271,28 +277,31 @@ const reducers = {
 };
 /** @type {?} */
 const selectAuthState = createFeatureSelector('auth');
-/** @type {?} */
-const selectAuthStatusState = createSelector(selectAuthState, (/**
+const ɵ0 = /**
  * @param {?} state
  * @return {?}
  */
-(state) => state.status));
+(state) => state.status;
+/** @type {?} */
+const selectAuthStatusState = createSelector(selectAuthState, (ɵ0));
 /** @type {?} */
 const getInit$1 = createSelector(selectAuthStatusState, getInit);
 /** @type {?} */
 const getUser$1 = createSelector(selectAuthStatusState, getUser);
-/** @type {?} */
-const getLoggedIn = createSelector(getUser$1, (/**
+const ɵ1 = /**
  * @param {?} user
  * @return {?}
  */
-user => user != null));
+user => user != null;
 /** @type {?} */
-const selectLoginPageState = createSelector(selectAuthState, (/**
+const getLoggedIn = createSelector(getUser$1, (ɵ1));
+const ɵ2 = /**
  * @param {?} state
  * @return {?}
  */
-(state) => state.loginPage));
+(state) => state.loginPage;
+/** @type {?} */
+const selectLoginPageState = createSelector(selectAuthState, (ɵ2));
 /** @type {?} */
 const getLoginPageError = createSelector(selectLoginPageState, getError);
 /** @type {?} */
@@ -309,38 +318,11 @@ var reducers$1 = /*#__PURE__*/Object.freeze({
     getLoggedIn: getLoggedIn,
     selectLoginPageState: selectLoginPageState,
     getLoginPageError: getLoginPageError,
-    getLoginPagePending: getLoginPagePending
+    getLoginPagePending: getLoginPagePending,
+    ɵ0: ɵ0,
+    ɵ1: ɵ1,
+    ɵ2: ɵ2
 });
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 
 /**
  * @fileoverview added by tsickle
@@ -426,7 +408,7 @@ class JwtHelperService {
                 throw new Error('Illegal base64url string!');
             }
         }
-        return this.b64DecodeUnicode(output);
+        return this._b64DecodeUnicode(output);
     }
     // credits for decoder goes to https://github.com/atk
     /**
@@ -434,7 +416,7 @@ class JwtHelperService {
      * @param {?} str
      * @return {?}
      */
-    b64decode(str) {
+    _b64decode(str) {
         /** @type {?} */
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
         /** @type {?} */
@@ -468,9 +450,9 @@ class JwtHelperService {
      * @param {?} str
      * @return {?}
      */
-    b64DecodeUnicode(str) {
+    _b64DecodeUnicode(str) {
         return decodeURIComponent(Array.prototype.map
-            .call(this.b64decode(str), (/**
+            .call(this._b64decode(str), (/**
          * @param {?} c
          * @return {?}
          */
@@ -541,7 +523,7 @@ JwtHelperService.decorators = [
 JwtHelperService.ctorParameters = () => [
     { type: undefined, decorators: [{ type: Inject, args: [JWT_OPTIONS,] }] }
 ];
-/** @nocollapse */ JwtHelperService.ngInjectableDef = defineInjectable({ factory: function JwtHelperService_Factory() { return new JwtHelperService(inject(JWT_OPTIONS)); }, token: JwtHelperService, providedIn: "root" });
+/** @nocollapse */ JwtHelperService.ngInjectableDef = ɵɵdefineInjectable({ factory: function JwtHelperService_Factory() { return new JwtHelperService(ɵɵinject(JWT_OPTIONS)); }, token: JwtHelperService, providedIn: "root" });
 
 /**
  * @fileoverview added by tsickle
@@ -648,7 +630,7 @@ JwtInterceptor.ctorParameters = () => [
     { type: undefined, decorators: [{ type: Inject, args: [JWT_OPTIONS,] }] },
     { type: JwtHelperService }
 ];
-/** @nocollapse */ JwtInterceptor.ngInjectableDef = defineInjectable({ factory: function JwtInterceptor_Factory() { return new JwtInterceptor(inject(JWT_OPTIONS), inject(JwtHelperService)); }, token: JwtInterceptor, providedIn: "root" });
+/** @nocollapse */ JwtInterceptor.ngInjectableDef = ɵɵdefineInjectable({ factory: function JwtInterceptor_Factory() { return new JwtInterceptor(ɵɵinject(JWT_OPTIONS), ɵɵinject(JwtHelperService)); }, token: JwtInterceptor, providedIn: "root" });
 
 /**
  * @fileoverview added by tsickle
@@ -714,7 +696,7 @@ AuthService.ctorParameters = () => [
     { type: HttpClient },
     { type: undefined, decorators: [{ type: Inject, args: [AUTH_OPTIONS,] }] }
 ];
-/** @nocollapse */ AuthService.ngInjectableDef = defineInjectable({ factory: function AuthService_Factory() { return new AuthService(inject(HttpClient), inject(AUTH_OPTIONS)); }, token: AuthService, providedIn: "root" });
+/** @nocollapse */ AuthService.ngInjectableDef = ɵɵdefineInjectable({ factory: function AuthService_Factory() { return new AuthService(ɵɵinject(HttpClient), ɵɵinject(AUTH_OPTIONS)); }, token: AuthService, providedIn: "root" });
 
 /**
  * @fileoverview added by tsickle
@@ -722,10 +704,10 @@ AuthService.ctorParameters = () => [
  */
 class AuthGuard {
     /**
-     * @param {?} store
+     * @param {?} _store
      */
-    constructor(store) {
-        this.store = store;
+    constructor(_store) {
+        this._store = _store;
     }
     /**
      * @return {?}
@@ -746,20 +728,20 @@ class AuthGuard {
      * @return {?}
      */
     _guard() {
-        return this.store.pipe(select(getInit$1), filter((/**
+        return this._store.pipe(select(getInit$1), filter((/**
          * @param {?} init
          * @return {?}
          */
         init => init)), concatMap((/**
          * @return {?}
          */
-        () => this.store.pipe(select(getLoggedIn)))), map((/**
+        () => this._store.pipe(select(getLoggedIn)))), map((/**
          * @param {?} authed
          * @return {?}
          */
         authed => {
             if (!authed) {
-                this.store.dispatch(new LoginRedirect());
+                this._store.dispatch(new LoginRedirect());
                 return false;
             }
             return true;
@@ -773,7 +755,7 @@ AuthGuard.decorators = [
 AuthGuard.ctorParameters = () => [
     { type: Store }
 ];
-/** @nocollapse */ AuthGuard.ngInjectableDef = defineInjectable({ factory: function AuthGuard_Factory() { return new AuthGuard(inject(Store)); }, token: AuthGuard, providedIn: "root" });
+/** @nocollapse */ AuthGuard.ngInjectableDef = ɵɵdefineInjectable({ factory: function AuthGuard_Factory() { return new AuthGuard(ɵɵinject(Store)); }, token: AuthGuard, providedIn: "root" });
 
 /**
  * @fileoverview added by tsickle
@@ -849,46 +831,57 @@ class LoginComponent {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 class AuthEffects {
     /**
-     * @param {?} actions$
-     * @param {?} authService
-     * @param {?} jwtHelperService
-     * @param {?} userInteractionsService
-     * @param {?} router
-     * @param {?} ts
-     * @param {?} config
+     * @param {?} _actions$
+     * @param {?} _authService
+     * @param {?} _jwtHelperService
+     * @param {?} _userInteractionsService
+     * @param {?} _router
+     * @param {?} _ts
+     * @param {?} _config
      */
-    constructor(actions$, authService, jwtHelperService, userInteractionsService, router, ts, config) {
-        this.actions$ = actions$;
-        this.authService = authService;
-        this.jwtHelperService = jwtHelperService;
-        this.userInteractionsService = userInteractionsService;
-        this.router = router;
-        this.ts = ts;
-        this.config = config;
-        this.initUser$ = this.actions$.pipe(ofType(AuthActionTypes.InitUser), exhaustMap((/**
+    constructor(_actions$, _authService, _jwtHelperService, _userInteractionsService, _router, _ts, _config) {
+        this._actions$ = _actions$;
+        this._authService = _authService;
+        this._jwtHelperService = _jwtHelperService;
+        this._userInteractionsService = _userInteractionsService;
+        this._router = _router;
+        this._ts = _ts;
+        this._config = _config;
+        this.initUser$ = createEffect((/**
          * @return {?}
          */
-        () => this.authService.getCurrentUser().pipe(catchError((/**
+        () => this._actions$.pipe(ofType(AuthActionTypes.InitUser), exhaustMap((/**
+         * @return {?}
+         */
+        () => this._authService.getCurrentUser().pipe(catchError((/**
          * @param {?} _
          * @return {?}
          */
-        _ => of(null)))))), map((/**
+        _ => {
+            return of(this._config.meGetter != null ? this._config.meGetter() : null);
+        }))))), map((/**
          * @param {?} user
          * @return {?}
          */
-        (user) => new InitUserComplete({ user }))));
-        this.initUserComplete$ = this.actions$.pipe(ofType(AuthActionTypes.InitUserComplete), map((/**
+        (user) => {
+            if (this._config.meSetter != null) {
+                this._config.meSetter(user);
+            }
+            return new InitUserComplete({ user });
+        })))));
+        this.initUserComplete$ = createEffect((/**
          * @return {?}
          */
-        () => new InitComplete())));
-        this.login$ = this.actions$.pipe(ofType(LoginPageActionTypes.Login), map((/**
+        () => this._actions$.pipe(ofType(AuthActionTypes.InitUserComplete), map((/**
+         * @return {?}
+         */
+        () => new InitComplete())))));
+        this.login$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions$.pipe(ofType(LoginPageActionTypes.Login), map((/**
          * @param {?} action
          * @return {?}
          */
@@ -896,7 +889,7 @@ class AuthEffects {
          * @param {?} auth
          * @return {?}
          */
-        (auth) => this.authService.login(auth).pipe(map((/**
+        (auth) => this._authService.login(auth).pipe(map((/**
          * @param {?} res
          * @return {?}
          */
@@ -917,14 +910,17 @@ class AuthEffects {
              * @param {?} e
              * @return {?}
              */
-            e => (/** @type {?} */ (this.ts.get(e))))))
+            e => (/** @type {?} */ (this._ts.get(e))))))
                 .pipe(map((/**
              * @param {?} error
              * @return {?}
              */
             error => new LoginFailure({ error }))));
-        }))))));
-        this.loginSuccess$ = this.actions$.pipe(ofType(AuthApiActionTypes.LoginSuccess), tap((/**
+        }))))))));
+        this.loginSuccess$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions$.pipe(ofType(AuthApiActionTypes.LoginSuccess), tap((/**
          * @param {?} action
          * @return {?}
          */
@@ -932,29 +928,37 @@ class AuthEffects {
             /** @type {?} */
             const payload = (/** @type {?} */ (action.payload));
             /** @type {?} */
-            const tokenKey = this.config.tokenKey || 'access_token';
+            const tokenKey = this._config.tokenKey || 'access_token';
             /** @type {?} */
-            const refreshTokenKey = this.config.refreshTokenKey || 'refresh_token';
-            this.jwtHelperService.tokenSetter(payload[tokenKey]);
-            this.jwtHelperService.refreshTokenSetter(payload[refreshTokenKey]);
-            if (this.config.loggedInUserSetter) {
-                this.config.loggedInUserSetter(payload.user_id);
+            const refreshTokenKey = this._config.refreshTokenKey || 'refresh_token';
+            this._jwtHelperService.tokenSetter(payload[tokenKey]);
+            this._jwtHelperService.refreshTokenSetter(payload[refreshTokenKey]);
+            if (this._config.loggedInUserSetter) {
+                this._config.loggedInUserSetter(payload.user_id);
             }
-            this.router.navigate(['/']);
-        })), map((/**
+            this._router.navigate(['/']);
+        })), mergeMap((/**
+         * @param {?} action
          * @return {?}
          */
-        () => {
-            return this._getRefreshTokenAction();
-        })));
-        this.loginFailure$ = this.actions$.pipe(ofType(AuthApiActionTypes.LoginFailure), tap((/**
+        (action) => [
+            this._getRefreshTokenAction(),
+            new InitUserComplete({ user: action.payload.user }),
+        ])))));
+        this.loginFailure$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions$.pipe(ofType(AuthApiActionTypes.LoginFailure), tap((/**
          * @param {?} action
          * @return {?}
          */
         (action) => {
-            this.userInteractionsService.showLoginError(action.payload.error.join('\n'));
-        })));
-        this.refreshToken$ = this.actions$.pipe(ofType(AuthApiActionTypes.RefreshToken), delayWhen((/**
+            this._userInteractionsService.showLoginError(action.payload.error.join('\n'));
+        })))), { dispatch: false });
+        this.refreshToken$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions$.pipe(ofType(AuthApiActionTypes.RefreshToken), delayWhen((/**
          * @param {?} action
          * @return {?}
          */
@@ -962,7 +966,7 @@ class AuthEffects {
          * @param {?} action
          * @return {?}
          */
-        (action) => this.authService.refreshToken(this.jwtHelperService.refreshTokenGetter() || '').pipe(switchMap((/**
+        (action) => this._authService.refreshToken(this._jwtHelperService.refreshTokenGetter() || '').pipe(switchMap((/**
          * @param {?} payload
          * @return {?}
          */
@@ -970,8 +974,8 @@ class AuthEffects {
             /** @type {?} */
             const res = [];
             /** @type {?} */
-            const tokenKey = this.config.tokenKey || 'access_token';
-            this.jwtHelperService.tokenSetter(payload[tokenKey]);
+            const tokenKey = this._config.tokenKey || 'access_token';
+            this._jwtHelperService.tokenSetter(payload[tokenKey]);
             if (action.payload.fromInit) {
                 res.push(new InitUser());
             }
@@ -980,43 +984,49 @@ class AuthEffects {
         })), catchError((/**
          * @return {?}
          */
-        () => of(new InitComplete())))))));
-        this.loginRedirect$ = this.actions$.pipe(ofType(AuthApiActionTypes.LoginRedirect, AuthActionTypes.Logout), tap((/**
+        () => of(new InitComplete())))))))));
+        this.loginRedirect$ = createEffect((/**
+         * @return {?}
+         */
+        () => this._actions$.pipe(ofType(AuthApiActionTypes.LoginRedirect, AuthActionTypes.Logout), tap((/**
          * @param {?} _authed
          * @return {?}
          */
         _authed => {
-            this.router.navigate(['/login']);
-        })));
-        this.logoutConfirmation$ = this.actions$.pipe(ofType(AuthActionTypes.LogoutConfirmation), exhaustMap((/**
+            this._router.navigate(['/login']);
+        })))), { dispatch: false });
+        this.logoutConfirmation$ = createEffect((/**
          * @return {?}
          */
-        () => this.userInteractionsService.askLogoutConfirm())), map((/**
+        () => this._actions$.pipe(ofType(AuthActionTypes.LogoutConfirmation), exhaustMap((/**
+         * @return {?}
+         */
+        () => this._userInteractionsService.askLogoutConfirm())), map((/**
          * @param {?} result
          * @return {?}
          */
         result => result
             ? new Logout()
-            : new LogoutConfirmationDismiss())));
-        this.init$ = defer((/**
+            : new LogoutConfirmationDismiss())))));
+        this.init$ = createEffect((/**
          * @return {?}
          */
-        () => of(null))).pipe(switchMap((/**
+        () => this._actions$.pipe(ofType(AuthActionTypes.Init), switchMap((/**
          * @return {?}
          */
         () => {
             /** @type {?} */
             const res = [];
             /** @type {?} */
-            const token = this.jwtHelperService.tokenGetter();
+            const token = this._jwtHelperService.tokenGetter();
             if (token) {
                 try {
-                    if (!this.jwtHelperService.isTokenExpired(token)) {
+                    if (!this._jwtHelperService.isTokenExpired(token)) {
                         /** @type {?} */
-                        const decoded = this.jwtHelperService.decodeToken(token);
+                        const decoded = this._jwtHelperService.decodeToken(token);
                         /** @type {?} */
-                        const scopes = this.config.disableScopes ? [] : this._getScopesFromToken(decoded);
-                        if (this.config.disableScopes || scopes.indexOf('admin') > -1) {
+                        const scopes = this._config.disableScopes ? [] : this._getScopesFromToken(decoded);
+                        if (this._config.disableScopes || scopes.indexOf('admin') > -1) {
                             res.push(new InitUser());
                             res.push(this._getRefreshTokenAction());
                         }
@@ -1033,7 +1043,13 @@ class AuthEffects {
                 res.push(new InitComplete());
             }
             return res;
-        })));
+        })))));
+    }
+    /**
+     * @return {?}
+     */
+    ngrxOnInitEffects() {
+        return new Init();
     }
     /**
      * @private
@@ -1042,9 +1058,9 @@ class AuthEffects {
      */
     _getRefreshTokenAction(fromInit) {
         /** @type {?} */
-        const accessToken = this.jwtHelperService.tokenGetter();
+        const accessToken = this._jwtHelperService.tokenGetter();
         /** @type {?} */
-        const exp = this.jwtHelperService.getTokenExpirationDate(accessToken) || new Date();
+        const exp = this._jwtHelperService.getTokenExpirationDate(accessToken) || new Date();
         /** @type {?} */
         const refreshDelay = Math.max(0, Math.round((exp.getTime() - new Date().getTime()) * 0.8));
         return new RefreshToken({ refreshDelay, fromInit });
@@ -1056,7 +1072,7 @@ class AuthEffects {
      */
     _getScopesFromToken(token) {
         /** @type {?} */
-        const scopesPath = this.config.scopesPath || ['scopes'];
+        const scopesPath = this._config.scopesPath || ['scopes'];
         scopesPath.forEach((/**
          * @param {?} p
          * @return {?}
@@ -1078,42 +1094,6 @@ AuthEffects.ctorParameters = () => [
     { type: TranslateService },
     { type: undefined, decorators: [{ type: Inject, args: [AUTH_OPTIONS,] }] }
 ];
-__decorate([
-    Effect(),
-    __metadata("design:type", Object)
-], AuthEffects.prototype, "initUser$", void 0);
-__decorate([
-    Effect(),
-    __metadata("design:type", Object)
-], AuthEffects.prototype, "initUserComplete$", void 0);
-__decorate([
-    Effect(),
-    __metadata("design:type", Object)
-], AuthEffects.prototype, "login$", void 0);
-__decorate([
-    Effect(),
-    __metadata("design:type", Object)
-], AuthEffects.prototype, "loginSuccess$", void 0);
-__decorate([
-    Effect({ dispatch: false }),
-    __metadata("design:type", Object)
-], AuthEffects.prototype, "loginFailure$", void 0);
-__decorate([
-    Effect(),
-    __metadata("design:type", Object)
-], AuthEffects.prototype, "refreshToken$", void 0);
-__decorate([
-    Effect({ dispatch: false }),
-    __metadata("design:type", Object)
-], AuthEffects.prototype, "loginRedirect$", void 0);
-__decorate([
-    Effect(),
-    __metadata("design:type", Object)
-], AuthEffects.prototype, "logoutConfirmation$", void 0);
-__decorate([
-    Effect(),
-    __metadata("design:type", Object)
-], AuthEffects.prototype, "init$", void 0);
 
 /**
  * @fileoverview added by tsickle
@@ -1136,16 +1116,6 @@ AuthModule.decorators = [
                 ]
             },] },
 ];
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 
 export { AUTH_OPTIONS, authActions as AuthActions, authApiActions as AuthApiActions, AuthGuard, AuthModule, AuthService, AuthUserInteractionsService, JWT_OPTIONS, JwtHelperService, JwtInterceptor, LoginComponent, reducers$1 as reducers, reducers as ɵb, reducer as ɵc, reducer$1 as ɵd, AuthEffects as ɵe };
 //# sourceMappingURL=auth.js.map

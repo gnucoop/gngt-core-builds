@@ -21,17 +21,13 @@
 import { HttpClient, HttpResponse, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InjectionToken, Injectable, Inject, NgModule } from '@angular/core';
 import { timer, from, zip, of, throwError, BehaviorSubject, Subscription } from 'rxjs';
-import { delayWhen, exhaustMap, take, switchMap, map, catchError, mapTo, tap, concatMap, filter } from 'rxjs/operators';
-import { __assign, __extends } from 'tslib';
+import { delayWhen, exhaustMap, take, switchMap, map, concatMap, toArray, catchError, mapTo, tap, filter } from 'rxjs/operators';
+import { __assign } from 'tslib';
 import * as PouchDB from 'pouchdb';
-import { plugin } from 'pouchdb';
+import PouchDB__default, {  } from 'pouchdb';
 import * as PouchDBDebug from 'pouchdb-debug';
 import * as PouchDBFind from 'pouchdb-find';
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
+import PouchDBFind__default, {  } from 'pouchdb-find';
 
 /**
  * @fileoverview added by tsickle
@@ -52,6 +48,32 @@ var SYNC_OPTIONS = new InjectionToken('SYNC_OPTIONS');
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+/**
+ * @param {?} endpoint
+ * @param {?} tableName
+ * @return {?}
+ */
+function registerSyncModel(endpoint, tableName) {
+    if (SYNC_REGISTERED_MODELS.find((/**
+     * @param {?} r
+     * @return {?}
+     */
+    function (r) { return r.tableName === tableName; })) == null) {
+        /** @type {?} */
+        var registeredModel = { tableName: tableName, endpoint: endpoint };
+        SYNC_REGISTERED_MODELS.push(registeredModel);
+        console.log("Registered sync model " + tableName + " with endpoint " + endpoint);
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/** @type {?} */
+var pouchDBStatic = PouchDB__default || PouchDB;
+/** @type {?} */
+var pouchDBFindPlugin = PouchDBFind__default || PouchDBFind;
 var SyncService = /** @class */ (function () {
     function SyncService(_opts, _httpClient) {
         this._opts = _opts;
@@ -74,8 +96,8 @@ var SyncService = /** @class */ (function () {
         if (this._opts.changesBatchSize == null) {
             this._opts.changesBatchSize = 50;
         }
-        this._syncUrl = this._opts.baseUrl + "/" + (this._opts.changesPath || 'changes');
-        this._changesUrl = this._opts.baseUrl + "/" + (this._opts.docsPath || 'docs');
+        this._syncUrl = "" + this._opts.baseUrl + (this._opts.changesPath || 'changes');
+        this._changesUrl = "" + this._opts.baseUrl + (this._opts.docsPath || 'docs');
         this._initLocalDatabase();
         this._databaseIsInit = this._databaseInit.pipe(filter((/**
          * @param {?} i
@@ -83,6 +105,19 @@ var SyncService = /** @class */ (function () {
          */
         function (i) { return i; })));
     }
+    /**
+     * @param {?} endPoint
+     * @param {?} tableName
+     * @return {?}
+     */
+    SyncService.prototype.registerSyncModel = /**
+     * @param {?} endPoint
+     * @param {?} tableName
+     * @return {?}
+     */
+    function (endPoint, tableName) {
+        registerSyncModel(endPoint, tableName);
+    };
     /**
      * @param {?=} immediate
      * @return {?}
@@ -143,7 +178,7 @@ var SyncService = /** @class */ (function () {
          * @param {?} _
          * @return {?}
          */
-        function (_) { return from(db.find(_this._modelGetFindRequest(tableName, params))).pipe(take(1)); })), switchMap((/**
+        function (_) { return from(db.find(_this._modelGetFindRequest(tableName, params))); })), take(1), switchMap((/**
          * @param {?} res
          * @return {?}
          */
@@ -184,7 +219,7 @@ var SyncService = /** @class */ (function () {
                 return of(obj_1);
             }
             return throwError('not_found');
-        })));
+        })), take(1));
     };
     /**
      * @param {?} tableName
@@ -208,7 +243,7 @@ var SyncService = /** @class */ (function () {
          * @param {?} idx
          * @return {?}
          */
-        function (idx) { return from(db.find(_this._modelListFindRequest(tableName, params, idx))).pipe(take(1)); })), switchMap((/**
+        function (idx) { return from(db.find(_this._modelListFindRequest(tableName, params, idx))); })), take(1), switchMap((/**
          * @param {?} res
          * @return {?}
          */
@@ -277,7 +312,7 @@ var SyncService = /** @class */ (function () {
              * @return {?}
              */
             function (d) { return _this._subObject(d.object, params.fields); })));
-        })));
+        })), take(1));
     };
     /**
      * @param {?} tableName
@@ -295,7 +330,7 @@ var SyncService = /** @class */ (function () {
          * @param {?} _
          * @return {?}
          */
-        function (_) { return _this._nextObjectId(tableName); })), exhaustMap((/**
+        function (_) { return _this._nextObjectId(tableName); })), take(1), exhaustMap((/**
          * @param {?} id
          * @return {?}
          */
@@ -307,11 +342,10 @@ var SyncService = /** @class */ (function () {
              * @param {?} doc
              * @return {?}
              */
-            function (doc) { return _this._createLocalSyncEntry(__assign({ doc_id: doc.id, entry_type: 'insert' }, localDoc)); })), map((/**
-             * @param {?} _
+            function (doc) { return _this._createLocalSyncEntry(__assign({ doc_id: doc.id, entry_type: 'insert' }, localDoc)).pipe(map((/**
              * @return {?}
              */
-            function (_) { return id; })));
+            function () { return object; }))); })));
         })), take(1));
     };
     /**
@@ -334,7 +368,7 @@ var SyncService = /** @class */ (function () {
          * @param {?} _
          * @return {?}
          */
-        function (_) { return from(db.find(_this._modelGetFindRequest(tableName, { id: id }))).pipe(take(1)); })), exhaustMap((/**
+        function (_) { return from(db.find(_this._modelGetFindRequest(tableName, { id: id }))); })), take(1), exhaustMap((/**
          * @param {?} res
          * @return {?}
          */
@@ -344,25 +378,29 @@ var SyncService = /** @class */ (function () {
             }
             /** @type {?} */
             var localDoc = __assign({}, res.docs[0], { object: object });
-            return from(db.post(localDoc)).pipe(take(1));
-        })), exhaustMap((/**
-         * @param {?} res
+            return from(db.post(localDoc)).pipe(map((/**
+             * @param {?} r
+             * @return {?}
+             */
+            function (r) { return ({ res: r, localDoc: localDoc }); })));
+        })), take(1), exhaustMap((/**
+         * @param {?} __0
          * @return {?}
          */
-        function (res) {
+        function (_a) {
+            var res = _a.res, localDoc = _a.localDoc;
             /** @type {?} */
             var syncEntry = {
                 doc_id: res.id,
                 table_name: tableName,
-                object_id: id,
+                object_id: localDoc.object_id,
                 entry_type: 'update'
             };
-            return _this._createLocalSyncEntry(syncEntry);
-        })), take(1), map((/**
-         * @param {?} _
-         * @return {?}
-         */
-        function (_) { return id; })));
+            return _this._createLocalSyncEntry(syncEntry).pipe(map((/**
+             * @return {?}
+             */
+            function () { return localDoc.object; })));
+        })), take(1));
     };
     /**
      * @param {?} tableName
@@ -382,7 +420,7 @@ var SyncService = /** @class */ (function () {
          * @param {?} _
          * @return {?}
          */
-        function (_) { return from(db.find(_this._modelGetFindRequest(tableName, { id: id }))).pipe(take(1)); })), exhaustMap((/**
+        function (_) { return from(db.find(_this._modelGetFindRequest(tableName, { id: id }))); })), take(1), exhaustMap((/**
          * @param {?} res
          * @return {?}
          */
@@ -392,25 +430,178 @@ var SyncService = /** @class */ (function () {
             }
             /** @type {?} */
             var localDoc = res.docs[0];
-            return from(db.remove(localDoc)).pipe(take(1));
-        })), exhaustMap((/**
-         * @param {?} res
+            return from(db.remove(localDoc)).pipe(map((/**
+             * @param {?} r
+             * @return {?}
+             */
+            function (r) { return ({ res: r, localDoc: localDoc }); })));
+        })), take(1), exhaustMap((/**
+         * @param {?} __0
          * @return {?}
          */
-        function (res) {
+        function (_a) {
+            var res = _a.res, localDoc = _a.localDoc;
             /** @type {?} */
             var syncEntry = {
                 doc_id: res.id,
                 table_name: tableName,
-                object_id: id,
+                object_id: localDoc.object_id,
                 entry_type: 'delete'
             };
-            return _this._createLocalSyncEntry(syncEntry);
-        })), take(1), map((/**
+            return _this._createLocalSyncEntry(syncEntry).pipe(map((/**
+             * @return {?}
+             */
+            function () { return localDoc.object; })));
+        })), take(1));
+    };
+    /**
+     * @param {?} tableName
+     * @param {?} ids
+     * @return {?}
+     */
+    SyncService.prototype.deleteAll = /**
+     * @param {?} tableName
+     * @param {?} ids
+     * @return {?}
+     */
+    function (tableName, ids) {
+        var _this = this;
+        /** @type {?} */
+        var db = this._getLocalDocsDb();
+        return this._databaseIsInit.pipe(exhaustMap((/**
          * @param {?} _
          * @return {?}
          */
-        function (_) { return id; })));
+        function (_) { return from(db.find(_this._modelBulkIdsFindRequest(tableName, ids))); })), take(1), concatMap((/**
+         * @param {?} res
+         * @return {?}
+         */
+        function (res) {
+            if (res.docs.length !== 1) {
+                return throwError('not_found');
+            }
+            return from(res.docs);
+        })), concatMap((/**
+         * @param {?} localDoc
+         * @return {?}
+         */
+        function (localDoc) {
+            return from(db.remove(localDoc)).pipe(map((/**
+             * @param {?} res
+             * @return {?}
+             */
+            function (res) { return ({ res: res, localDoc: localDoc }); })));
+        })), concatMap((/**
+         * @param {?} __0
+         * @return {?}
+         */
+        function (_a) {
+            var res = _a.res, localDoc = _a.localDoc;
+            /** @type {?} */
+            var syncEntry = {
+                doc_id: res.id,
+                table_name: tableName,
+                object_id: localDoc.object_id,
+                entry_type: 'delete'
+            };
+            return _this._createLocalSyncEntry(syncEntry).pipe(map((/**
+             * @return {?}
+             */
+            function () { return localDoc.object; })));
+        })), take(ids.length), toArray());
+    };
+    /**
+     * @param {?} tableName
+     * @param {?} params
+     * @return {?}
+     */
+    SyncService.prototype.query = /**
+     * @param {?} tableName
+     * @param {?} params
+     * @return {?}
+     */
+    function (tableName, params) {
+        var _this = this;
+        /** @type {?} */
+        var db = this._getLocalDocsDb();
+        return this._databaseIsInit.pipe(exhaustMap((/**
+         * @param {?} _
+         * @return {?}
+         */
+        function (_) { return _this._relationalModelIdxObs({ tableName: tableName, sort: params.sort }); })), take(1), exhaustMap((/**
+         * @param {?} idx
+         * @return {?}
+         */
+        function (idx) { return from(db.find(_this._modelQueryFindRequest(tableName, params, idx))); })), take(1), switchMap((/**
+         * @param {?} res
+         * @return {?}
+         */
+        function (res) {
+            if (params.joins != null) {
+                /** @type {?} */
+                var joinTables_2 = params.joins.reduce((/**
+                 * @param {?} prev
+                 * @param {?} cur
+                 * @return {?}
+                 */
+                function (prev, cur) {
+                    prev[cur.model] = res.docs.map((/**
+                     * @param {?} d
+                     * @return {?}
+                     */
+                    function (d) { return d.object[cur.property]; }));
+                    return prev;
+                }), (/** @type {?} */ ({})));
+                return zip.apply(void 0, params.joins.map((/**
+                 * @param {?} join
+                 * @return {?}
+                 */
+                function (join) {
+                    /** @type {?} */
+                    var req = _this._modelListFindRequest(join.model, { fields: join.fields });
+                    req.selector['object_id'] = { '$in': joinTables_2[join.model] };
+                    return from(db.find(req)).pipe(take(1), map((/**
+                     * @param {?} related
+                     * @return {?}
+                     */
+                    function (related) { return ({ join: join, related: related.docs }); })));
+                }))).pipe(map((/**
+                 * @param {?} joins
+                 * @return {?}
+                 */
+                function (joins) {
+                    return res.docs.map((/**
+                     * @param {?} doc
+                     * @return {?}
+                     */
+                    function (doc) {
+                        /** @type {?} */
+                        var obj = doc.object;
+                        joins.forEach((/**
+                         * @param {?} joinEntry
+                         * @return {?}
+                         */
+                        function (joinEntry) {
+                            /** @type {?} */
+                            var prop = joinEntry.join.property;
+                            /** @type {?} */
+                            var rel = joinEntry.related.find((/**
+                             * @param {?} r
+                             * @return {?}
+                             */
+                            function (r) { return r.object_id === obj[prop]; }));
+                            obj[prop] = rel != null ? rel.object : null;
+                        }));
+                        return _this._subObject(obj, params.fields);
+                    }));
+                })));
+            }
+            return of(res.docs.map((/**
+             * @param {?} d
+             * @return {?}
+             */
+            function (d) { return _this._subObject(d.object, params.fields); })));
+        })), take(1));
     };
     /**
      * @private
@@ -1160,6 +1351,45 @@ var SyncService = /** @class */ (function () {
     /**
      * @private
      * @param {?} tableName
+     * @param {?} ids
+     * @return {?}
+     */
+    SyncService.prototype._modelBulkIdsFindRequest = /**
+     * @private
+     * @param {?} tableName
+     * @param {?} ids
+     * @return {?}
+     */
+    function (tableName, ids) {
+        return {
+            selector: {
+                table_name: tableName,
+                object_id: { $in: ids }
+            }
+        };
+    };
+    /**
+     * @private
+     * @param {?} tableName
+     * @param {?} params
+     * @param {?=} index
+     * @return {?}
+     */
+    SyncService.prototype._modelQueryFindRequest = /**
+     * @private
+     * @param {?} tableName
+     * @param {?} params
+     * @param {?=} index
+     * @return {?}
+     */
+    function (tableName, params, index) {
+        /** @type {?} */
+        var req = this._modelListFindRequest(tableName, params, index);
+        return __assign({}, req, { selector: __assign({}, req.selector, this._normalizeSelector(params.selector)) });
+    };
+    /**
+     * @private
+     * @param {?} tableName
      * @param {?} params
      * @param {?=} index
      * @return {?}
@@ -1197,6 +1427,28 @@ var SyncService = /** @class */ (function () {
             }
         }
         return req;
+    };
+    /**
+     * @private
+     * @param {?} selector
+     * @return {?}
+     */
+    SyncService.prototype._normalizeSelector = /**
+     * @private
+     * @param {?} selector
+     * @return {?}
+     */
+    function (selector) {
+        /** @type {?} */
+        var normSelector = {};
+        Object.keys(selector).forEach((/**
+         * @param {?} key
+         * @return {?}
+         */
+        function (key) {
+            normSelector["object." + key] = selector[key];
+        }));
+        return normSelector;
     };
     /**
      * @private
@@ -1267,9 +1519,9 @@ var SyncService = /** @class */ (function () {
      */
     function () {
         var _this = this;
-        plugin(PouchDBFind);
-        plugin(PouchDBDebug);
-        this._database = new PouchDB(this._opts.localDatabaseName, { revs_limit: 1 });
+        pouchDBStatic.plugin(pouchDBFindPlugin);
+        pouchDBStatic.plugin(PouchDBDebug);
+        this._database = new pouchDBStatic(this._opts.localDatabaseName, { revs_limit: 1 });
         this._database.createIndex(this._relationalModelIdx)
             .then((/**
          * @param {?} _
@@ -1366,8 +1618,8 @@ var OfflineInterceptor = /** @class */ (function () {
         /** @type {?} */
         var method = req.method.toLowerCase();
         var _a = this._analyzeRequestUrl(req, model), exactMatch = _a.exactMatch, relativeUrl = _a.relativeUrl;
-        if (method === 'get') {
-            if (exactMatch) {
+        if (exactMatch) {
+            if (method === 'get') {
                 /** @type {?} */
                 var limit = (/** @type {?} */ (req.params.get('limit')));
                 /** @type {?} */
@@ -1393,12 +1645,34 @@ var OfflineInterceptor = /** @class */ (function () {
                     body: res
                 }); })));
             }
-            else {
-                if (relativeUrl.length === 1) {
+            else if (method === 'post') {
+                /** @type {?} */
+                var obj = req.body;
+                return this._syncService.create(model.tableName, obj).pipe(catchError((/**
+                 * @param {?} _
+                 * @return {?}
+                 */
+                function (_) { return throwError(reqError); })), map((/**
+                 * @param {?} res
+                 * @return {?}
+                 */
+                function (res) { return new HttpResponse({
+                    status: 201,
+                    statusText: 'OK',
+                    url: req.url,
+                    body: res
+                }); })));
+            }
+        }
+        else {
+            if (relativeUrl.length === 1) {
+                /** @type {?} */
+                var lastUrlPart = relativeUrl[0];
+                if (lastUrlPart === 'delete_all') {
                     /** @type {?} */
-                    var id = parseInt(relativeUrl[0], 10);
-                    if (!isNaN(id) && id > 0) {
-                        return this._syncService.get(model.tableName, { id: id }).pipe(catchError((/**
+                    var ids = req.body.ids;
+                    if (ids != null && ids instanceof Array && ids.length > 0) {
+                        return this._syncService.deleteAll(model.tableName, ids).pipe(catchError((/**
                          * @param {?} _
                          * @return {?}
                          */
@@ -1412,6 +1686,62 @@ var OfflineInterceptor = /** @class */ (function () {
                             url: req.url,
                             body: res
                         }); })));
+                    }
+                }
+                else if (lastUrlPart === 'query') {
+                    /** @type {?} */
+                    var params = req.body;
+                    return this._syncService.query(model.tableName, params).pipe(catchError((/**
+                     * @param {?} _
+                     * @return {?}
+                     */
+                    function (_) { return throwError(reqError); })), map((/**
+                     * @param {?} res
+                     * @return {?}
+                     */
+                    function (res) { return new HttpResponse({
+                        status: 200,
+                        statusText: 'OK',
+                        url: req.url,
+                        body: res
+                    }); })));
+                }
+                else {
+                    /** @type {?} */
+                    var id = parseInt(lastUrlPart, 10);
+                    if (!isNaN(id) && id > 0) {
+                        /** @type {?} */
+                        var op = null;
+                        /** @type {?} */
+                        var successStatus_1 = 200;
+                        /** @type {?} */
+                        var obj = req.body;
+                        if (method === 'get') {
+                            op = this._syncService.get(model.tableName, { id: id });
+                            successStatus_1 = 201;
+                        }
+                        else if (method === 'patch' || method === 'put') {
+                            op = this._syncService.update(model.tableName, id, obj);
+                        }
+                        else if (method === 'delete') {
+                            op = this._syncService.delete(model.tableName, id);
+                        }
+                        if (op != null) {
+                            return op.pipe(catchError((/**
+                             * @param {?} _
+                             * @return {?}
+                             */
+                            function (_) { return throwError(reqError); })), map((/**
+                             * @param {?} res
+                             * @return {?}
+                             */
+                            function (res) { return new HttpResponse({
+                                status: successStatus_1,
+                                statusText: 'OK',
+                                url: req.url,
+                                body: res
+                            }); })));
+                        }
                     }
                 }
             }
@@ -1473,77 +1803,6 @@ var OfflineInterceptor = /** @class */ (function () {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
- * @param {?} endpoint
- * @param {?} tableName
- * @return {?}
- */
-function registerSyncModel(endpoint, tableName) {
-    if (SYNC_REGISTERED_MODELS.find((/**
-     * @param {?} r
-     * @return {?}
-     */
-    function (r) { return r.tableName === tableName; })) == null) {
-        /** @type {?} */
-        var registeredModel = { tableName: tableName, endpoint: endpoint };
-        SYNC_REGISTERED_MODELS.push(registeredModel);
-        console.log("Registered sync model " + tableName + " with endpoint " + endpoint);
-    }
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/** @type {?} */
-var ANNOTATIONS = '__gngt_annotations__';
-// WARNING: interface has both a type and a value, skipping emit
-/**
- * @template T
- * @param {?} opts
- * @return {?}
- */
-function SyncModel(opts) {
-    return (/**
-     * @param {?} cls
-     * @return {?}
-     */
-    function SyncModelFactory(cls) {
-        /** @type {?} */
-        var annotations = cls.hasOwnProperty(ANNOTATIONS)
-            ? ((/** @type {?} */ (cls)))[ANNOTATIONS]
-            : Object.defineProperty(cls, ANNOTATIONS, { value: [] })[ANNOTATIONS];
-        annotations.push({ sync_model: true });
-        return (/** @type {?} */ (/** @class */ (function (_super) {
-            __extends(class_1, _super);
-            function class_1() {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i] = arguments[_i];
-                }
-                var _this = _super.apply(this, args) || this;
-                registerSyncModel(((/** @type {?} */ (_this))).endPoint, opts.tableName);
-                return _this;
-            }
-            return class_1;
-        }(cls))));
-    });
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 var SyncModule = /** @class */ (function () {
     function SyncModule() {
     }
@@ -1571,20 +1830,5 @@ var SyncModule = /** @class */ (function () {
     return SyncModule;
 }());
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-export { OfflineInterceptor, SYNC_OPTIONS, SyncModel, SyncModule, SyncService };
+export { OfflineInterceptor, SYNC_OPTIONS, SyncModule, SyncService };
 //# sourceMappingURL=sync.es5.js.map

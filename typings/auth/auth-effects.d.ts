@@ -20,7 +20,7 @@
  */
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Actions } from '@ngrx/effects';
+import { Actions, OnInitEffects } from '@ngrx/effects';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from './auth';
 import * as AuthActions from './auth-actions';
@@ -28,24 +28,25 @@ import * as AuthApiActions from './auth-api-actions';
 import { AuthOptions } from './auth-options';
 import { AuthUserInteractionsService } from './auth-user-interactions';
 import { JwtHelperService } from './jwt-helper';
-export declare class AuthEffects {
-    private actions$;
-    private authService;
-    private jwtHelperService;
-    private userInteractionsService;
-    private router;
-    private ts;
-    private config;
+export declare class AuthEffects implements OnInitEffects {
+    private _actions$;
+    private _authService;
+    private _jwtHelperService;
+    private _userInteractionsService;
+    private _router;
+    private _ts;
+    private _config;
     initUser$: Observable<AuthActions.InitUserComplete>;
     initUserComplete$: Observable<AuthActions.InitComplete>;
     login$: Observable<AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure>;
-    loginSuccess$: Observable<AuthApiActions.RefreshToken>;
+    loginSuccess$: Observable<AuthActions.InitUserComplete | AuthApiActions.RefreshToken>;
     loginFailure$: Observable<AuthApiActions.LoginFailure>;
-    refreshToken$: Observable<AuthActions.InitUser | AuthActions.InitUserComplete | AuthActions.InitComplete | AuthActions.Logout | AuthActions.LogoutConfirmation | AuthActions.LogoutConfirmationDismiss | AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure | AuthApiActions.LoginRedirect | AuthApiActions.RefreshToken>;
+    refreshToken$: Observable<AuthActions.Init | AuthActions.InitUser | AuthActions.InitUserComplete | AuthActions.InitComplete | AuthActions.Logout | AuthActions.LogoutConfirmation | AuthActions.LogoutConfirmationDismiss | AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure | AuthApiActions.LoginRedirect | AuthApiActions.RefreshToken>;
     loginRedirect$: Observable<never>;
     logoutConfirmation$: Observable<AuthActions.Logout | AuthActions.LogoutConfirmationDismiss>;
-    init$: Observable<AuthActions.InitUser | AuthActions.InitUserComplete | AuthActions.InitComplete | AuthActions.Logout | AuthActions.LogoutConfirmation | AuthActions.LogoutConfirmationDismiss | AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure | AuthApiActions.LoginRedirect | AuthApiActions.RefreshToken>;
-    constructor(actions$: Actions, authService: AuthService, jwtHelperService: JwtHelperService, userInteractionsService: AuthUserInteractionsService, router: Router, ts: TranslateService, config: AuthOptions);
+    init$: Observable<AuthActions.Init | AuthActions.InitUser | AuthActions.InitUserComplete | AuthActions.InitComplete | AuthActions.Logout | AuthActions.LogoutConfirmation | AuthActions.LogoutConfirmationDismiss | AuthApiActions.LoginSuccess | AuthApiActions.LoginFailure | AuthApiActions.LoginRedirect | AuthApiActions.RefreshToken>;
+    constructor(_actions$: Actions, _authService: AuthService, _jwtHelperService: JwtHelperService, _userInteractionsService: AuthUserInteractionsService, _router: Router, _ts: TranslateService, _config: AuthOptions);
+    ngrxOnInitEffects(): AuthActions.Init;
     private _getRefreshTokenAction;
     private _getScopesFromToken;
 }

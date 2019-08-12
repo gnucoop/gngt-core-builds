@@ -27,8 +27,8 @@ export declare class JwtHelperService {
     refreshTokenSetter: (refreshToken: string | null) => void;
     constructor(config: JwtOptions);
     urlBase64Decode(str: string): string;
-    private b64decode;
-    private b64DecodeUnicode;
+    private _b64decode;
+    private _b64DecodeUnicode;
     decodeToken(token?: string | null): JwtToken | null;
     getTokenExpirationDate(token?: string | null): Date | null;
     isTokenExpired(token?: string | null, offsetSeconds?: number): boolean;

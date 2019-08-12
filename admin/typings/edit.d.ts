@@ -54,11 +54,11 @@ export declare abstract class AdminEditComponent<T extends Model, S extends from
     private _canSave;
     canSave: boolean;
     readonly form: Observable<FormGroup>;
+    private _loading;
     readonly loading: Observable<boolean>;
     private _updateFormEvt;
     private _saveEvt;
     private _saveSub;
-    private _savedSub;
     private _valueChanges$;
     readonly valueChanges$: Observable<any>;
     constructor(_cdr: ChangeDetectorRef, _fb: FormBuilder, _router: Router);

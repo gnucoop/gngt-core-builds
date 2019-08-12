@@ -21,14 +21,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Model, ModelListParams, ModelListResult, ModelManager as BaseModelManager, ModelQueryParams } from '@gngt/core/common';
+import { SyncService } from '@gngt/core/sync';
 import { ModelOptions } from './model-options';
 export declare abstract class ModelManager<M extends Model> extends BaseModelManager {
-    private _config;
     private _endPoint;
     protected _http: HttpClient;
     readonly endPoint: string;
     private _baseUrl;
-    constructor(_config: ModelOptions, _endPoint: string, _http: HttpClient);
+    readonly baseUrl: string;
+    private _useTrailingSlash;
+    constructor(config: ModelOptions, _endPoint: string, _http: HttpClient, syncService?: SyncService);
     get(id: number): Observable<M>;
     list(options?: ModelListParams): Observable<ModelListResult<M>>;
     create(data: M): Observable<M>;

@@ -20,7 +20,7 @@
  */
 /** Name of the Gngt version that is shipped together with the schematics. */
 export declare const gngtVersion: string | null;
-export declare const requiredAngularMaterialVersion = ">=7.0.0";
-export declare const requiredNgrxVersion = ">=7.0.0";
-export declare const requiredNgxtVersion = ">=11.0.0";
+export declare const requiredAngularMaterialVersion = ">=8.0.0 <9.0.0";
+export declare const requiredNgrxVersion = ">=8.0.0 <9.0.0";
+export declare const requiredNgxtVersion = ">=11.0.0 <12.0.0";
 export declare const requiredUrlParseVersion = "^1.4.4";

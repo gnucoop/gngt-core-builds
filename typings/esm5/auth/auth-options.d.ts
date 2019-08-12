@@ -18,6 +18,7 @@
  * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
  *
  */
+import { User } from './user';
 export interface AuthOptions {
     loginUrl: string;
     logoutUrl: string;
@@ -29,4 +30,6 @@ export interface AuthOptions {
     refreshTokenKey?: string;
     loggedInUserGetter?: () => number | null;
     loggedInUserSetter?: (id: number | null) => void;
+    meGetter?: () => User | null;
+    meSetter?: (user: User | null) => void;
 }

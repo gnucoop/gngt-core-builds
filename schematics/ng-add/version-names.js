@@ -24,9 +24,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.gngtVersion = loadPackageVersionGracefully('@gngt/core') ||
     loadPackageVersionGracefully('@gngt/ionic') ||
     loadPackageVersionGracefully('@gngt/material');
-exports.requiredAngularMaterialVersion = '>=7.0.0';
-exports.requiredNgrxVersion = '>=7.0.0';
-exports.requiredNgxtVersion = '>=11.0.0';
+exports.requiredAngularMaterialVersion = '>=8.0.0 <9.0.0';
+exports.requiredNgrxVersion = '>=8.0.0 <9.0.0';
+exports.requiredNgxtVersion = '>=11.0.0 <12.0.0';
 exports.requiredUrlParseVersion = '^1.4.4';
 /** Loads the full version from the given Angular package gracefully. */
 function loadPackageVersionGracefully(packageName) {

@@ -21,7 +21,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/cdk/coercion'), require('@angular/core'), require('rxjs'), require('rxjs/operators'), require('@gngt/core/model')) :
     typeof define === 'function' && define.amd ? define('@gngt/core/admin', ['exports', '@angular/cdk/coercion', '@angular/core', 'rxjs', 'rxjs/operators', '@gngt/core/model'], factory) :
-    (global = global || self, factory((global.dewco = global.dewco || {}, global.dewco.core = global.dewco.core || {}, global.dewco.core.admin = {}), global.ng.cdk.coercion, global.ng.core, global.rxjs, global.rxjs.operators));
+    (global = global || self, factory((global.gngt = global.gngt || {}, global.gngt.core = global.gngt.core || {}, global.gngt.core.admin = {}), global.ng.cdk.coercion, global.ng.core, global.rxjs, global.rxjs.operators));
 }(this, function (exports, coercion, core, rxjs, operators) { 'use strict';
 
     /*! *****************************************************************************
@@ -87,10 +87,11 @@
             this._service = new rxjs.BehaviorSubject(null);
             this._fields = [];
             this._id = new rxjs.BehaviorSubject(null);
+            this._loading = new rxjs.BehaviorSubject(false);
+            this.loading = this._loading.asObservable();
             this._updateFormEvt = new core.EventEmitter();
             this._saveEvt = new core.EventEmitter();
             this._saveSub = rxjs.Subscription.EMPTY;
-            this._savedSub = rxjs.Subscription.EMPTY;
             this._processFormData = this._defaultProcessData;
             /** @type {?} */
             var objObs = rxjs.combineLatest(this._service, this._id).pipe(operators.filter((/**
@@ -158,7 +159,13 @@
              * @return {?}
              */
             function (form) { return form.valueChanges; })));
-            this._saveSub = this._saveEvt.pipe(operators.withLatestFrom(this.form, this._service, this._id), operators.filter((/**
+            /** @type {?} */
+            var serviceObs = this._service.pipe(operators.filter((/**
+             * @param {?} s
+             * @return {?}
+             */
+            function (s) { return s != null; })));
+            this._saveSub = this._saveEvt.pipe(operators.withLatestFrom(this.form, serviceObs, this._id), operators.filter((/**
              * @param {?} __0
              * @return {?}
              */
@@ -187,7 +194,10 @@
                     }
                 }
                 return rxjs.of([formValue, service, id]);
-            }))).subscribe((/**
+            })), operators.tap((/**
+             * @return {?}
+             */
+            function () { return _this._loading.next(true); })), operators.switchMap((/**
              * @param {?} __0
              * @return {?}
              */
@@ -195,39 +205,19 @@
                 var formValue = _a[0], service = _a[1], id = _a[2];
                 if (id === 'new') {
                     delete formValue['id'];
-                    (/** @type {?} */ (service)).create(formValue);
+                    return (/** @type {?} */ (service)).create(formValue);
                 }
-                else {
-                    (/** @type {?} */ (service)).patch(formValue);
-                }
-            }));
-            /** @type {?} */
-            var serviceObs = this._service.pipe(operators.filter((/**
-             * @param {?} s
+                return (/** @type {?} */ (service)).patch(formValue);
+            })), operators.take(1)).subscribe((/**
              * @return {?}
              */
-            function (s) { return s != null; })));
-            this.loading = serviceObs.pipe(operators.filter((/**
-             * @param {?} s
+            function () {
+                _this._loading.next(false);
+                _this.goBack();
+            }), (/**
              * @return {?}
              */
-            function (s) { return s != null; })), operators.switchMap((/**
-             * @param {?} s
-             * @return {?}
-             */
-            function (s) { return rxjs.merge((/** @type {?} */ (s)).getGetLoading(), (/** @type {?} */ (s)).getCreateLoading(), (/** @type {?} */ (s)).getPatchLoading()); })));
-            this._savedSub = serviceObs.pipe(operators.filter((/**
-             * @param {?} s
-             * @return {?}
-             */
-            function (s) { return s != null; })), operators.switchMap((/**
-             * @param {?} s
-             * @return {?}
-             */
-            function (s) { return rxjs.merge((/** @type {?} */ (s)).getCreateSuccess(), (/** @type {?} */ (s)).getPatchSuccess()); }))).subscribe((/**
-             * @return {?}
-             */
-            function () { return _this.goBack(); }));
+            function () { return _this._loading.next(false); }));
         }
         Object.defineProperty(AdminEditComponent.prototype, "title", {
             get: /**
@@ -441,7 +431,6 @@
             this._updateFormEvt.complete();
             this._saveEvt.complete();
             this._saveSub.unsubscribe();
-            this._savedSub.unsubscribe();
         };
         /**
          * @private
@@ -509,16 +498,6 @@
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
 
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-
     /** @enum {string} */
     var AdminEditFieldSubtype = {
         Color: 'color',
@@ -556,11 +535,6 @@
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
-
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
     /**
      * @abstract
      * @template T, S, A, MS
@@ -579,6 +553,7 @@
             this._newItemPath = 'new';
             this._actionProcessed = new core.EventEmitter();
             this.actionProcessed = this._actionProcessed.asObservable();
+            this._deletionEvt = new core.EventEmitter();
             this._deletionSub = rxjs.Subscription.EMPTY;
         }
         Object.defineProperty(AdminListComponent.prototype, "title", {
@@ -703,6 +678,7 @@
          */
         function () {
             this._deletionSub.unsubscribe();
+            this._deletionEvt.complete();
         };
         /**
          * @param {?} action
@@ -793,10 +769,40 @@
          */
         function () {
             var _this = this;
-            this._deletionSub = rxjs.merge(this._service.getDeleteSuccess(), this._service.getDeleteAllSuccess()).subscribe((/**
+            this._deletionSub.unsubscribe();
+            this._deletionSub = this._deletionEvt.pipe(operators.switchMap((/**
+             * @param {?} selected
              * @return {?}
              */
-            function () { return _this.refreshList(); }));
+            function (selected) { return _this._aui.askDeleteConfirm().pipe(operators.map((/**
+             * @param {?} res
+             * @return {?}
+             */
+            function (res) { return ({ res: res, selected: selected }); }))); })), operators.switchMap((/**
+             * @param {?} __0
+             * @return {?}
+             */
+            function (_a) {
+                var res = _a.res, selected = _a.selected;
+                if (res) {
+                    if (selected.length === 1) {
+                        return _this._service.delete(selected[0]);
+                    }
+                    return _this._service.deleteAll(selected);
+                }
+                return rxjs.of(null);
+            })), operators.filter((/**
+             * @param {?} r
+             * @return {?}
+             */
+            function (r) { return r != null; })), operators.take(1)).subscribe((/**
+             * @return {?}
+             */
+            function () {
+                _this._actionProcessed.emit('delete');
+                _this.clearSelection();
+                _this.refreshList();
+            }));
         };
         return AdminListComponent;
     }());

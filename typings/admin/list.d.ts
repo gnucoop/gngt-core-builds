@@ -40,6 +40,7 @@ export declare abstract class AdminListComponent<T extends Model, S extends from
     service: MS;
     private _actionProcessed;
     readonly actionProcessed: Observable<string>;
+    private _deletionEvt;
     private _deletionSub;
     constructor(_cdr: ChangeDetectorRef, _aui: AdminUserInteractionsService);
     abstract getSelection(): T[];

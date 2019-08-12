@@ -21,11 +21,13 @@
 import { __extends, __assign } from 'tslib';
 import { type } from '@gngt/core/reducers';
 import { of, throwError, pipe } from 'rxjs';
-import { mergeMap, map, catchError, filter, tap } from 'rxjs/operators';
-import { ofType } from '@ngrx/effects';
+import { mergeMap, map, catchError, filter, switchMap, tap } from 'rxjs/operators';
+import { createEffect, ofType } from '@ngrx/effects';
 import { v4 } from 'uuid';
+import { HttpClient } from '@angular/common/http';
+import { Optional, InjectionToken } from '@angular/core';
 import { ModelManager as ModelManager$1 } from '@gngt/core/common';
-import { InjectionToken } from '@angular/core';
+import { SyncService } from '@gngt/core/sync';
 import { select, createSelector, createFeatureSelector } from '@ngrx/store';
 
 /**
@@ -842,7 +844,10 @@ ModelEffects = /** @class */ (function () {
         this._service = _service;
         this._manager = _manager;
         this._actionTypes = _actionTypes;
-        this.modelGet$ = this._actions.pipe(ofType(this._actionTypes.GET), mergeMap((/**
+        this.modelGet$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions.pipe(ofType(_this._actionTypes.GET), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -862,8 +867,11 @@ ModelEffects = /** @class */ (function () {
             type: _this._actionTypes.GET_FAILURE,
             payload: { error: error },
             uuid: action.uuid
-        })); }))); })));
-        this.modelList$ = this._actions.pipe(ofType(this._actionTypes.LIST), mergeMap((/**
+        })); }))); }))); }));
+        this.modelList$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions.pipe(ofType(_this._actionTypes.LIST), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -883,8 +891,11 @@ ModelEffects = /** @class */ (function () {
             type: _this._actionTypes.LIST_FAILURE,
             payload: { error: error },
             uuid: action.uuid
-        })); }))); })));
-        this.modelCreate$ = this._actions.pipe(ofType(this._actionTypes.CREATE), mergeMap((/**
+        })); }))); }))); }));
+        this.modelCreate$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions.pipe(ofType(_this._actionTypes.CREATE), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -904,9 +915,11 @@ ModelEffects = /** @class */ (function () {
             type: _this._actionTypes.CREATE_FAILURE,
             payload: { error: error },
             uuid: action.uuid
-        })); }))); })));
-        this.modelUpdate$ = this._actions
-            .pipe(ofType(this._actionTypes.UPDATE), mergeMap((/**
+        })); }))); }))); }));
+        this.modelUpdate$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions.pipe(ofType(_this._actionTypes.UPDATE), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -926,8 +939,11 @@ ModelEffects = /** @class */ (function () {
             type: _this._actionTypes.CREATE_FAILURE,
             payload: { error: error },
             uuid: action.uuid
-        })); }))); })));
-        this.modelPatch$ = this._actions.pipe(ofType(this._actionTypes.PATCH), mergeMap((/**
+        })); }))); }))); }));
+        this.modelPatch$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions.pipe(ofType(_this._actionTypes.PATCH), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -947,8 +963,11 @@ ModelEffects = /** @class */ (function () {
             type: _this._actionTypes.CREATE_FAILURE,
             payload: { error: error },
             uuid: action.uuid
-        })); }))); })));
-        this.modelDelete$ = this._actions.pipe(ofType(this._actionTypes.DELETE), mergeMap((/**
+        })); }))); }))); }));
+        this.modelDelete$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions.pipe(ofType(_this._actionTypes.DELETE), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -967,8 +986,11 @@ ModelEffects = /** @class */ (function () {
             type: _this._actionTypes.DELETE_FAILURE,
             payload: { error: error },
             uuid: action.uuid
-        })); }))); })));
-        this.modelDeleteAll$ = this._actions.pipe(ofType(this._actionTypes.DELETE_ALL), mergeMap((/**
+        })); }))); }))); }));
+        this.modelDeleteAll$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions.pipe(ofType(_this._actionTypes.DELETE_ALL), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -991,8 +1013,11 @@ ModelEffects = /** @class */ (function () {
             type: _this._actionTypes.DELETE_ALL_FAILURE,
             payload: { error: error },
             uuid: action.uuid
-        })); }))); })));
-        this.modelQuery$ = this._actions.pipe(ofType(this._actionTypes.QUERY), mergeMap((/**
+        })); }))); }))); }));
+        this.modelQuery$ = createEffect((/**
+         * @return {?}
+         */
+        function () { return _this._actions.pipe(ofType(_this._actionTypes.QUERY), mergeMap((/**
          * @param {?} action
          * @return {?}
          */
@@ -1012,7 +1037,7 @@ ModelEffects = /** @class */ (function () {
             type: _this._actionTypes.QUERY_FAILURE,
             payload: { error: error },
             uuid: action.uuid
-        })); }))); })));
+        })); }))); }))); }));
     }
     return ModelEffects;
 }());
@@ -1025,18 +1050,23 @@ ModelEffects = /** @class */ (function () {
  * @abstract
  * @template M
  */
-var  /**
- * @abstract
- * @template M
- */
-ModelManager = /** @class */ (function (_super) {
+var ModelManager = /** @class */ (function (_super) {
     __extends(ModelManager, _super);
-    function ModelManager(_config, _endPoint, _http) {
+    function ModelManager(config, _endPoint, _http, syncService) {
         var _this = _super.call(this) || this;
-        _this._config = _config;
         _this._endPoint = _endPoint;
         _this._http = _http;
-        _this._baseUrl = "" + _this._config.baseApiUrl + _this._endPoint;
+        _this._useTrailingSlash = false;
+        _this._baseUrl = "" + config.baseApiUrl + _this._endPoint;
+        _this._useTrailingSlash = config.addTrailingSlash != null
+            ? config.addTrailingSlash
+            : false;
+        if (syncService != null && config.syncModel) {
+            if (config.tableName == null) {
+                throw new Error("Table name must be set for model " + _this._endPoint);
+            }
+            syncService.registerSyncModel(_this._baseUrl, config.tableName);
+        }
         return _this;
     }
     Object.defineProperty(ModelManager.prototype, "endPoint", {
@@ -1044,6 +1074,14 @@ ModelManager = /** @class */ (function (_super) {
          * @return {?}
          */
         function () { return this._endPoint; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ModelManager.prototype, "baseUrl", {
+        get: /**
+         * @return {?}
+         */
+        function () { return this._baseUrl; },
         enumerable: true,
         configurable: true
     });
@@ -1130,7 +1168,7 @@ ModelManager = /** @class */ (function (_super) {
     function (ids) {
         /** @type {?} */
         var url = this._baseUrl + "/delete_all";
-        if (this._config.addTrailingSlash) {
+        if (this._useTrailingSlash) {
             url = url + "/";
         }
         return this._http.post(url, { ids: ids });
@@ -1146,7 +1184,7 @@ ModelManager = /** @class */ (function (_super) {
     function (params) {
         /** @type {?} */
         var url = this._baseUrl + "/query";
-        if (this._config.addTrailingSlash) {
+        if (this._useTrailingSlash) {
             url = url + "/";
         }
         return this._http.post(url, params);
@@ -1164,7 +1202,7 @@ ModelManager = /** @class */ (function (_super) {
     function (id) {
         /** @type {?} */
         var url = this._baseUrl + "/" + id;
-        if (this._config.addTrailingSlash) {
+        if (this._useTrailingSlash) {
             url = url + "/";
         }
         return url;
@@ -1180,7 +1218,7 @@ ModelManager = /** @class */ (function (_super) {
     function () {
         /** @type {?} */
         var url = this._baseUrl;
-        if (this._config.addTrailingSlash) {
+        if (this._useTrailingSlash) {
             url = url + "/";
         }
         return url;
@@ -1239,13 +1277,15 @@ ModelManager = /** @class */ (function (_super) {
         }
         return params;
     };
+    /** @nocollapse */
+    ModelManager.ctorParameters = function () { return [
+        { type: undefined },
+        { type: String },
+        { type: HttpClient },
+        { type: SyncService, decorators: [{ type: Optional }] }
+    ]; };
     return ModelManager;
 }(ModelManager$1));
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 
 /**
  * @fileoverview added by tsickle
@@ -1929,13 +1969,23 @@ ModelService = /** @class */ (function () {
      * @return {?}
      */
     function (id) {
+        var _this = this;
         /** @type {?} */
         var action = createAction({
             type: this._actionTypes.GET,
             payload: { id: id }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        var actResult = this._actions.pipe(ofType(this._actionTypes.GET_SUCCESS, this._actionTypes.GET_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        function (a) { return a.uuid === action.uuid; })));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        function () { return _this._store; })), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -1978,13 +2028,23 @@ ModelService = /** @class */ (function () {
      * @return {?}
      */
     function (options) {
+        var _this = this;
         /** @type {?} */
         var action = createAction({
             type: this._actionTypes.LIST,
             payload: { params: options || {} }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        var actResult = this._actions.pipe(ofType(this._actionTypes.LIST_SUCCESS, this._actionTypes.LIST_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        function (a) { return a.uuid === action.uuid; })));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        function () { return _this._store; })), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -2027,13 +2087,23 @@ ModelService = /** @class */ (function () {
      * @return {?}
      */
     function (data) {
+        var _this = this;
         /** @type {?} */
         var action = createAction({
             type: this._actionTypes.CREATE,
             payload: { item: data },
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        var actResult = this._actions.pipe(ofType(this._actionTypes.CREATE_SUCCESS, this._actionTypes.CREATE_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        function (a) { return a.uuid === action.uuid; })));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        function () { return _this._store; })), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -2076,13 +2146,23 @@ ModelService = /** @class */ (function () {
      * @return {?}
      */
     function (data) {
+        var _this = this;
         /** @type {?} */
         var action = createAction({
             type: this._actionTypes.UPDATE,
             payload: { item: data },
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        var actResult = this._actions.pipe(ofType(this._actionTypes.UPDATE_SUCCESS, this._actionTypes.UPDATE_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        function (a) { return a.uuid === action.uuid; })));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        function () { return _this._store; })), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -2125,13 +2205,23 @@ ModelService = /** @class */ (function () {
      * @return {?}
      */
     function (data) {
+        var _this = this;
         /** @type {?} */
         var action = createAction({
             type: this._actionTypes.PATCH,
             payload: { item: data }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        var actResult = this._actions.pipe(ofType(this._actionTypes.PATCH_SUCCESS, this._actionTypes.PATCH_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        function (a) { return a.uuid === action.uuid; })));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        function () { return _this._store; })), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -2174,13 +2264,23 @@ ModelService = /** @class */ (function () {
      * @return {?}
      */
     function (data) {
+        var _this = this;
         /** @type {?} */
         var action = createAction({
             type: this._actionTypes.DELETE,
             payload: { item: data }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        var actResult = this._actions.pipe(ofType(this._actionTypes.DELETE_SUCCESS, this._actionTypes.DELETE_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        function (a) { return a.uuid === action.uuid; })));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        function () { return _this._store; })), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -2223,13 +2323,23 @@ ModelService = /** @class */ (function () {
      * @return {?}
      */
     function (data) {
+        var _this = this;
         /** @type {?} */
         var action = createAction({
             type: this._actionTypes.DELETE_ALL,
             payload: { items: data }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        var actResult = this._actions.pipe(ofType(this._actionTypes.DELETE_ALL_SUCCESS, this._actionTypes.DELETE_ALL_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        function (a) { return a.uuid === action.uuid; })));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        function () { return _this._store; })), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -2272,13 +2382,23 @@ ModelService = /** @class */ (function () {
      * @return {?}
      */
     function (options) {
+        var _this = this;
         /** @type {?} */
         var action = createAction({
             type: this._actionTypes.QUERY,
             payload: { params: options || {} }
         });
         this._store.dispatch(action);
-        return this._store.pipe(select(createSelector(this._modelState, (/**
+        /** @type {?} */
+        var actResult = this._actions.pipe(ofType(this._actionTypes.QUERY_SUCCESS, this._actionTypes.QUERY_FAILURE), filter((/**
+         * @param {?} a
+         * @return {?}
+         */
+        function (a) { return a.uuid === action.uuid; })));
+        return actResult.pipe(switchMap((/**
+         * @return {?}
+         */
+        function () { return _this._store; })), select(createSelector(this._modelState, (/**
          * @param {?} state
          * @return {?}
          */
@@ -2315,15 +2435,5 @@ ModelService = /** @class */ (function () {
     return ModelService;
 }());
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-export { MODEL_OPTIONS, modelActions as ModelActions, ModelEffects, ModelManager, ModelService, generateInitialModelState, modelReducer, reducers, ModelGenericAction as ɵa };
+export { MODEL_OPTIONS, modelActions as ModelActions, ModelEffects, ModelGenericAction, ModelManager, ModelService, createAction, generateInitialModelState, modelReducer, reducers };
 //# sourceMappingURL=model.es5.js.map

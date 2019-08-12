@@ -21,16 +21,12 @@
 import { HttpClient, HttpResponse, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InjectionToken, Injectable, Inject, NgModule } from '@angular/core';
 import { BehaviorSubject, Subscription, timer, from, zip, of, throwError } from 'rxjs';
-import { filter, delayWhen, exhaustMap, take, switchMap, map, catchError, mapTo, tap, concatMap } from 'rxjs/operators';
+import { filter, delayWhen, exhaustMap, take, switchMap, map, concatMap, toArray, catchError, mapTo, tap } from 'rxjs/operators';
 import * as PouchDB from 'pouchdb';
-import { plugin } from 'pouchdb';
+import PouchDB__default, {  } from 'pouchdb';
 import * as PouchDBDebug from 'pouchdb-debug';
 import * as PouchDBFind from 'pouchdb-find';
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
+import PouchDBFind__default, {  } from 'pouchdb-find';
 
 /**
  * @fileoverview added by tsickle
@@ -51,6 +47,32 @@ const SYNC_OPTIONS = new InjectionToken('SYNC_OPTIONS');
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+/**
+ * @param {?} endpoint
+ * @param {?} tableName
+ * @return {?}
+ */
+function registerSyncModel(endpoint, tableName) {
+    if (SYNC_REGISTERED_MODELS.find((/**
+     * @param {?} r
+     * @return {?}
+     */
+    r => r.tableName === tableName)) == null) {
+        /** @type {?} */
+        const registeredModel = { tableName, endpoint };
+        SYNC_REGISTERED_MODELS.push(registeredModel);
+        console.log(`Registered sync model ${tableName} with endpoint ${endpoint}`);
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/** @type {?} */
+const pouchDBStatic = PouchDB__default || PouchDB;
+/** @type {?} */
+const pouchDBFindPlugin = PouchDBFind__default || PouchDBFind;
 class SyncService {
     /**
      * @param {?} _opts
@@ -77,14 +99,22 @@ class SyncService {
         if (this._opts.changesBatchSize == null) {
             this._opts.changesBatchSize = 50;
         }
-        this._syncUrl = `${this._opts.baseUrl}/${this._opts.changesPath || 'changes'}`;
-        this._changesUrl = `${this._opts.baseUrl}/${this._opts.docsPath || 'docs'}`;
+        this._syncUrl = `${this._opts.baseUrl}${this._opts.changesPath || 'changes'}`;
+        this._changesUrl = `${this._opts.baseUrl}${this._opts.docsPath || 'docs'}`;
         this._initLocalDatabase();
         this._databaseIsInit = this._databaseInit.pipe(filter((/**
          * @param {?} i
          * @return {?}
          */
         i => i)));
+    }
+    /**
+     * @param {?} endPoint
+     * @param {?} tableName
+     * @return {?}
+     */
+    registerSyncModel(endPoint, tableName) {
+        registerSyncModel(endPoint, tableName);
     }
     /**
      * @param {?=} immediate
@@ -131,7 +161,7 @@ class SyncService {
          * @param {?} _
          * @return {?}
          */
-        _ => from(db.find(this._modelGetFindRequest(tableName, params))).pipe(take(1)))), switchMap((/**
+        _ => from(db.find(this._modelGetFindRequest(tableName, params))))), take(1), switchMap((/**
          * @param {?} res
          * @return {?}
          */
@@ -170,7 +200,7 @@ class SyncService {
                 return of(obj);
             }
             return throwError('not_found');
-        })));
+        })), take(1));
     }
     /**
      * @param {?} tableName
@@ -188,7 +218,7 @@ class SyncService {
          * @param {?} idx
          * @return {?}
          */
-        idx => from(db.find(this._modelListFindRequest(tableName, params, idx))).pipe(take(1)))), switchMap((/**
+        idx => from(db.find(this._modelListFindRequest(tableName, params, idx))))), take(1), switchMap((/**
          * @param {?} res
          * @return {?}
          */
@@ -257,7 +287,7 @@ class SyncService {
              * @return {?}
              */
             d => this._subObject(d.object, params.fields))));
-        })));
+        })), take(1));
     }
     /**
      * @param {?} tableName
@@ -269,7 +299,7 @@ class SyncService {
          * @param {?} _
          * @return {?}
          */
-        _ => this._nextObjectId(tableName))), exhaustMap((/**
+        _ => this._nextObjectId(tableName))), take(1), exhaustMap((/**
          * @param {?} id
          * @return {?}
          */
@@ -281,11 +311,10 @@ class SyncService {
              * @param {?} doc
              * @return {?}
              */
-            doc => this._createLocalSyncEntry(Object.assign({ doc_id: doc.id, entry_type: 'insert' }, localDoc)))), map((/**
-             * @param {?} _
+            doc => this._createLocalSyncEntry(Object.assign({ doc_id: doc.id, entry_type: 'insert' }, localDoc)).pipe(map((/**
              * @return {?}
              */
-            _ => id)));
+            () => object))))));
         })), take(1));
     }
     /**
@@ -301,7 +330,7 @@ class SyncService {
          * @param {?} _
          * @return {?}
          */
-        _ => from(db.find(this._modelGetFindRequest(tableName, { id }))).pipe(take(1)))), exhaustMap((/**
+        _ => from(db.find(this._modelGetFindRequest(tableName, { id }))))), take(1), exhaustMap((/**
          * @param {?} res
          * @return {?}
          */
@@ -311,25 +340,28 @@ class SyncService {
             }
             /** @type {?} */
             const localDoc = Object.assign({}, res.docs[0], { object });
-            return from(db.post(localDoc)).pipe(take(1));
-        })), exhaustMap((/**
-         * @param {?} res
+            return from(db.post(localDoc)).pipe(map((/**
+             * @param {?} r
+             * @return {?}
+             */
+            r => ({ res: r, localDoc }))));
+        })), take(1), exhaustMap((/**
+         * @param {?} __0
          * @return {?}
          */
-        res => {
+        ({ res, localDoc }) => {
             /** @type {?} */
             const syncEntry = {
                 doc_id: res.id,
                 table_name: tableName,
-                object_id: id,
+                object_id: localDoc.object_id,
                 entry_type: 'update'
             };
-            return this._createLocalSyncEntry(syncEntry);
-        })), take(1), map((/**
-         * @param {?} _
-         * @return {?}
-         */
-        _ => id)));
+            return this._createLocalSyncEntry(syncEntry).pipe(map((/**
+             * @return {?}
+             */
+            () => localDoc.object)));
+        })), take(1));
     }
     /**
      * @param {?} tableName
@@ -343,7 +375,7 @@ class SyncService {
          * @param {?} _
          * @return {?}
          */
-        _ => from(db.find(this._modelGetFindRequest(tableName, { id }))).pipe(take(1)))), exhaustMap((/**
+        _ => from(db.find(this._modelGetFindRequest(tableName, { id }))))), take(1), exhaustMap((/**
          * @param {?} res
          * @return {?}
          */
@@ -353,25 +385,164 @@ class SyncService {
             }
             /** @type {?} */
             const localDoc = res.docs[0];
-            return from(db.remove(localDoc)).pipe(take(1));
-        })), exhaustMap((/**
-         * @param {?} res
+            return from(db.remove(localDoc)).pipe(map((/**
+             * @param {?} r
+             * @return {?}
+             */
+            r => ({ res: r, localDoc }))));
+        })), take(1), exhaustMap((/**
+         * @param {?} __0
          * @return {?}
          */
-        res => {
+        ({ res, localDoc }) => {
             /** @type {?} */
             const syncEntry = {
                 doc_id: res.id,
                 table_name: tableName,
-                object_id: id,
+                object_id: localDoc.object_id,
                 entry_type: 'delete'
             };
-            return this._createLocalSyncEntry(syncEntry);
-        })), take(1), map((/**
+            return this._createLocalSyncEntry(syncEntry).pipe(map((/**
+             * @return {?}
+             */
+            () => localDoc.object)));
+        })), take(1));
+    }
+    /**
+     * @param {?} tableName
+     * @param {?} ids
+     * @return {?}
+     */
+    deleteAll(tableName, ids) {
+        /** @type {?} */
+        const db = this._getLocalDocsDb();
+        return this._databaseIsInit.pipe(exhaustMap((/**
          * @param {?} _
          * @return {?}
          */
-        _ => id)));
+        _ => from(db.find(this._modelBulkIdsFindRequest(tableName, ids))))), take(1), concatMap((/**
+         * @param {?} res
+         * @return {?}
+         */
+        res => {
+            if (res.docs.length !== 1) {
+                return throwError('not_found');
+            }
+            return from(res.docs);
+        })), concatMap((/**
+         * @param {?} localDoc
+         * @return {?}
+         */
+        localDoc => {
+            return from(db.remove(localDoc)).pipe(map((/**
+             * @param {?} res
+             * @return {?}
+             */
+            res => ({ res, localDoc }))));
+        })), concatMap((/**
+         * @param {?} __0
+         * @return {?}
+         */
+        ({ res, localDoc }) => {
+            /** @type {?} */
+            const syncEntry = {
+                doc_id: res.id,
+                table_name: tableName,
+                object_id: localDoc.object_id,
+                entry_type: 'delete'
+            };
+            return this._createLocalSyncEntry(syncEntry).pipe(map((/**
+             * @return {?}
+             */
+            () => localDoc.object)));
+        })), take(ids.length), toArray());
+    }
+    /**
+     * @param {?} tableName
+     * @param {?} params
+     * @return {?}
+     */
+    query(tableName, params) {
+        /** @type {?} */
+        const db = this._getLocalDocsDb();
+        return this._databaseIsInit.pipe(exhaustMap((/**
+         * @param {?} _
+         * @return {?}
+         */
+        _ => this._relationalModelIdxObs({ tableName, sort: params.sort }))), take(1), exhaustMap((/**
+         * @param {?} idx
+         * @return {?}
+         */
+        idx => from(db.find(this._modelQueryFindRequest(tableName, params, idx))))), take(1), switchMap((/**
+         * @param {?} res
+         * @return {?}
+         */
+        res => {
+            if (params.joins != null) {
+                /** @type {?} */
+                const joinTables = params.joins.reduce((/**
+                 * @param {?} prev
+                 * @param {?} cur
+                 * @return {?}
+                 */
+                (prev, cur) => {
+                    prev[cur.model] = res.docs.map((/**
+                     * @param {?} d
+                     * @return {?}
+                     */
+                    d => d.object[cur.property]));
+                    return prev;
+                }), (/** @type {?} */ ({})));
+                return zip(...params.joins.map((/**
+                 * @param {?} join
+                 * @return {?}
+                 */
+                join => {
+                    /** @type {?} */
+                    const req = this._modelListFindRequest(join.model, { fields: join.fields });
+                    req.selector['object_id'] = { '$in': joinTables[join.model] };
+                    return from(db.find(req)).pipe(take(1), map((/**
+                     * @param {?} related
+                     * @return {?}
+                     */
+                    related => ({ join, related: related.docs }))));
+                }))).pipe(map((/**
+                 * @param {?} joins
+                 * @return {?}
+                 */
+                joins => {
+                    return res.docs.map((/**
+                     * @param {?} doc
+                     * @return {?}
+                     */
+                    doc => {
+                        /** @type {?} */
+                        const obj = doc.object;
+                        joins.forEach((/**
+                         * @param {?} joinEntry
+                         * @return {?}
+                         */
+                        joinEntry => {
+                            /** @type {?} */
+                            const prop = joinEntry.join.property;
+                            /** @type {?} */
+                            const rel = joinEntry.related.find((/**
+                             * @param {?} r
+                             * @return {?}
+                             */
+                            r => r.object_id === obj[prop]));
+                            obj[prop] = rel != null ? rel.object : null;
+                        }));
+                        return this._subObject(obj, params.fields);
+                    }));
+                })));
+            }
+            return of(res.docs.map((/**
+             * @param {?} d
+             * @return {?}
+             */
+            d => this._subObject(d.object, params.fields))));
+        })), take(1));
     }
     /**
      * @private
@@ -977,6 +1148,32 @@ class SyncService {
     /**
      * @private
      * @param {?} tableName
+     * @param {?} ids
+     * @return {?}
+     */
+    _modelBulkIdsFindRequest(tableName, ids) {
+        return {
+            selector: {
+                table_name: tableName,
+                object_id: { $in: ids }
+            }
+        };
+    }
+    /**
+     * @private
+     * @param {?} tableName
+     * @param {?} params
+     * @param {?=} index
+     * @return {?}
+     */
+    _modelQueryFindRequest(tableName, params, index) {
+        /** @type {?} */
+        const req = this._modelListFindRequest(tableName, params, index);
+        return Object.assign({}, req, { selector: Object.assign({}, req.selector, this._normalizeSelector(params.selector)) });
+    }
+    /**
+     * @private
+     * @param {?} tableName
      * @param {?} params
      * @param {?=} index
      * @return {?}
@@ -1007,6 +1204,23 @@ class SyncService {
             }
         }
         return req;
+    }
+    /**
+     * @private
+     * @param {?} selector
+     * @return {?}
+     */
+    _normalizeSelector(selector) {
+        /** @type {?} */
+        const normSelector = {};
+        Object.keys(selector).forEach((/**
+         * @param {?} key
+         * @return {?}
+         */
+        key => {
+            normSelector[`object.${key}`] = selector[key];
+        }));
+        return normSelector;
     }
     /**
      * @private
@@ -1057,9 +1271,9 @@ class SyncService {
      * @return {?}
      */
     _initLocalDatabase() {
-        plugin(PouchDBFind);
-        plugin(PouchDBDebug);
-        this._database = new PouchDB(this._opts.localDatabaseName, { revs_limit: 1 });
+        pouchDBStatic.plugin(pouchDBFindPlugin);
+        pouchDBStatic.plugin(PouchDBDebug);
+        this._database = new pouchDBStatic(this._opts.localDatabaseName, { revs_limit: 1 });
         this._database.createIndex(this._relationalModelIdx)
             .then((/**
          * @param {?} _
@@ -1140,8 +1354,8 @@ class OfflineInterceptor {
         /** @type {?} */
         const method = req.method.toLowerCase();
         const { exactMatch, relativeUrl } = this._analyzeRequestUrl(req, model);
-        if (method === 'get') {
-            if (exactMatch) {
+        if (exactMatch) {
+            if (method === 'get') {
                 /** @type {?} */
                 const limit = (/** @type {?} */ (req.params.get('limit')));
                 /** @type {?} */
@@ -1167,12 +1381,34 @@ class OfflineInterceptor {
                     body: res
                 }))));
             }
-            else {
-                if (relativeUrl.length === 1) {
+            else if (method === 'post') {
+                /** @type {?} */
+                const obj = req.body;
+                return this._syncService.create(model.tableName, obj).pipe(catchError((/**
+                 * @param {?} _
+                 * @return {?}
+                 */
+                _ => throwError(reqError))), map((/**
+                 * @param {?} res
+                 * @return {?}
+                 */
+                res => new HttpResponse({
+                    status: 201,
+                    statusText: 'OK',
+                    url: req.url,
+                    body: res
+                }))));
+            }
+        }
+        else {
+            if (relativeUrl.length === 1) {
+                /** @type {?} */
+                const lastUrlPart = relativeUrl[0];
+                if (lastUrlPart === 'delete_all') {
                     /** @type {?} */
-                    const id = parseInt(relativeUrl[0], 10);
-                    if (!isNaN(id) && id > 0) {
-                        return this._syncService.get(model.tableName, { id }).pipe(catchError((/**
+                    const ids = req.body.ids;
+                    if (ids != null && ids instanceof Array && ids.length > 0) {
+                        return this._syncService.deleteAll(model.tableName, ids).pipe(catchError((/**
                          * @param {?} _
                          * @return {?}
                          */
@@ -1186,6 +1422,62 @@ class OfflineInterceptor {
                             url: req.url,
                             body: res
                         }))));
+                    }
+                }
+                else if (lastUrlPart === 'query') {
+                    /** @type {?} */
+                    const params = req.body;
+                    return this._syncService.query(model.tableName, params).pipe(catchError((/**
+                     * @param {?} _
+                     * @return {?}
+                     */
+                    _ => throwError(reqError))), map((/**
+                     * @param {?} res
+                     * @return {?}
+                     */
+                    res => new HttpResponse({
+                        status: 200,
+                        statusText: 'OK',
+                        url: req.url,
+                        body: res
+                    }))));
+                }
+                else {
+                    /** @type {?} */
+                    const id = parseInt(lastUrlPart, 10);
+                    if (!isNaN(id) && id > 0) {
+                        /** @type {?} */
+                        let op = null;
+                        /** @type {?} */
+                        let successStatus = 200;
+                        /** @type {?} */
+                        const obj = req.body;
+                        if (method === 'get') {
+                            op = this._syncService.get(model.tableName, { id });
+                            successStatus = 201;
+                        }
+                        else if (method === 'patch' || method === 'put') {
+                            op = this._syncService.update(model.tableName, id, obj);
+                        }
+                        else if (method === 'delete') {
+                            op = this._syncService.delete(model.tableName, id);
+                        }
+                        if (op != null) {
+                            return op.pipe(catchError((/**
+                             * @param {?} _
+                             * @return {?}
+                             */
+                            _ => throwError(reqError))), map((/**
+                             * @param {?} res
+                             * @return {?}
+                             */
+                            res => new HttpResponse({
+                                status: successStatus,
+                                statusText: 'OK',
+                                url: req.url,
+                                body: res
+                            }))));
+                        }
                     }
                 }
             }
@@ -1235,73 +1527,6 @@ OfflineInterceptor.ctorParameters = () => [
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
- * @param {?} endpoint
- * @param {?} tableName
- * @return {?}
- */
-function registerSyncModel(endpoint, tableName) {
-    if (SYNC_REGISTERED_MODELS.find((/**
-     * @param {?} r
-     * @return {?}
-     */
-    r => r.tableName === tableName)) == null) {
-        /** @type {?} */
-        const registeredModel = { tableName, endpoint };
-        SYNC_REGISTERED_MODELS.push(registeredModel);
-        console.log(`Registered sync model ${tableName} with endpoint ${endpoint}`);
-    }
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/** @type {?} */
-const ANNOTATIONS = '__gngt_annotations__';
-// WARNING: interface has both a type and a value, skipping emit
-/**
- * @template T
- * @param {?} opts
- * @return {?}
- */
-function SyncModel(opts) {
-    return (/**
-     * @param {?} cls
-     * @return {?}
-     */
-    function SyncModelFactory(cls) {
-        /** @type {?} */
-        const annotations = cls.hasOwnProperty(ANNOTATIONS)
-            ? ((/** @type {?} */ (cls)))[ANNOTATIONS]
-            : Object.defineProperty(cls, ANNOTATIONS, { value: [] })[ANNOTATIONS];
-        annotations.push({ sync_model: true });
-        return (/** @type {?} */ (class extends cls {
-            /**
-             * @param {...?} args
-             */
-            constructor(...args) {
-                super(...args);
-                registerSyncModel(((/** @type {?} */ (this))).endPoint, opts.tableName);
-            }
-        }));
-    });
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 class SyncModule {
     /**
      * @param {?} opts
@@ -1322,20 +1547,5 @@ SyncModule.decorators = [
     { type: NgModule, args: [{},] },
 ];
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-export { OfflineInterceptor, SYNC_OPTIONS, SyncModel, SyncModule, SyncService };
+export { OfflineInterceptor, SYNC_OPTIONS, SyncModule, SyncService };
 //# sourceMappingURL=sync.js.map

@@ -24,11 +24,6 @@
  */
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
  * This function coerces a string into a string literal type.
  * Using tagged union types in TypeScript 2.0, this enables
  * powerful typechecking of our reducers.
@@ -51,16 +46,6 @@ function type(label) {
     typeCache[(/** @type {?} */ (label))] = true;
     return (/** @type {?} */ (label));
 }
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
 
 export { type };
 //# sourceMappingURL=reducers.es5.js.map
