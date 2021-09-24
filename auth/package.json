@@ -1,8 +1,9 @@
 {
   "name": "@gngt/core/auth",
-  "typings": "../auth.d.ts",
   "main": "../bundles/core-auth.umd.js",
-  "module": "../esm5/auth.es5.js",
-  "es2015": "../esm2015/auth.js",
-  "sideEffects": false
+  "fesm2015": "../fesm2015/auth.js",
+  "esm2015": "../esm2015/auth/index.js",
+  "typings": "./index.d.ts",
+  "module": "../fesm2015/auth.js",
+  "es2015": "../fesm2015/auth.js"
 }

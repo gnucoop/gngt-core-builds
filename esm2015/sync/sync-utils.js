@@ -1,0 +1,29 @@
+/**
+ * @license
+ * Copyright (C) Gnucoop soc. coop.
+ *
+ * This file is part of the Gnucoop Angular Toolkit (gngt).
+ *
+ * Gnucoop Angular Toolkit (gngt) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Gnucoop Angular Toolkit (gngt) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
+ *
+ */
+import { SYNC_REGISTERED_MODELS } from './registered-models';
+export function registerSyncModel(endpoint, tableName) {
+    if (SYNC_REGISTERED_MODELS.find(r => r.tableName === tableName) == null) {
+        const registeredModel = { tableName, endpoint };
+        SYNC_REGISTERED_MODELS.push(registeredModel);
+        console.log(`Registered sync model ${tableName} with endpoint ${endpoint}`);
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3luYy11dGlscy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uL3NyYy9jb3JlL3N5bmMvc3luYy11dGlscy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7Ozs7Ozs7Ozs7Ozs7OztHQW1CRztBQUVILE9BQU8sRUFBQyxzQkFBc0IsRUFBQyxNQUFNLHFCQUFxQixDQUFDO0FBRTNELE1BQU0sVUFBVSxpQkFBaUIsQ0FBQyxRQUFnQixFQUFFLFNBQWlCO0lBQ25FLElBQUksc0JBQXNCLENBQUMsSUFBSSxDQUFDLENBQUMsQ0FBQyxFQUFFLENBQUMsQ0FBQyxDQUFDLFNBQVMsS0FBSyxTQUFTLENBQUMsSUFBSSxJQUFJLEVBQUU7UUFDdkUsTUFBTSxlQUFlLEdBQUcsRUFBQyxTQUFTLEVBQUUsUUFBUSxFQUFDLENBQUM7UUFDOUMsc0JBQXNCLENBQUMsSUFBSSxDQUFDLGVBQWUsQ0FBQyxDQUFDO1FBQzdDLE9BQU8sQ0FBQyxHQUFHLENBQUMseUJBQXlCLFNBQVMsa0JBQWtCLFFBQVEsRUFBRSxDQUFDLENBQUM7S0FDN0U7QUFDSCxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IChDKSBHbnVjb29wIHNvYy4gY29vcC5cbiAqXG4gKiBUaGlzIGZpbGUgaXMgcGFydCBvZiB0aGUgR251Y29vcCBBbmd1bGFyIFRvb2xraXQgKGduZ3QpLlxuICpcbiAqIEdudWNvb3AgQW5ndWxhciBUb29sa2l0IChnbmd0KSBpcyBmcmVlIHNvZnR3YXJlOiB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5XG4gKiBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGFzIHB1Ymxpc2hlZCBieVxuICogdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbiwgZWl0aGVyIHZlcnNpb24gMyBvZiB0aGUgTGljZW5zZSwgb3JcbiAqIChhdCB5b3VyIG9wdGlvbikgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogR251Y29vcCBBbmd1bGFyIFRvb2xraXQgKGduZ3QpIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQgd2lsbCBiZSB1c2VmdWwsXG4gKiBidXQgV0lUSE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXQgZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZlxuICogTUVSQ0hBTlRBQklMSVRZIG9yIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLiAgU2VlIHRoZVxuICogR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgZm9yIG1vcmUgZGV0YWlscy5cbiAqXG4gKiBZb3Ugc2hvdWxkIGhhdmUgcmVjZWl2ZWQgYSBjb3B5IG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZVxuICogYWxvbmcgd2l0aCBHbnVjb29wIEFuZ3VsYXIgVG9vbGtpdCAoZ25ndCkuICBJZiBub3QsIHNlZSBodHRwOi8vd3d3LmdudS5vcmcvbGljZW5zZXMvLlxuICpcbiAqL1xuXG5pbXBvcnQge1NZTkNfUkVHSVNURVJFRF9NT0RFTFN9IGZyb20gJy4vcmVnaXN0ZXJlZC1tb2RlbHMnO1xuXG5leHBvcnQgZnVuY3Rpb24gcmVnaXN0ZXJTeW5jTW9kZWwoZW5kcG9pbnQ6IHN0cmluZywgdGFibGVOYW1lOiBzdHJpbmcpOiB2b2lkIHtcbiAgaWYgKFNZTkNfUkVHSVNURVJFRF9NT0RFTFMuZmluZChyID0+IHIudGFibGVOYW1lID09PSB0YWJsZU5hbWUpID09IG51bGwpIHtcbiAgICBjb25zdCByZWdpc3RlcmVkTW9kZWwgPSB7dGFibGVOYW1lLCBlbmRwb2ludH07XG4gICAgU1lOQ19SRUdJU1RFUkVEX01PREVMUy5wdXNoKHJlZ2lzdGVyZWRNb2RlbCk7XG4gICAgY29uc29sZS5sb2coYFJlZ2lzdGVyZWQgc3luYyBtb2RlbCAke3RhYmxlTmFtZX0gd2l0aCBlbmRwb2ludCAke2VuZHBvaW50fWApO1xuICB9XG59XG4iXX0=

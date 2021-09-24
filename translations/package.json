@@ -1,8 +1,9 @@
 {
   "name": "@gngt/core/translations",
-  "typings": "../translations.d.ts",
   "main": "../bundles/core-translations.umd.js",
-  "module": "../esm5/translations.es5.js",
-  "es2015": "../esm2015/translations.js",
-  "sideEffects": false
+  "fesm2015": "../fesm2015/translations.js",
+  "esm2015": "../esm2015/translations/index.js",
+  "typings": "./index.d.ts",
+  "module": "../fesm2015/translations.js",
+  "es2015": "../fesm2015/translations.js"
 }

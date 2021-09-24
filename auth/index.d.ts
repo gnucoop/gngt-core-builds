@@ -1,21 +1,7 @@
 /**
- * @license
- * Copyright (C) 2018 Gnucoop soc. coop.
- *
- * This file is part of the Gnucoop Angular Toolkit (gngt).
- *
- * Gnucoop Angular Toolkit (gngt) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Gnucoop Angular Toolkit (gngt) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Gnucoop Angular Toolkit (gngt).  If not, see http://www.gnu.org/licenses/.
- *
+ * Generated bundle index. Do not edit.
  */
-export * from './typings/index';
+export * from './public-api';
+export { AuthEffects as ɵgc_gngt_src_core_auth_auth_h } from './auth-effects';
+export { State as ɵgc_gngt_src_core_auth_auth_a, getInit as ɵgc_gngt_src_core_auth_auth_c, getUser as ɵgc_gngt_src_core_auth_auth_d, reducer as ɵgc_gngt_src_core_auth_auth_b } from './auth-reducer';
+export { getError as ɵgc_gngt_src_core_auth_auth_f, getPending as ɵgc_gngt_src_core_auth_auth_g, reducer as ɵgc_gngt_src_core_auth_auth_e } from './login-page-reducer';

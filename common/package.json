@@ -1,8 +1,9 @@
 {
   "name": "@gngt/core/common",
-  "typings": "../common.d.ts",
   "main": "../bundles/core-common.umd.js",
-  "module": "../esm5/common.es5.js",
-  "es2015": "../esm2015/common.js",
-  "sideEffects": false
+  "fesm2015": "../fesm2015/common.js",
+  "esm2015": "../esm2015/common/index.js",
+  "typings": "./index.d.ts",
+  "module": "../fesm2015/common.js",
+  "es2015": "../fesm2015/common.js"
 }
